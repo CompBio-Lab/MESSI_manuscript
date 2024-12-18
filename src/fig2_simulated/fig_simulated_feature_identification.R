@@ -4,47 +4,11 @@ data_path <- "data/sim_data_fs_results/merge_selected_features/all_feature_selec
 
 
 library(tidyverse)
+library(hrbrthemes)
+
+source(here::here("src/fig2_simulated/helpers.R"))
 
 # Custom functions
-get_top_bottom_counts_df <- function(feats_df, total_feat_counts_df, true_label, noise_label) {
-  counts_df <- feats_df %>%
-    group_by(method, dataset) %>%
-    arrange(desc(abs(coef)), .by_group = TRUE) %>%
-    group_map(~ {
-      # Find a match in the reference df to see its corresponding counts
-      matched <- total_feat_counts_df %>%
-        filter(method == .y$method, dataset == .y$dataset)
-
-      # Get the number of true and noise
-      true_num <- matched %>% pull( {{ true_label }} )
-      noise_num <- matched %>% pull( {{ noise_label }} )
-
-      if (is.na(true_num)) {
-        message("Dataset: ", .y$dataset, " Method: ", .y$method, " has NA in feature count")
-        true_num <- 0
-      }
-
-      if (is.na(noise_num)) {
-        message("Dataset: ", .y$dataset, " Method: ", .y$method, " has NA in feature count")
-        noise_num <- 0
-      }
-      # Then pull each
-      top_sliced <- slice_head(.x , n = true_num) %>%
-        count(feature_type, name = "n_selected") %>%
-        mutate(category = "top_count")
-      bottom_sliced <- slice_head(.x, n = noise_num) %>%
-        count(feature_type, name = "n_selected") %>%
-        mutate(category = "bottom_count")
-
-      binded <- bind_rows(top_sliced, bottom_sliced)
-      output <- bind_cols(.y, binded)
-      return(output)
-      }) %>%
-  bind_rows() %>%
-  ungroup()
-
-  return(counts_df)
-}
 
 get_fs_stats <- function(top_bottom_counts,
                          top_identifier="top_counts",
@@ -89,6 +53,9 @@ feats_df <- read.csv(data_path) %>%
     TRUE ~ NA
   ))
 
+
+
+
 # dname <- feats_df$dataset %>% unique() %>% sample(1)
 # feats_df %>%
 #   filter(dataset == dname) %>%
@@ -104,7 +71,8 @@ all_counts_df <- feats_df %>%
   pivot_wider(names_from = "feature_type", values_from = "n") %>%
   rename(noise_count = noise,
          true_count = true) %>%
-  mutate(n_total = noise_count + true_count)
+  # From n_total to p_total
+  mutate(p_total = noise_count + true_count)
 
 
 # Then this gets to some summary stats of binary classification
@@ -123,19 +91,72 @@ plot_data <- feats_df %>%
   retrieve_sim_params()
 
 
+# ======================================================
+# See for diablo now?
+methods <- c("diablo-full")
+feats_df %>%
+  filter(method %in% methods) %>%
+
+
+
+
+
+
 # =============================================================================
-# Then for plotting goes here
 plot_data %>%
-  arrange(sensitivity)
+  sample_n(2)
+
+palette <- "Paired"
+
+p1 <- plot_data %>%
+  ggplot(aes(x = method, y = sensitivity, fill=method)) +
+  geom_boxplot() +
+  theme_bw() +
+  labs(title="Sensitivity of feature selection results",
+       fill="Method") +
+  scale_fill_brewer(palette=palette)
 
 
-
-
-
-
-plot_data %>%
+p2 <- plot_data %>%
   ggplot(aes(x = method, y = sensitivity, fill=factor(dt))) +
   geom_boxplot() +
-  theme_bw()
+  theme_bw() +
+  labs(title="Sensitivity of feature selection results aggregated by dt",
+       color="dt") +
+  scale_fill_brewer(palette="Pastel2")
+
+
+p3 <- plot_data %>%
+  #filter(dt >= 20) %>%
+  group_by(method, dt) %>%
+  summarize(avg_sensitivity = mean(sensitivity)) %>%
+  ggplot(aes(x=method, y=avg_sensitivity, group=factor(dt), color=factor(dt))) +
+  geom_point() +
+  geom_line() +
+  theme_bw() +
+  scale_color_brewer(palette="Dark2") +
+  labs(color = "dt", title="Average Sensitivity (by rho) aggregated by dt")
+
+p1
+
+p2
+
+p3
+
+plot_data %>%
+  filter(method == "diablo-null")
+
+
+plot_data %>%
+  ggplot(aes(x = method, y = sensitivity)) +
+  geom_point() +
+  theme_bw() +
+  facet_grid(rho ~ dt, label = label_both) +
+  labs(title="Sensitivity of feature selection results aggregated by dt",
+       color="dt") +
+  scale_fill_brewer(palette="Pastel2")
+
+
+
 
 
