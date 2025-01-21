@@ -3,8 +3,11 @@
 # Important variables
 RAW_GZ=raw/results.tar.gz
 DATA_DIR=data
+DATA_RAW_DIR=${DATA_DIR}/raw
+DATA_OUTDIR=${DATA_DIR}/processed
 SRC_DIR=src
-OUTPUT_DIR=results/figures
+OUTPUT_DIR=results
+FIG_OUTDIR=${OUTPUT_DIR}/figures
 KEEP='.gitkeep'
 BANNER="======================================================================="
 
@@ -30,15 +33,15 @@ DEVICE=png # default is png
 DPI=700 # default is 300
 # Output files
 # For performance evaluation
-FIG_REAL_OUT=${OUTPUT_DIR}/fig_performance_evaluation.${DEVICE}
-FIG_SIM_OUT=${OUTPUT_DIR}/fig_simulated_performance.${DEVICE}
+FIG_REAL_OUT=${FIG_OUTDIR}/fig_performance_evaluation.${DEVICE}
+FIG_SIM_OUT=${FIG_OUTDIR}/fig_simulated_performance.${DEVICE}
 FIG1_OUTPUT=$(FIG_REAL_OUT) $(FIG_SIM_OUT)
 # For computational time
-FIG_COMP_TIME=${OUTPUT_DIR}/fig_computational_time.${DEVICE}
+FIG_COMP_TIME=${FIG_OUTDIR}/fig_computational_time.${DEVICE}
 FIG2_OUTPUT=$(FIG_COMP_TIME)
 # For feature selection
-FIG_FEAT_SELECTION_REAL_CORR=${OUTPUT_DIR}/fig_feature_selection_weights.${DEVICE}
-FIG_FEAT_SELECTION_SIM_RANK=${OUTPUT_DIR}/fig_feature_selection_sim_rank.${DEVICE}
+FIG_FEAT_SELECTION_REAL_CORR=${FIG_OUTDIR}/fig_feature_selection_weights.${DEVICE}
+FIG_FEAT_SELECTION_SIM_RANK=${FIG_OUTDIR}/fig_feature_selection_sim_rank.${DEVICE}
 FIG3_OUTPUT=$(FIG_FEAT_SELECTION_REAL_CORR) $(FIG_FEAT_SELECTION_SIM_RANK)
 
 # =========================
@@ -46,11 +49,17 @@ FIG3_OUTPUT=$(FIG_FEAT_SELECTION_REAL_CORR) $(FIG_FEAT_SELECTION_SIM_RANK)
 OUTPUTS=$(FIG1_OUTPUT) $(FIG2_OUTPUT) $(FIG3_OUTPUT)
 all: $(OUTPUTS)
 
-.PHONY: clean
-clean:
-	@echo "Cleaning files in ${OUTPUT_DIR} ..."
-	@find ${OUTPUT_DIR} ! -name ${KEEP} -type f -exec rm -f {} +
+.PHONY: clean clean_data clean_fig
+clean: clean_data clean_fig
+
+clean_fig:
+	@echo "Cleaning files in ${FIG_OUTDIR} ..."
+	@find ${FIG_OUTDIR} ! -name ${KEEP} -type f -exec rm -f {} +
 #untar: $(RAW_GZ)
+
+clean_data:
+	@echo "Cleaning files in ${DATA_OUTDIR} ..."
+	@find ${DATA_OUTDIR} ! -name ${KEEP} -type f -exec rm -f {} +
 #	@tar -xf $(RAW_GZ) \
 #	--transform="s/.*\///" \
 #	--directory ${DATA_DIR}
