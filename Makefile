@@ -4,8 +4,9 @@
 RAW_GZ=raw/results.tar.gz
 DATA_DIR=data
 SRC_DIR=src
-OUTPUT_DIR=figures
+OUTPUT_DIR=results/figures
 KEEP='.gitkeep'
+BANNER="======================================================================="
 
 
 
@@ -54,10 +55,15 @@ clean:
 #	--transform="s/.*\///" \
 #	--directory ${DATA_DIR}
 
+# ==============================================================================
+# PREPROCESSING
+
+# ==============================================================================
+
 
 # FIGURE 1 Performance Evaluation
 $(FIG1_OUTPUT): ${FIG1_SRC} ${FIG1_CSV}
-	@echo ""
+	@echo ${BANNER}
 	@echo -e "Plotting figures of performance evaluation ... \n"
 	Rscript $(FIG1_SRC) \
 		--csv $(FIG1_CSV) \
@@ -68,7 +74,7 @@ $(FIG1_OUTPUT): ${FIG1_SRC} ${FIG1_CSV}
 		--device ${DEVICE} \
 		--dpi ${DPI}
 $(FIG2_OUTPUT): ${FIG2_SRC} ${FIG2_TRACE} ${FIG2_METADATA}
-	@echo ""
+	@echo ${BANNER}
 	@echo -e "Plotting figure of computational time\n"
 	Rscript $(FIG2_SRC) \
 		--metadata ${FIG2_METADATA} \
@@ -80,7 +86,7 @@ $(FIG2_OUTPUT): ${FIG2_SRC} ${FIG2_TRACE} ${FIG2_METADATA}
 		--dpi ${DPI}
 
 $(FIG3_OUTPUT): ${FIG3_SRC} ${FIG3_CSV}
-	@echo ""
+	@echo ${BANNER}
 	@echo -e "Plotting figure of feature selection comparison... \n"
 	Rscript ${FIG3_SRC} \
 		--csv ${FIG3_CSV} \
