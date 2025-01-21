@@ -38,3 +38,26 @@ get_top_bottom_counts_df <- function(feats_df, total_feat_counts_df, true_label,
   return(counts_df)
 }
 
+library(testthat)
+
+# Load test data
+test_data <- read.csv("data/feature_selection_test_data.csv") %>% as_tibble()
+
+total_feats_df <- test_data %>%
+  group_by(method, dataset, feature_type) %>%
+  summarize(n = n()) %>%
+  ungroup() %>%
+  pivot_wider(names_from = "feature_type", values_from = "n") %>%
+  rename(noise_count = noise,
+         true_count = true) %>%
+  # From n_total to p_total
+  mutate(p_total = noise_count + true_count)
+
+top_count <- get_top_bottom_counts_df(test_data, total_feats_df,
+                                      true_label=true_count,
+                                      noise_label=noise_count)
+
+test_that("Should work", {
+  expect_equal()
+})
+
