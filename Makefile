@@ -81,10 +81,6 @@ clean_data:
 	@echo "Cleaning file in ${DATA_PROCESSED_DIR} ..."
 	@find ${DATA_PROCESSED_DIR} ! -name ${KEEP} -type f -exec rm -f {} +
 #untar: $(RAW_GZ)
-
-clean_data:
-	@echo "Cleaning files in ${DATA_OUTDIR} ..."
-	@find ${DATA_OUTDIR} ! -name ${KEEP} -type f -exec rm -f {} +
 #	@tar -xf $(RAW_GZ) \
 #	--transform="s/.*\///" \
 #	--directory ${DATA_DIR}
