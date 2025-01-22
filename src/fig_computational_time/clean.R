@@ -1,18 +1,14 @@
 doc <- "
 
-This script is used to create figure 2 of computational time.
+This script is used to make plot data for figure of computational time.
 
 Usage:
-  fig_computational_time.R [options]
+  clean.R [options]
 
 Options:
- --metadata=METADATA    Path to write out performance auc of real datasets
- --trace=TRACE          Path to write out performance auc of sim datasets
- --output=OUTPUT        Path to write out computational time
- --width=WIDTH          Width of the graph [default: 7]
- --height=height        Height of the graph [default: 7]
- --device=DEVICE        Device to print out [default: png]
- --dpi=DPI              Dots per inch [default: 300]
+ --metadata=METADATA        Path to write out performance auc of real datasets
+ --trace=TRACE              Path to write out performance auc of sim datasets
+ --output_csv=OUTPUT_CSV    Path to write out computational time
 "
 
 # Load libraries
@@ -21,24 +17,10 @@ library(purrr)
 library(ggplot2)
 library(stringr)
 library(tidyr)
-# Parse cli
-opt <- docopt::docopt(doc)
-
-# Convenient vars
-output_path <- opt$output
-metadata_path <- opt$metadata
-trace_path <- opt$trace
-
-# Plotting params
-width <- as.numeric(opt$width)
-height <- as.numeric(opt$height)
-device <- opt$device
-dpi <- as.numeric(opt$dpi)
-text_size <- 12
-method_palette <- "Paired"
 
 
-# Custom functions
+
+# Custom functions ===============================================================
 toSeconds <- function(x) {
   parts <- unlist(strsplit(x, " "))
   hours <- minutes <- seconds <- 0
@@ -78,20 +60,6 @@ wrangle_metadata <- function(metadata_df) {
     select(dataset, omics_names, sample_size,
            dataset_dim, is_simulated, positive_prop, feat_dimensions)
 }
-
-# ========================
-# First handle the metadata
-#metadata_path <- "data/parsed_metadata.csv"
-metadata_df <- read.csv(metadata_path) %>%
-  as_tibble() %>%
-  wrangle_metadata()
-
-
-# library(knitr)
-# metadata_df %>%
-#   filter(is_simulated == 0) %>%
-#   select(dataset, omics_names, sample_size, feat_dimensions, positive_prop) %>%
-#   kable()
 
 
 
@@ -168,50 +136,50 @@ wrangle_trace <- function(
   return(output_df)
 }
 
+# ==================================================================================================================
 
-# Then hanlde the execution trace
-# Then also want to wrangle the execution trace
-#trace_path <- "data/execution_trace.txt"
-trace_df <- readr::read_tsv(trace_path, col_types = readr::cols()) %>%
-  wrangle_trace()
+main <- function(metadata_path, trace_path, output_path) {
+    # First handle the metadata
+  #metadata_path <- "data/parsed_metadata.csv"
+  metadata_df <- read.csv(metadata_path) %>%
+    as_tibble() %>%
+    wrangle_metadata()
 
-# ================================================================
-# Now to combine the trace with the metadata
-plot_df <- left_join(
-  x = metadata_df,
-  y = trace_df,
-  by = "dataset"
-  ) %>%
-  # Add a label column to group datasets by their sizes
-  mutate(
-    size_label = ifelse(
-      dataset_dim < median(metadata_df$dataset_dim),
-      "Small",
-      "Large"
-    ) %>% factor(levels=c("Small", "Large"))
-  ) %>%
-  select(method, dataset, dataset_dim, size_label, raw_seconds, action)
+  # Then hanlde the execution trace
+  # Then also want to wrangle the execution trace
+  #trace_path <- "data/execution_trace.txt"
+  trace_df <- readr::read_tsv(trace_path, col_types = readr::cols()) %>%
+    wrangle_trace()
 
-# Plotting starts here
-computation_time_plot <- plot_df %>%
-  ggplot(aes(x=size_label, y = raw_seconds, fill=method)) +
-  stat_boxplot(geom="errorbar") +
-  geom_boxplot(outlier.color = "red", outlier.fill="red") +
-  scale_y_log10(labels = scales::label_log()) +
-  scale_fill_brewer(palette=method_palette) +
-  labs(x = "Dataset Size", y = "Computation time in seconds (log scale)", fill = "Method") +
-  theme_classic() +
-  theme(
-    # Make sizing
-    axis.text = element_text(size = text_size),
-    axis.title = element_text(size = text_size + 2),
-    legend.title = element_text(size = text_size + 2),
-    legend.text = element_text(size = text_size),
-    legend.position = "bottom"
-  ) +
-  guides(fill=guide_legend(nrow=2))
-# Lastly save it
-ggsave(output_path, plot=computation_time_plot,
-       width=width, height=height, device=device, dpi=dpi,
-       create.dir = TRUE)
-message("Saved image of ", width, " x ", height, " to ", output_path)
+  # ================================================================
+  # Now to combine the trace with the metadata
+  plot_df <- left_join(
+    x = metadata_df,
+    y = trace_df,
+    by = "dataset"
+    ) %>%
+    # Add a label column to group datasets by their sizes
+    mutate(
+      size_label = ifelse(
+        dataset_dim < median(metadata_df$dataset_dim),
+        "Small",
+        "Large"
+      ) %>% factor(levels=c("Small", "Large"))
+    ) %>%
+    select(method, dataset, dataset_dim, size_label, raw_seconds, action)
+
+  # Lastly write out to file
+  write.csv(plot_df, file=output_path, row.names=FALSE)
+}
+
+
+# Parse cli
+opt <- docopt::docopt(doc)
+
+# Convenient vars
+metadata_path <- opt$metadata
+trace_path <- opt$trace
+output_path <- opt$output_csv
+# Execute the main function
+main(metadata_path = metadata_path, trace_path = trace_path, output_path = output_path)
+
