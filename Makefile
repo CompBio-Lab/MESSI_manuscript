@@ -19,7 +19,6 @@ SRC_DIR=src
 # Similarly results could have figures and other files
 OUTPUT_DIR=results
 FIG_DIR=results/figures
-
 KEEP='.gitkeep'
 BANNER="======================================================================="
 
@@ -53,6 +52,7 @@ FIG3_PLOT_SRC=${FIG3_SRC_DIR}/plot.R
 
 # Figure out names
 # For performance evaluation
+
 FIG_REAL_OUT=${FIG_DIR}/fig_performance_evaluation.${DEVICE}
 FIG_SIM_OUT=${FIG_DIR}/fig_simulated_performance.${DEVICE}
 FIG1_OUTPUT=$(FIG_REAL_OUT) $(FIG_SIM_OUT)
@@ -69,6 +69,7 @@ FIG3_OUTPUT=$(FIG_FEAT_SELECTION_REAL_CORR) $(FIG_FEAT_SELECTION_SIM_RANK)
 OUTPUTS=$(FIG1_OUTPUT) $(FIG2_OUTPUT) $(FIG3_OUTPUT)
 all: $(OUTPUTS)
 
+
 .PHONY: clean
 clean: clean_figures clean_data
 
@@ -80,6 +81,10 @@ clean_data:
 	@echo "Cleaning file in ${DATA_PROCESSED_DIR} ..."
 	@find ${DATA_PROCESSED_DIR} ! -name ${KEEP} -type f -exec rm -f {} +
 #untar: $(RAW_GZ)
+
+clean_data:
+	@echo "Cleaning files in ${DATA_OUTDIR} ..."
+	@find ${DATA_OUTDIR} ! -name ${KEEP} -type f -exec rm -f {} +
 #	@tar -xf $(RAW_GZ) \
 #	--transform="s/.*\///" \
 #	--directory ${DATA_DIR}
