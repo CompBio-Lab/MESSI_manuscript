@@ -6,7 +6,7 @@ Usage:
   fig_feature_selection.R [options]
 
 Options:
- --csv=CSV              Path to read in the feature selection result
+ --input_csv=CSV              Path to read in the feature selection result
  --real_output=R_OUT    Path to write out real data heatmap on correlation
  --sim_output=S_OUT     Path to write out sim data heatmap on ranking
  --width=WIDTH          Width of the graph [default: 7]
@@ -21,81 +21,9 @@ library(ggplot2)
 library(stringr)
 suppressPackageStartupMessages(library(ComplexHeatmap))
 library(tidyr)
-opt <- docopt::docopt(doc)
-
-# Convenient vars
-input_path <- opt$csv
-real_output_path <- opt$real_output
-sim_output_path <- opt$sim_output
-# Plot params
-fontsize <- 12
-width <- as.numeric(opt$width)
-height <- as.numeric(opt$height)
-device <- opt$device
-dpi <- as.numeric(opt$dpi)
-
-# convert weights > ranks > spearman corr >
-# heatmap > stratify by sim and real > stratify by tuned params
-
-# Custom function
-wrangle_feat_selection <- function(df) {
-  df %>%
-  # Need to fix error for mogonet appending view in front of feature
-  mutate(
-    feature = case_when(
-      str_detect(method, "mogonet") ~ paste(view, feature, sep="_"),
-      TRUE ~ feature
-    ),
-    # Rename rgcca to sgcca
-    method = case_when(
-      str_detect(method, "rgcca") ~ "sgcca",
-      TRUE ~ method
-    )
-  ) %>%
-    # SGCCA has slight problem in missing a feature in tcga-brca and tcga-kipan???
-    # So need to drop this
-    filter(! (
-      (feature == "RNAseq_HiSeq_Gene_level_GAGE1" & dataset_name == "tcga-brca") |
-        (feature == "RNAseq_HiSeq_Gene_level_C8orf71" & dataset_name == "tcga-kipan")
-    )
-    ) %>%
-    mutate(
-      is_simulated = case_when(
-        str_detect(dataset_name, "sim") ~ "simulated",
-        TRUE ~ "real"
-      )
-    ) %>%
-    # Rename the method names
-    mutate(
-      method = case_when(
-        str_detect(method, "sgcca") ~ "sgcca + lda",
-        str_detect(method, "mofa") ~ "mofa + glmnet",
-        TRUE ~ method
-      )
-    )
-}
 
 
-#input_path <- "data/all_feature_selection_results.csv"
 
-# First load in data and wrangle it
-feat_result_df <- read.csv(input_path) %>%
-  as_tibble() %>%
-  wrangle_feat_selection()
-
-# Some intermediate dataframes here for using later
-# Get rankings first
-ranking_df <- feat_result_df %>%
-  group_by(method, dataset_name, view) %>%
-  # So the coef with rank number smaller means better
-  # ie. rank 1 (highest) > rank2 > ... rank 10 > ... rank n
-  mutate(ranking = rank(desc(abs(coef)))) %>%
-  ungroup() %>%
-  select(-coef)
-
-wide_ranking_df <- ranking_df %>%
-  pivot_wider(names_from = method, values_from=ranking) %>%
-  rename(dataset = dataset_name)
 
 # This function plots heatmap for visualizing real data feature
 # selection ranking and taken the spearson correlation
@@ -327,28 +255,43 @@ plot_sim_heatmap <- function(wide_ranking_df, fontsize=12, method_palette="Paire
 
 
 
-# Lastly plot it
-# Then plot it
-#fontsize <- 12
-real_data_heatmap_plot <- plot_real_heatmap(wide_ranking_df, fontsize = fontsize,
+main <- function(input_path, real_output_path, sim_output_path) {
+  
+  wide_ranking_df <- read.csv(input_path)
+
+  real_data_heatmap_plot <- plot_real_heatmap(wide_ranking_df, fontsize = fontsize,
                                             heatmap_title = NULL)
 
-#real_data_heatmap_plot
-#real_data_heatmap_plot
-#sim_data_heatmap_plot <- plot_sim_heatmap(wide_ranking_df, fontsize = fontsize,
-#                                          heatmap_title = NULL)
+  #sim_data_heatmap_plot <- plot_sim_heatmap(wide_ranking_df, fontsize = fontsize,
+  #                                          heatmap_title = NULL)
 
-#sim_data_heatmap_plot
-# And save them to disk
-ggsave(real_output_path, plot = real_data_heatmap_plot,
-       width = width, height = height, device=device, dpi=dpi)
+  # TODO: making a placeholder now for sim data
+  sim_data_heatmap_plot <- ggplot() + ggtitle("Fake plot placeholder for feature selection (sim)")
 
-#sim_output_path <- "figures/fig_feature_selection_sim_rank.png"
-#width <- height <- 7
-#device <- "png"
-#dpi <- 700
-#ggsave(sim_output_path, plot = sim_data_heatmap_plot,
-#       width = width, height = height + 2, device=device, dpi=dpi)
+  # And save them to disk
+  ggsave(real_output_path, plot = real_data_heatmap_plot,
+        width = width, height = height, device=device, dpi=dpi)
 
-message("Saved image of ", width, " x ", height, " to ", real_output_path)
-#message("Saved image of ", width, " x ", height, " to ", sim_output_path)
+  ggsave(sim_output_path, plot = sim_data_heatmap_plot,
+        width = width, height = height + 2, device=device, dpi=dpi)
+
+  message("\nSaved image of ", width, " x ", height, " to ", real_output_path)
+  message("\nSaved image of ", width, " x ", height, " to ", sim_output_path)
+}
+
+
+opt <- docopt::docopt(doc)
+
+# Convenient vars
+input_path <- opt$input_csv
+real_output_path <- opt$real_output
+sim_output_path <- opt$sim_output
+# Plot params
+fontsize <- 12
+width <- as.numeric(opt$width)
+height <- as.numeric(opt$height)
+device <- opt$device
+dpi <- as.numeric(opt$dpi)
+
+# lastly call the main
+main(input_path = input_path, real_output_path = real_output_path, sim_output_path = sim_output_path)

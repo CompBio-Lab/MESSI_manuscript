@@ -1,12 +1,12 @@
 doc <- "
 
-This script is used to create figure 1 of performance evaluation
+This script is used to create figure of performance evaluation
 
 Usage:
-  fig_performance_evaluation.R [options]
+  plot.R [options]
 
 Options:
- --csv=CSV              File to load the csv
+ --input_csv=INPUT_CSV  File to load the csv
  --real_out=REAL_OUT    Path to write out performance auc of real datasets
  --sim_out=SIM_OUT      Path to write out performance auc of sim datasets
  --width=WIDTH          Width of the graph [default: 7]
@@ -27,7 +27,7 @@ library(stringr)
 library(tidyr)
 suppressPackageStartupMessages(library(ComplexHeatmap))
 # Load the variables from cli
-input_path <- here(opt$csv)
+input_path <- here(opt$input_csv)
 real_output_path <- here(opt$real_out)
 sim_output_path  <- here(opt$sim_out)
 # Plot params
@@ -45,61 +45,13 @@ dpi <- as.numeric(opt$dpi)
 message("\nRendering figure of performance evaluation of classification")
 message("\nInput path: ", input_path)
 
-# Custom functions
-wrangle_data <- function(df) {
-  clean_df <- df %>%
-    rename(method = method_name) %>%
-    # Given there's same result for rgcca and sgcca
-    # going to drop those of rgcca and retain sgcca only.
-    filter(method != "rgcca") %>%
-    # Add identifier to tell which one real or simulated
-    group_by(method, dataset) %>%
-    summarise(
-      across(
-        .cols=c(auc, f1_score, accuracy, balanced_accuracy, precision, recall),
-        .fns=list(mean = mean, sd = sd)),
-      .groups = "drop"
-    ) %>%
-    ungroup() %>%
-    # Then rank the performance of each method within each dataset
-    # I.e. For Dataset L, could be m1, m3 , m5, m2 , m6 from best to worst (left to right)
-    group_by(dataset) %>%
-    # TODO:  ~~Sort in desceding order, and rank them, i.e. 1st equals top performing~~
-    #mutate(ranking = rank(desc(auc_mean))) %>%
-    mutate(ranking = rank(auc_mean)) %>%
-    ungroup() %>%
-    mutate(
-      is_simulated = case_when(
-        str_detect(dataset, "sim") ~ "yes",
-        TRUE ~ "no"
-      )
-    ) %>%
-    # Rename method names
-    mutate(
-      method = case_when(
-        str_detect(method, "mofa") ~ "mofa + glmnet",
-        str_detect(method, "sgcca") ~ "sgcca + lda",
-        TRUE ~ method
-      )
-    ) %>%
-    select(
-      method, dataset, ranking,
-      auc_mean, auc_sd, f1_score_mean, f1_score_sd, is_simulated
-    ) %>%
-    arrange(ranking)
-  return(clean_df)
-}
 
 # ==================================================
 # First load data and clean it for plotting
 
 #input_path <- "data/metrics.csv"
 
-clean_df <- read.csv(input_path) %>%
-  as_tibble() %>%
-  wrangle_data()
-
-
+clean_df <- read.csv(input_path) %>% as_tibble()
 
 # For the real data uses heatmap showing mean auc and rank them
 fig1_real_df <- clean_df %>%
@@ -131,7 +83,6 @@ plot_fig1_real <- function(
     tibble::column_to_rownames(var="method") %>%
     as.matrix()
 
-  #auc_matrix
   methods <- rownames(rank_matrix)
   datasets <- colnames(rank_matrix)
 
@@ -156,7 +107,6 @@ plot_fig1_real <- function(
     show_annotation_name = FALSE
   )
 
-  colnames(rank_matrix)
 
   # Row wise
   row_ha <- rowAnnotation(
@@ -239,7 +189,7 @@ ggsave(real_output_path, plot=heatmap_fig_real,
 message("Saved image of ", width, " x ", height, " to ", real_output_path)
 
 
-# =================
+# =====================================================================================
 # For sim data, boxplot stratify by params
 fig1_sim_df <- clean_df %>%
   filter(is_simulated == "yes")
@@ -326,7 +276,6 @@ plot_fig1_sim <- function(
 
 sim_facet_boxplot <- plot_fig1_sim(fig1_sim_df = fig1_sim_df)
 
-sim_facet_boxplot
 # Save the fig1 boxplot of sim data to disk
 ggsave(sim_output_path, plot=sim_facet_boxplot,
        width = width, height = height, device=device,
