@@ -83,7 +83,6 @@ plot_fig1_real <- function(
     tibble::column_to_rownames(var="method") %>%
     as.matrix()
 
-  #auc_matrix
   methods <- rownames(rank_matrix)
   datasets <- colnames(rank_matrix)
 
@@ -108,7 +107,6 @@ plot_fig1_real <- function(
     show_annotation_name = FALSE
   )
 
-  colnames(rank_matrix)
 
   # Row wise
   row_ha <- rowAnnotation(
@@ -278,7 +276,6 @@ plot_fig1_sim <- function(
 
 sim_facet_boxplot <- plot_fig1_sim(fig1_sim_df = fig1_sim_df)
 
-sim_facet_boxplot
 # Save the fig1 boxplot of sim data to disk
 ggsave(sim_output_path, plot=sim_facet_boxplot,
        width = width, height = height, device=device,
