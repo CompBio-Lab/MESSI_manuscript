@@ -29,21 +29,27 @@ BANNER="======================================================================="
 METRICS_CSV=${DATA_RAW_DIR}/metrics.csv
 METADATA_CSV=${DATA_RAW_DIR}/parsed_metadata.csv
 TRACE_TXT=${DATA_RAW_DIR}/execution_trace.txt
+FS_RESULTS_CSV=${DATA_RAW_DIR}/all_feature_selection_results.csv
+
 # Processed file names
 FIG1_PROCESSED=${DATA_PROCESSED_DIR}/fig_performance_evaluation_plot_data.csv
 FIG2_PROCESSED=${DATA_PROCESSED_DIR}/fig_computational_time_plot_data.csv
+FIG3_PROCESSED=${DATA_PROCESSED_DIR}/fig_feature_selection_plot_data.csv
 
 # Figure directories
 FIG1_SRC_DIR=${SRC_DIR}/fig_performance_evaluation
 FIG2_SRC_DIR=${SRC_DIR}/fig_computational_time
+FIG3_SRC_DIR=${SRC_DIR}/fig_feature_selection
 
 # Cleaning scripts
 FIG1_WRANGLE_SRC=${FIG1_SRC_DIR}/clean.R
 FIG2_WRANGLE_SRC=${FIG2_SRC_DIR}/clean.R
+FIG3_WRANGLE_SRC=${FIG3_SRC_DIR}/clean.R
 
 # Plotting scripts
 FIG1_PLOT_SRC=${FIG1_SRC_DIR}/plot.R
 FIG2_PLOT_SRC=${FIG2_SRC_DIR}/plot.R
+FIG3_PLOT_SRC=${FIG3_SRC_DIR}/plot.R
 
 # Figure out names
 # For performance evaluation
@@ -54,15 +60,13 @@ FIG1_OUTPUT=$(FIG_REAL_OUT) $(FIG_SIM_OUT)
 FIG_COMP_TIME=${FIG_DIR}/fig_computational_time.${DEVICE}
 FIG2_OUTPUT=$(FIG_COMP_TIME)
 # # For feature selection
-# FIG_FEAT_SELECTION_REAL_CORR=${FIG_DIR}/fig_feature_selection_weights.${DEVICE}
-# FIG_FEAT_SELECTION_SIM_RANK=${FIG_DIR}/fig_feature_selection_sim_rank.${DEVICE}
-# FIG3_OUTPUT=$(FIG_FEAT_SELECTION_REAL_CORR) $(FIG_FEAT_SELECTION_SIM_RANK)
+FIG_FEAT_SELECTION_REAL_CORR=${FIG_DIR}/fig_feature_selection_weights.${DEVICE}
+FIG_FEAT_SELECTION_SIM_RANK=${FIG_DIR}/fig_feature_selection_sim_rank.${DEVICE}
+FIG3_OUTPUT=$(FIG_FEAT_SELECTION_REAL_CORR) $(FIG_FEAT_SELECTION_SIM_RANK)
 
 # ====================================================================================
 # All the outputs
-#OUTPUTS=$(FIG1_OUTPUT) $(FIG2_OUTPUT) $(FIG3_OUTPUT)
-#OUTPUTS=$(FIG1_OUTPUT)
-OUTPUTS=$(FIG1_OUTPUT) $(FIG2_OUTPUT)
+OUTPUTS=$(FIG1_OUTPUT) $(FIG2_OUTPUT) $(FIG3_OUTPUT)
 all: $(OUTPUTS)
 
 .PHONY: clean
@@ -95,16 +99,21 @@ $(FIG1_PROCESSED): ${FIG1_WRANGLE_SRC} ${METRICS_CSV}
 # Figure 2 processing
 $(FIG2_PROCESSED): ${FIG2_WRANGLE_SRC} ${METADATA_CSV} ${TRACE_TXT} 
 	@echo ${BANNER}
-	@echo -e "Processing data for figure 1 performance evaluation"
+	@echo -e "Processing data for figure 2 computational time"
 	Rscript ${FIG2_WRANGLE_SRC} \
 		--metadata ${METADATA_CSV} \
 		--trace ${TRACE_TXT} \
-		--output_csv $(FIG2_PROCESSED) \
+		--output_csv $(FIG2_PROCESSED)
+
+# Figure 3 processing
+$(FIG3_PROCESSED): ${FIG3_WRANGLE_SRC} ${FS_RESULTS_CSV}
+	@echo ${BANNER}
+	@echo -e "Processing data for figure 3 feature selection"
+	Rscript ${FIG3_WRANGLE_SRC} \
+		--input_csv $(FS_RESULTS_CSV) \
+		--output_csv ${FIG3_PROCESSED}
 
 # ==============================================================================
-
-
-# ======================================================
 # FIGURE 1 Performance Evaluation
 $(FIG1_OUTPUT): ${FIG1_PLOT_SRC} ${FIG1_PROCESSED}
 	@echo ${BANNER}
@@ -119,11 +128,11 @@ $(FIG1_OUTPUT): ${FIG1_PLOT_SRC} ${FIG1_PROCESSED}
 		--dpi ${DPI}
 
 
-# ============================================================
+# ==============================================================================
 # FIGURE 2 Performance evaluation
 $(FIG2_OUTPUT): ${FIG2_PLOT_SRC} ${FIG2_PROCESSED}
 	@echo ${BANNER}
-	@echo -e "Plotting figure of computational time\n"
+	@echo -e "Plotting figure of computational time ... \n"
 	Rscript $(FIG2_PLOT_SRC) \
 		--input_csv ${FIG2_PROCESSED} \
 		--output_path ${FIG_COMP_TIME} \
@@ -132,14 +141,17 @@ $(FIG2_OUTPUT): ${FIG2_PLOT_SRC} ${FIG2_PROCESSED}
 		--device ${DEVICE} \
 		--dpi ${DPI}
 
-# $(FIG3_OUTPUT): ${FIG3_SRC} ${FIG3_CSV}
-# 	@echo ${BANNER}
-# 	@echo -e "Plotting figure of feature selection comparison... \n"
-# 	Rscript ${FIG3_SRC} \
-# 		--csv ${FIG3_CSV} \
-# 		--real_output ${FIG_FEAT_SELECTION_REAL_CORR} \
-# 		--sim_output ${FIG_FEAT_SELECTION_SIM_RANK} \
-# 		--width ${WIDTH} \
-# 		--height ${HEIGHT} \
-# 		--device ${DEVICE} \
-# 		--dpi ${DPI}
+
+# ==============================================================================
+# FIGURE 3 Feature Selection
+$(FIG3_OUTPUT): ${FIG3_PLOT_SRC} ${FIG3_PROCESSED}
+	@echo ${BANNER}
+	@echo -e "Plotting figure of feature selection comparison... \n"
+	Rscript ${FIG3_PLOT_SRC} \
+		--input_csv ${FIG3_PROCESSED} \
+		--real_output ${FIG_FEAT_SELECTION_REAL_CORR} \
+		--sim_output ${FIG_FEAT_SELECTION_SIM_RANK} \
+		--width ${WIDTH} \
+		--height ${HEIGHT} \
+		--device ${DEVICE} \
+		--dpi ${DPI}
