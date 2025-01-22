@@ -81,7 +81,7 @@ wrangle_metadata <- function(metadata_df) {
 
 # ========================
 # First handle the metadata
-metadata_path <- "data/parsed_metadata.csv"
+#metadata_path <- "data/parsed_metadata.csv"
 metadata_df <- read.csv(metadata_path) %>%
   as_tibble() %>%
   wrangle_metadata()

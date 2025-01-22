@@ -17,16 +17,30 @@ BANNER="======================================================================="
 
 # ==============================================================================
 
-
-# Scripts
-FIG1_SRC=${SRC_DIR}/fig_performance_evaluation.R
-FIG2_SRC=${SRC_DIR}/fig_computational_time.R
-FIG3_SRC=${SRC_DIR}/fig_feature_selection.R
 # Input data files
-FIG3_CSV=${DATA_RAW_DIR}/all_feature_selection_results.csv
-FIG1_CSV=${DATA_RAW_DIR}/metrics.csv
-FIG2_TRACE=${DATA_RAW_DIR}/execution_trace.txt
-FIG2_METADATA=${DATA_RAW_DIR}/parsed_metadata.csv
+METRICS_CSV=${DATA_RAW_DIR}/metrics.csv
+
+# Figure directories
+FIG1_SRC_DIR=${SRC_DIR}/fig_performance_evaluation
+FIG2_SRC_DIR=${SRC_DIR}
+
+# Cleaning scripts
+FIG1_WRANGLE_SRC=${FIG1_SRC_DIR}/clean.R
+
+
+# Plotting scripts
+FIG1_PLOT_SRC=${FIG1_SRC_DIR}/plot.R
+# FIG1_SRC=${SRC_DIR}/fig_performance_evaluation.R
+# FIG2_SRC=${SRC_DIR}/fig_computational_time.R
+# FIG3_SRC=${SRC_DIR}/fig_feature_selection.R
+# Input data files
+# FIG3_CSV=${DATA_RAW_DIR}/all_feature_selection_results.csv
+# FIG1_CSV=${DATA_RAW_DIR}/metrics.csv
+# FIG2_TRACE=${DATA_RAW_DIR}/execution_trace.txt
+# FIG2_METADATA=${DATA_RAW_DIR}/parsed_metadata.csv
+
+# Processed file names
+FIG1_PROCESSED=${DATA_PROCESSED_DIR}/fig_performance_evaluation_plot_data.csv
 
 
 # ==========================
@@ -51,6 +65,7 @@ FIG1_OUTPUT=$(FIG_REAL_OUT) $(FIG_SIM_OUT)
 # =========================
 # All the outputs
 #OUTPUTS=$(FIG1_OUTPUT) $(FIG2_OUTPUT) $(FIG3_OUTPUT)
+#OUTPUTS=$(FIG1_OUTPUT)
 OUTPUTS=$(FIG1_OUTPUT)
 all: $(OUTPUTS)
 
@@ -68,21 +83,48 @@ clean_figures:
 # ==============================================================================
 # PREPROCESSING
 
+# Figure 1 processing
+# Runs through a bit a wrangle then plot it
+$(FIG1_PROCESSED): ${FIG1_WRANGLE_SRC} ${METRICS_CSV}
+	@echo ${BANNER}
+	@echo -e "Processing data for figure 1 performance evaluation"
+	Rscript ${FIG1_WRANGLE_SRC} \
+		--input_csv $(METRICS_CSV) \
+		--output_csv ${FIG1_PROCESSED}
+
+
 # ==============================================================================
 
 
+# ======================================================
 # FIGURE 1 Performance Evaluation
-$(FIG1_OUTPUT): ${FIG1_SRC} ${FIG1_CSV}
+$(FIG1_OUTPUT): ${FIG1_PLOT_SRC} ${FIG1_PROCESSED}
 	@echo ${BANNER}
 	@echo -e "Plotting figures of performance evaluation ... \n"
-	Rscript $(FIG1_SRC) \
-		--csv $(FIG1_CSV) \
+	Rscript $(FIG1_PLOT_SRC) \
+		--input_csv $(FIG1_PROCESSED) \
 		--real_out $(FIG_REAL_OUT) \
 		--sim_out $(FIG_SIM_OUT) \
 		--width ${WIDTH} \
 		--height ${HEIGHT} \
 		--device ${DEVICE} \
 		--dpi ${DPI}
+
+
+
+# $(FIG1_OUTPUT): ${FIG1_SRC} ${FIG1_PROCESSED}
+# 	@echo ${BANNER}
+# 	@echo -e "Plotting figures of performance evaluation ... \n"
+# 	Rscript $(FIG1_SRC) \
+# 		--csv $(FIG1_CSV) \
+# 		--real_out $(FIG_REAL_OUT) \
+# 		--sim_out $(FIG_SIM_OUT) \
+# 		--width ${WIDTH} \
+# 		--height ${HEIGHT} \
+# 		--device ${DEVICE} \
+# 		--dpi ${DPI}
+
+# ============================================================
 
 # $(FIG2_OUTPUT): ${FIG2_SRC} ${FIG2_TRACE} ${FIG2_METADATA}
 # 	@echo ${BANNER}
