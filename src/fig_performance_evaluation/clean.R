@@ -20,7 +20,7 @@ library(tibble)
 library(here)
 library(stringr)
 library(tidyr)
-suppressPackageStartupMessages(library(ComplexHeatmap))
+
 
 # Verbose message
 message("\nRendering figure of performance evaluation of classification")
