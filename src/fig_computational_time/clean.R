@@ -9,6 +9,7 @@ Options:
  --metadata=METADATA        Path to write out performance auc of real datasets
  --trace=TRACE              Path to write out performance auc of sim datasets
  --output_csv=OUTPUT_CSV    Path to write out computational time
+ --data_type=DATA_TYPE      Type of data to processed. One of real, sim [default: real]
 "
 
 # Load libraries
@@ -138,7 +139,7 @@ wrangle_trace <- function(
 
 # ==================================================================================================================
 
-main <- function(metadata_path, trace_path, output_path) {
+main <- function(metadata_path, trace_path, output_path, data_type) {
     # First handle the metadata
   #metadata_path <- "data/parsed_metadata.csv"
   metadata_df <- read.csv(metadata_path) %>%
@@ -180,6 +181,8 @@ opt <- docopt::docopt(doc)
 metadata_path <- opt$metadata
 trace_path <- opt$trace
 output_path <- opt$output_csv
+data_type <- opt$data_type
 # Execute the main function
-main(metadata_path = metadata_path, trace_path = trace_path, output_path = output_path)
+main(metadata_path = metadata_path, trace_path = trace_path,
+     output_path = output_path, data_type = data_type)
 
