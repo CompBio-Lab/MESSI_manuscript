@@ -6,8 +6,9 @@ Usage:
   clean.R [options]
 
 Options:
-  --input_csv=INPUT_CSV             Path to read in the feature selection result
-  --output_csv=OUTPUT_CSV           Path to write out plot data
+  --input_csv=INPUT_CSV       Path to read in the feature selection result
+  --output_csv=OUTPUT_CSV     Path to write out plot data
+  --data_type=DATA_TYPE       Type of data to processed. One of real, sim [default: real]
 
 "
 
@@ -57,7 +58,7 @@ wrangle_feat_selection <- function(df) {
 
 
 #input_path <- "data/all_feature_selection_results.csv"
-main <- function(input_path, output_path) {
+main <- function(input_path, output_path, data_type) {
   # First load in data and wrangle it
   feat_result_df <- read.csv(input_path) %>%
     as_tibble() %>%
@@ -78,7 +79,7 @@ main <- function(input_path, output_path) {
     rename(dataset = dataset_name)
 
   # Lastly write it out as csv
-  write.csv(wide_ranking_df, file=output_path, row.names=FALSE) 
+  write.csv(wide_ranking_df, file=output_path, row.names=FALSE)
 }
 
 
@@ -90,6 +91,7 @@ opt <- docopt::docopt(doc)
 # Convenient vars
 input_path <- opt$input_csv
 output_path <- opt$output_csv
+data_type <- opt$data_type
 
 # And call the main function
-main(input_path = input_path, output_path = output_path)
+main(input_path = input_path, output_path = output_path, data_type = data_type)
