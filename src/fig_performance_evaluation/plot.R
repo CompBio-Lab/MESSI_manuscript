@@ -6,13 +6,13 @@ Usage:
   plot.R [options]
 
 Options:
- --input_csv=INPUT_CSV  File to load the csv
- --real_out=REAL_OUT    Path to write out performance auc of real datasets
- --sim_out=SIM_OUT      Path to write out performance auc of sim datasets
- --width=WIDTH          Width of the graph [default: 7]
- --height=height        Height of the graph [default: 7]
- --device=DEVICE        Device to print out [default: png]
- --dpi=DPI              Dots per inch [default: 300]
+  --input_path=INPUT      Path to load input data
+  --output_path=OUTPUT    Path to write out plot
+  --width=WIDTH           Width of the graph [default: 7]
+  --height=height         Height of the graph [default: 7]
+  --device=DEVICE         Device to print out [default: png]
+  --dpi=DPI               Dots per inch [default: 300]
+  --data_type=DATA_TYPE   Type of data to processed. One of real, sim [default: real]
 "
 
 # Parse doc
@@ -26,36 +26,7 @@ library(here)
 library(stringr)
 library(tidyr)
 suppressPackageStartupMessages(library(ComplexHeatmap))
-# Load the variables from cli
-input_path <- here(opt$input_csv)
-real_output_path <- here(opt$real_out)
-sim_output_path  <- here(opt$sim_out)
-# Plot params
-method_palette <- "Paired"
-dataset_palette <- "Pastel1"
-text_size <- 12
-width <- as.numeric(opt$width)
-height <- as.numeric(opt$height)
-device <- opt$device
-dpi <- as.numeric(opt$dpi)
-
-
-
-# Verbose message
-message("\nRendering figure of performance evaluation of classification")
-message("\nInput path: ", input_path)
-
-
-# ==================================================
-# First load data and clean it for plotting
-
-#input_path <- "data/metrics.csv"
-
-clean_df <- read.csv(input_path) %>% as_tibble()
-
-# For the real data uses heatmap showing mean auc and rank them
-fig1_real_df <- clean_df %>%
-  filter(is_simulated == "no")
+# ==============================================================================
 
 
 # This function has the details of making heatmap to ilustrate
@@ -64,24 +35,16 @@ fig1_real_df <- clean_df %>%
 # The rank in d1 could be m1 = 1, m2 = 4, m3 = 2, m4 = 3, where m2 is the best in d1
 # The rank in d2 could be m1 = 3, m2 = 1, m3 = 2, m4 = 4, where m4 is the best in d2
 plot_fig1_real <- function(
-    fig1_real_df, fontsize=12, method_palette="Paired", dataset_palette="Pastel1",
+    input_data, text_size=12, method_palette="Paired", dataset_palette="Pastel1",
     heatmap_title = "Mean AUC (5-fold CV) ranking in real datasets") {
   # Then now the figure for mean auc ranking in real data
-  auc_matrix <- fig1_real_df %>%
-    select(method, dataset, auc_mean) %>%
-    pivot_wider(names_from = dataset, values_from = auc_mean) %>%
-    arrange(method) %>%
-    select(order(colnames(.))) %>%
-    tibble::column_to_rownames(var="method") %>%
-    as.matrix()
+  if (!is.list(input_data)) stop("Plot data of real data should be a list")
+  if (!all(names(input_data) %in% c("auc_matrix", "rank_matrix"))) {
+    stop("Plot data of real data should have 'auc_matrix' and 'rank_matrix'")
+  }
 
-  rank_matrix <- fig1_real_df %>%
-    select(method, dataset, ranking) %>%
-    pivot_wider(names_from = dataset, values_from = ranking) %>%
-    arrange(method) %>%
-    select(order(colnames(.))) %>%
-    tibble::column_to_rownames(var="method") %>%
-    as.matrix()
+  auc_matrix <- input_data$auc_matrix
+  rank_matrix <- input_data$rank_matrix
 
   methods <- rownames(rank_matrix)
   datasets <- colnames(rank_matrix)
@@ -132,7 +95,7 @@ plot_fig1_real <- function(
     col = col_fun,
     border = T,
     column_title = heatmap_title,
-    column_title_gp = gpar(fontsize=fontsize, fontface="bold"),
+    column_title_gp = gpar(fontsize=text_size, fontface="bold"),
     row_names_rot = 0,
     column_names_rot = 45,
     #column_labels = rownames(rank_matrix),
@@ -172,66 +135,21 @@ plot_fig1_real <- function(
   return(heatmap_p)
 }
 
-# Draw the heatmap
-
-heatmap_fig_real <- plot_fig1_real(
-  fig1_real_df = fig1_real_df,
-  fontsize = text_size,
-  method_palette = method_palette,
-  dataset_palette = dataset_palette,
-  heatmap_title = NULL
-)
-
-# Save the fig1 heatmap of real data to disk
-ggsave(real_output_path, plot=heatmap_fig_real,
-       width = width, height = height, device=device, dpi=dpi,
-       create.dir = TRUE)
-message("Saved image of ", width, " x ", height, " to ", real_output_path)
-
-
-# =====================================================================================
+# ==============================================================================
 # For sim data, boxplot stratify by params
-fig1_sim_df <- clean_df %>%
-  filter(is_simulated == "yes")
-
 # This function has details of showing boxplot facet by correlation and
 # effect combination in intersim strategy simulated data
 plot_fig1_sim <- function(
-    fig1_sim_df, text_size=12,
+    input_data, text_size=12,
     x_lab = "Method", y_lab="Mean Auc Score from 5-fold CV",
     method_palette="Paired") {
 
-  # Wrangle it further
-  sim_df <- fig1_sim_df %>%
-    # Extract the params from dataset name, although there should be NAs,
-    # since different strategy might not share the same param used
-    # like mvn has latp and j , while intersim has H and e
-    mutate(
-      strategy = str_extract(dataset, "(?<=_strategy-)[^_]+"),
-      n = as.numeric(str_extract(dataset, "(?<=_n-)[0-9]+")),
-      p = as.numeric(str_extract(dataset, "(?<=_p-)[0-9]+")),
-      sigma = str_extract(dataset, "(?<=_sigma-)[^_]+"),
-      j = as.numeric(str_extract(dataset, "(?<=_j-)[0-9]+")),
-      latp = as.numeric(str_extract(dataset, "(?<=_latp-)[0-9]+")),
-      sy = as.numeric(str_extract(dataset, "(?<=_sy-)[0-9]+")),
-      sp = as.numeric(str_extract(dataset, "(?<=_sp-)[0-9]+")),
-      ustd = as.numeric(str_extract(dataset, "(?<=_ustd-)[0-9]+")),
-      fctstr = as.numeric(str_extract(dataset, "(?<=_fctstr-)[0-9]+")),
-      H = as.numeric(str_extract(dataset, "(?<=_H-)[0-9]+")),
-      effect = as.numeric(str_extract(dataset, "(?<=_effect-)[0-9.]+")),
-      e = as.numeric(str_extract(dataset, "(?<=_e-)[0-9]+")),
-      corr = as.numeric(str_extract(dataset, "(?<=_corr-)[0-9.]+"))
-    ) %>%
-    # For simplicity now, only use intersim ones
-    filter(strategy == "intersim") %>%
-    # Then only retain relevant cols
-    select(method, dataset, ranking ,
-           auc_mean, auc_sd, f1_score_mean, f1_score_sd,
-           effect, corr)
+  if (!is.data.frame(input_data)) stop("Plot data for simulated data should be dataframe")
+  sim_df <- input_data
 
   # Labeller for facetting
-  effect_labels <- paste0("Effect = ", sim_df$effect |> unique())
-  names(effect_labels) <- sim_df$effect |> unique()
+  signal_labels <- paste0("Signal = ", sim_df$signal |> unique())
+  names(signal_labels) <- sim_df$signal |> unique()
   corr_labels <- paste0("Cor = ", sim_df$corr |> unique())
   names(corr_labels) <- sim_df$corr |> unique()
   # Then the plotting
@@ -241,8 +159,8 @@ plot_fig1_sim <- function(
     geom_boxplot()+
     scale_fill_brewer(palette = method_palette) +
     facet_grid(
-      effect~corr,
-      labeller = labeller(effect = effect_labels, corr = corr_labels),
+      signal~corr,
+      labeller = labeller(signal = signal_labels, corr = corr_labels),
       scales = "free"
     ) +
     theme_bw() +
@@ -274,10 +192,58 @@ plot_fig1_sim <- function(
   return(p)
 }
 
-sim_facet_boxplot <- plot_fig1_sim(fig1_sim_df = fig1_sim_df)
 
-# Save the fig1 boxplot of sim data to disk
-ggsave(sim_output_path, plot=sim_facet_boxplot,
-       width = width, height = height, device=device,
-       dpi = dpi, create.dir = TRUE)
-message("Saved image of ", width, " x ", height, " to ", sim_output_path)
+# ==============================================================================
+# Plot here conditionally
+
+
+# Load the variables from cli
+input_path <- here(opt$input_path)
+output_path <- here(opt$output_path)
+data_type <- opt$data_type
+# Plot params
+method_palette <- "Paired"
+dataset_palette <- "Pastel1"
+text_size <- 12
+width <- as.numeric(opt$width)
+height <- as.numeric(opt$height)
+device <- opt$device
+dpi <- as.numeric(opt$dpi)
+
+# ================================
+# And load the input data
+input_data <- readRDS(input_path)
+
+
+# Verbose message
+message("\nRendering figure of performance evaluation of classification")
+message("\nInput path: ", input_path)
+
+# Then call the function depending on data type
+if (data_type == "real") {
+  out_plot <- plot_fig1_real(
+    input_data = input_data,
+    text_size = text_size,
+    method_palette = method_palette,
+    dataset_palette = dataset_palette,
+    heatmap_title = NULL
+  )
+
+}
+
+if (data_type == "sim") {
+  out_plot <- plot_fig1_sim(
+    input_data = input_data,
+    text_size = text_size,
+    method_palette = method_palette
+  )
+}
+
+
+# Lastly save it to output
+ggsave(output_path, plot = out_plot, width = width, height = height,
+       device = device, dpi = dpi, create.dir = TRUE)
+message("Saved image of ", width, " x ", height, " to ", output_path)
+
+
+

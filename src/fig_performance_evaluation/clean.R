@@ -7,7 +7,7 @@ Usage:
 
 Options:
   --input_csv=INPUT_CSV       File to load the csv
-  --output_csv=OUTPUT_CSV     File to output plot data as csv
+  --output_path=OUTPUT_PATH   File to output plot data as rds
   --data_type=DATA_TYPE       Type of data to processed, one of real, sim [default: real]
 "
 
@@ -22,21 +22,17 @@ library(stringr)
 library(tidyr)
 
 
-# Verbose message
-message("\nRendering figure of performance evaluation of classification")
-
 # Custom functions
 wrangle_data <- function(df) {
-  clean_df <- df %>%
+  wrangle_df <- df %>%
     rename(method = method_name) %>%
     # Given there's same result for rgcca and sgcca
     # going to drop those of rgcca and retain sgcca only.
     filter(method != "rgcca") %>%
-    # Add identifier to tell which one real or simulated
     group_by(method, dataset) %>%
     summarise(
       across(
-        .cols=c(auc, f1_score, accuracy, balanced_accuracy, precision, recall),
+        .cols=c(auc, f1_score),
         .fns=list(mean = mean, sd = sd)),
       .groups = "drop"
     ) %>%
@@ -48,32 +44,22 @@ wrangle_data <- function(df) {
     #mutate(ranking = rank(desc(auc_mean))) %>%
     mutate(ranking = rank(auc_mean)) %>%
     ungroup() %>%
-    mutate(
-      is_simulated = case_when(
-        str_detect(dataset, "sim") ~ "yes",
-        TRUE ~ "no"
-      )
-    ) %>%
     # Rename method names
     mutate(
       method = case_when(
         str_detect(method, "mofa") ~ "mofa + glmnet",
         str_detect(method, "sgcca") ~ "sgcca + lda",
         TRUE ~ method
-      )
+        )
     ) %>%
     select(
       method, dataset, ranking,
-      auc_mean, auc_sd, f1_score_mean, f1_score_sd, is_simulated
+      auc_mean, auc_sd, f1_score_mean, f1_score_sd
     ) %>%
     arrange(ranking)
-  return(clean_df)
+  return(wrangle_df)
 }
 
-# ==================================================
-# First load data and clean it for plotting
-
-#input_path <- "data/metrics.csv"
 
 
 retrieve_sim_params <- function(df) {
@@ -98,23 +84,64 @@ retrieve_sim_params <- function(df) {
     select(-c(params))
 }
 
+# Function to clean real data for plot
+clean_real <- function(wr_df) {
+  auc_matrix <- wr_df %>%
+    select(method, dataset, auc_mean) %>%
+    pivot_wider(names_from = dataset, values_from = auc_mean) %>%
+    arrange(method) %>%
+    select(order(colnames(.))) %>%
+    tibble::column_to_rownames(var="method") %>%
+    as.matrix()
+
+  rank_matrix <- wr_df %>%
+    select(method, dataset, ranking) %>%
+    pivot_wider(names_from = dataset, values_from = ranking) %>%
+    arrange(method) %>%
+    select(order(colnames(.))) %>%
+    tibble::column_to_rownames(var="method") %>%
+    as.matrix()
+
+  return(list(auc_matrix=auc_matrix, rank_matrix=rank_matrix))
+}
+
+# Function to clean sim data for plot
+clean_sim <- function(wr_df) {
+  clean_df <- wr_df %>%
+    retrieve_sim_params() %>%
+    rename(signal = dt, corr = rho) %>%
+    # Then only retain relevant cols
+    select(method, dataset, ranking ,
+           auc_mean, auc_sd, f1_score_mean, f1_score_sd,
+           signal, corr, n, p)
+
+  return(clean_df)
+}
+
+# ==================================================
+# First load data and clean it for plotting
+
+#input_path <- "data/metrics.csv"
+
+
 
 main <- function(input_path, output_path, data_type=c("real", "sim")) {
   data_type <- match.arg(data_type)
-  wrangled_df <- read.csv(input_path) %>%
+  # First do common wrangling on the input data
+  wrangle_df <- read.csv(input_path) %>%
     as_tibble() %>%
     wrangle_data()
 
 
   # Handle data type-specific processing
-  clean_df <- switch(
+  clean_rds <- switch(
     data_type,
-    sim = wrangled_df %>% select(-is_simulated) %>% retrieve_sim_params(),
-    real = wrangled_df # No additional processing for real data
+    sim = clean_sim(wrangle_df),
+    real = clean_real(wrangle_df)
   )
 
-
-  write.csv(clean_df, file = output_path, row.names = F)
+  # Then this to disk as rds
+  saveRDS(clean_rds, file = output_path)
   message("\nWritten data to: ", output_path)
 }
 
@@ -123,7 +150,7 @@ main <- function(input_path, output_path, data_type=c("real", "sim")) {
 # Execute the main function here
 
 main(input_path = here(opt$input_csv),
-     output_path = here(opt$output_csv),
+     output_path = here(opt$output_path),
      data_type = opt$data_type)
 
 
