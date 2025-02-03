@@ -44,6 +44,11 @@ toSeconds <- function(x) {
 wrangle_metadata <- function(metadata_df) {
   metadata_df %>%
     rename(dataset = dataset_name) %>%
+    # For the dataset names, remove the suffix _processed
+    mutate(dataset = case_when(
+      str_detect(dataset, "_processed") ~ str_remove(dataset, "_processed"),
+      TRUE ~ dataset
+    )) %>%
     mutate(subject_dimensions_list = str_split(subject_dimensions, ",")) %>%
     mutate(
       sample_size = map_dbl(
@@ -140,11 +145,11 @@ wrangle_trace <- function(
 # ==================================================================================================================
 
 main <- function(metadata_path, trace_path, output_path, data_type) {
-    # First handle the metadata
-  #metadata_path <- "data/parsed_metadata.csv"
+  # First handle the metadata
   metadata_df <- read.csv(metadata_path) %>%
     as_tibble() %>%
     wrangle_metadata()
+
 
   # Then hanlde the execution trace
   # Then also want to wrangle the execution trace
@@ -172,7 +177,6 @@ main <- function(metadata_path, trace_path, output_path, data_type) {
   # Lastly write out to file
   write.csv(plot_df, file=output_path, row.names=FALSE)
 }
-
 
 # Parse cli
 opt <- docopt::docopt(doc)
