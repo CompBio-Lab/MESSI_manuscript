@@ -6,13 +6,13 @@ Usage:
   fig_feature_selection.R [options]
 
 Options:
- --input_csv=CSV              Path to read in the feature selection result
- --real_output=R_OUT    Path to write out real data heatmap on correlation
- --sim_output=S_OUT     Path to write out sim data heatmap on ranking
- --width=WIDTH          Width of the graph [default: 7]
- --height=height        Height of the graph [default: 7]
- --device=DEVICE        Device to print out [default: png]
- --dpi=DPI              Dots per inch [default: 300]
+  --input_path=INPUT      Path to read in the feature selection result
+  --output_path=OUTPUT    Path to write out output plot
+  --width=WIDTH           Width of the graph [default: 7]
+  --height=height         Height of the graph [default: 7]
+  --device=DEVICE         Device to print out [default: png]
+  --dpi=DPI               Dots per inch [default: 300]
+  --data_type=DATA_TYPE   Type of data to processed. One of real, sim [default: real]
 "
 
 # Load libraries
@@ -255,37 +255,35 @@ plot_sim_heatmap <- function(wide_ranking_df, fontsize=12, method_palette="Paire
 
 
 
-main <- function(input_path, real_output_path, sim_output_path) {
-  
+main <- function(input_path, output_path, data_type) {
+
   wide_ranking_df <- read.csv(input_path)
 
-  real_data_heatmap_plot <- plot_real_heatmap(wide_ranking_df, fontsize = fontsize,
-                                            heatmap_title = NULL)
+  if (data_type == "real") {
+    out_plot <- plot_real_heatmap(wide_ranking_df, fontsize = fontsize,
+                      heatmap_title = NULL)
+  }
 
-  #sim_data_heatmap_plot <- plot_sim_heatmap(wide_ranking_df, fontsize = fontsize,
-  #                                          heatmap_title = NULL)
+  if (data_type == "sim") {
+    out_plot <- ggplot() + ggtitle("Fake plot placeholder for feature selection (sim)")
+  }
+
 
   # TODO: making a placeholder now for sim data
-  sim_data_heatmap_plot <- ggplot() + ggtitle("Fake plot placeholder for feature selection (sim)")
 
-  # And save them to disk
-  ggsave(real_output_path, plot = real_data_heatmap_plot,
+  ggsave(output_path, plot = out_plot,
         width = width, height = height, device=device, dpi=dpi)
+  message("Saved image of ", width, " x ", height, " to ", output_path)
 
-  ggsave(sim_output_path, plot = sim_data_heatmap_plot,
-        width = width, height = height + 2, device=device, dpi=dpi)
-
-  message("\nSaved image of ", width, " x ", height, " to ", real_output_path)
-  message("\nSaved image of ", width, " x ", height, " to ", sim_output_path)
 }
 
 
 opt <- docopt::docopt(doc)
 
 # Convenient vars
-input_path <- opt$input_csv
-real_output_path <- opt$real_output
-sim_output_path <- opt$sim_output
+input_path <- opt$input_path
+output_path <- opt$output_path
+data_type <- opt$data_type
 # Plot params
 fontsize <- 12
 width <- as.numeric(opt$width)
@@ -294,4 +292,4 @@ device <- opt$device
 dpi <- as.numeric(opt$dpi)
 
 # lastly call the main
-main(input_path = input_path, real_output_path = real_output_path, sim_output_path = sim_output_path)
+main(input_path = input_path, output_path = output_path, data_type = data_type)

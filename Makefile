@@ -80,28 +80,27 @@ FIG_REAL_PERF_OUT=${FIG_DIR}/fig_performance_evaluation_real.${DEVICE}
 FIG_SIM_PERF_OUT=${FIG_DIR}/fig_performance_evaluation_sim.${DEVICE}
 
 # Computational time
-# FIG_REAL_TIME_OUT=${FIG_DIR}/fig_computational_time_real.${DEVICE}
+FIG_REAL_TIME_OUT=${FIG_DIR}/fig_computational_time_real.${DEVICE}
 FIG_SIM_TIME_OUT=${FIG_DIR}/fig_computational_time_sim.${DEVICE}
 
 # Feature selection
-# FIG_REAL_FS_OUT=${FIG_DIR}/fig_feature_selection_real.${DEVICE}
+FIG_REAL_FS_OUT=${FIG_DIR}/fig_feature_selection_real.${DEVICE}
 FIG_SIM_FS_OUT=${FIG_DIR}/fig_feature_selection_sim.${DEVICE}
 
 # ====================================================================================
 # All the outputs
 # Real data targets are always included
-#OUTPUTS=${FIG_REAL_PERF_OUT} ${FIG_REAL_TIME_OUT} ${FIG_REAL_FS_OUT}
-OUTPUTS=${FIG_REAL_PERF_OUT}
+OUTPUTS=${FIG_REAL_PERF_OUT} ${FIG_REAL_TIME_OUT} ${FIG_REAL_FS_OUT}
 # Conditionally include simulated data targets if input files exist
 ifneq ($(wildcard ${SIM_METRICS_CSV}),)
 OUTPUTS+= ${FIG_SIM_PERF_OUT}
 endif
-# ifneq ($(wildcard ${SIM_METADATA_CSV}),)
-# OUTPUTS+= ${FIG_SIM_TIME_OUT}
-# endif
-# ifneq ($(wildcard ${SIM_FS_RESULTS_CSV}),)
-# OUTPUTS+= ${FIG_SIM_FS_OUT}
-# endif
+ifneq ($(wildcard ${SIM_METADATA_CSV}),)
+OUTPUTS+= ${FIG_SIM_TIME_OUT}
+endif
+ifneq ($(wildcard ${SIM_FS_RESULTS_CSV}),)
+OUTPUTS+= ${FIG_SIM_FS_OUT}
+endif
 
 all: ${OUTPUTS}
 
@@ -138,43 +137,43 @@ ${FIG1_SIM_PROCESSED}: ${FIG1_WRANGLE_SRC} ${SIM_METRICS_CSV}
 		--output_path ${FIG1_SIM_PROCESSED} \
 		--data_type sim
 
-# # Figure 2: Computational time (Real Data)
-# ${FIG2_REAL_PROCESSED}: ${FIG2_WRANGLE_SRC} ${REAL_METADATA_CSV} ${REAL_TRACE_TXT}
-# 	@echo ${BANNER}
-# 	@echo "Processing real data for computational time"
-# 	Rscript ${FIG2_WRANGLE_SRC} \
-# 		--metadata ${REAL_METADATA_CSV} \
-# 		--trace ${REAL_TRACE_TXT} \
-# 		--output_csv ${FIG2_REAL_PROCESSED} \
-# 		--data_type real
+# Figure 2: Computational time (Real Data)
+${FIG2_REAL_PROCESSED}: ${FIG2_WRANGLE_SRC} ${REAL_METADATA_CSV} ${REAL_TRACE_TXT}
+	@echo ${BANNER}
+	@echo "Processing real data for computational time"
+	Rscript ${FIG2_WRANGLE_SRC} \
+		--metadata ${REAL_METADATA_CSV} \
+		--trace ${REAL_TRACE_TXT} \
+		--output_csv ${FIG2_REAL_PROCESSED} \
+		--data_type real
 
-# # Figure 2: Computational time (Simulated Data)
-# ${FIG2_SIM_PROCESSED}: ${FIG2_WRANGLE_SRC} ${SIM_METADATA_CSV} ${SIM_TRACE_TXT}
-# 	@echo ${BANNER}
-# 	@echo "Processing simulated data for computational time"
-# 	Rscript ${FIG2_WRANGLE_SRC} \
-# 		--metadata ${SIM_METADATA_CSV} \
-# 		--trace ${SIM_TRACE_TXT} \
-# 		--output_csv ${FIG2_SIM_PROCESSED} \
-# 		--data_type sim
+# Figure 2: Computational time (Simulated Data)
+${FIG2_SIM_PROCESSED}: ${FIG2_WRANGLE_SRC} ${SIM_METADATA_CSV} ${SIM_TRACE_TXT}
+	@echo ${BANNER}
+	@echo "Processing simulated data for computational time"
+	Rscript ${FIG2_WRANGLE_SRC} \
+		--metadata ${SIM_METADATA_CSV} \
+		--trace ${SIM_TRACE_TXT} \
+		--output_csv ${FIG2_SIM_PROCESSED} \
+		--data_type sim
 
 # # Figure 3: Feature selection (Real Data)
-# ${FIG3_REAL_PROCESSED}: ${FIG3_WRANGLE_SRC} ${REAL_FS_RESULTS_CSV}
-# 	@echo ${BANNER}
-# 	@echo "Processing real data for feature selection"
-# 	Rscript ${FIG3_WRANGLE_SRC} \
-# 		--input_csv ${REAL_FS_RESULTS_CSV} \
-# 		--output_csv ${FIG3_REAL_PROCESSED} \
-# 		--data_type real
+${FIG3_REAL_PROCESSED}: ${FIG3_WRANGLE_SRC} ${REAL_FS_RESULTS_CSV}
+	@echo ${BANNER}
+	@echo "Processing real data for feature selection"
+	Rscript ${FIG3_WRANGLE_SRC} \
+		--input_csv ${REAL_FS_RESULTS_CSV} \
+		--output_csv ${FIG3_REAL_PROCESSED} \
+		--data_type real
 
-# # Figure 3: Feature selection (Simulated Data)
-# ${FIG3_SIM_PROCESSED}: ${FIG3_WRANGLE_SRC} ${SIM_FS_RESULTS_CSV}
-# 	@echo ${BANNER}
-# 	@echo "Processing simulated data for feature selection"
-# 	Rscript ${FIG3_WRANGLE_SRC} \
-# 		--input_csv ${SIM_FS_RESULTS_CSV} \
-# 		--output_csv ${FIG3_SIM_PROCESSED} \
-# 		--data_type sim
+# Figure 3: Feature selection (Simulated Data)
+${FIG3_SIM_PROCESSED}: ${FIG3_WRANGLE_SRC} ${SIM_FS_RESULTS_CSV}
+	@echo ${BANNER}
+	@echo "Processing simulated data for feature selection"
+	Rscript ${FIG3_WRANGLE_SRC} \
+		--input_csv ${SIM_FS_RESULTS_CSV} \
+		--output_csv ${FIG3_SIM_PROCESSED} \
+		--data_type sim
 
 # ==============================================================================
 # FIGURE 1: Performance evaluation (Real Data)
@@ -204,55 +203,55 @@ ${FIG_SIM_PERF_OUT}: ${FIG1_PLOT_SRC} ${FIG1_SIM_PROCESSED}
 		--data_type sim
 
 # # ==============================================================================
-# # FIGURE 2: Computational time (Real Data)
-# ${FIG_REAL_TIME_OUT}: ${FIG2_PLOT_SRC} ${FIG2_REAL_PROCESSED}
-# 	@echo ${BANNER}
-# 	@echo "Plotting computational time (Real Data)..."
-# 	Rscript ${FIG2_PLOT_SRC} \
-# 		--input_csv ${FIG2_REAL_PROCESSED} \
-# 		--output_path ${FIG_REAL_TIME_OUT} \
-# 		--width ${WIDTH} \
-# 		--height ${HEIGHT} \
-# 		--device ${DEVICE} \
-# 		--dpi ${DPI} \
-# 		--data_type real
+# FIGURE 2: Computational time (Real Data)
+${FIG_REAL_TIME_OUT}: ${FIG2_PLOT_SRC} ${FIG2_REAL_PROCESSED}
+	@echo ${BANNER}
+	@echo "Plotting computational time (Real Data)..."
+	Rscript ${FIG2_PLOT_SRC} \
+		--input_path ${FIG2_REAL_PROCESSED} \
+		--output_path ${FIG_REAL_TIME_OUT} \
+		--width ${WIDTH} \
+		--height ${HEIGHT} \
+		--device ${DEVICE} \
+		--dpi ${DPI} \
+		--data_type real
 
-# # FIGURE 2: Computational time (Simulated Data)
-# ${FIG_SIM_TIME_OUT}: ${FIG2_PLOT_SRC} ${FIG2_SIM_PROCESSED}
-# 	@echo ${BANNER}
-# 	@echo "Plotting computational time (Simulated Data)..."
-# 	Rscript ${FIG2_PLOT_SRC} \
-# 		--input_csv ${FIG2_SIM_PROCESSED} \
-# 		--output_path ${FIG_SIM_TIME_OUT} \
-# 		--width ${WIDTH} \
-# 		--height ${HEIGHT} \
-# 		--device ${DEVICE} \
-# 		--dpi ${DPI} \
-# 		--data_type sim
+# FIGURE 2: Computational time (Simulated Data)
+${FIG_SIM_TIME_OUT}: ${FIG2_PLOT_SRC} ${FIG2_SIM_PROCESSED}
+	@echo ${BANNER}
+	@echo "Plotting computational time (Simulated Data)..."
+	Rscript ${FIG2_PLOT_SRC} \
+		--input_path ${FIG2_SIM_PROCESSED} \
+		--output_path ${FIG_SIM_TIME_OUT} \
+		--width ${WIDTH} \
+		--height ${HEIGHT} \
+		--device ${DEVICE} \
+		--dpi ${DPI} \
+		--data_type sim
 
-# # ==============================================================================
-# # FIGURE 3: Feature selection (Real Data)
-# ${FIG_REAL_FS_OUT}: ${FIG3_PLOT_SRC} ${FIG3_REAL_PROCESSED}
-# 	@echo ${BANNER}
-# 	@echo "Plotting feature selection (Real Data)..."
-# 	Rscript ${FIG3_PLOT_SRC} \
-# 		--input_csv ${FIG3_REAL_PROCESSED} \
-# 		--output_path ${FIG_REAL_FS_OUT} \
-# 		--width ${WIDTH} \
-# 		--height ${HEIGHT} \
-# 		--device ${DEVICE} \
-# 		--dpi ${DPI} \
-# 		--data_type real
+# ==============================================================================
+# FIGURE 3: Feature selection (Real Data)
+${FIG_REAL_FS_OUT}: ${FIG3_PLOT_SRC} ${FIG3_REAL_PROCESSED}
+	@echo ${BANNER}
+	@echo "Plotting feature selection (Real Data)..."
+	Rscript ${FIG3_PLOT_SRC} \
+		--input_path ${FIG3_REAL_PROCESSED} \
+		--output_path ${FIG_REAL_FS_OUT} \
+		--width ${WIDTH} \
+		--height ${HEIGHT} \
+		--device ${DEVICE} \
+		--dpi ${DPI} \
+		--data_type real
 
-# # FIGURE 3: Feature selection (Simulated Data)
-# ${FIG_SIM_FS_OUT}: ${FIG3_PLOT_SRC} ${FIG3_SIM_PROCESSED}
-# 	@echo ${BANNER}
-# 	@echo "Plotting feature selection (Simulated Data)..."
-# 	Rscript ${FIG3_PLOT_SRC} \
-# 		--input_csv ${FIG3_SIM_PROCESSED} \
-# 		--output_path ${FIG_SIM_FS_OUT} \
-# 		--width ${WIDTH} \
-# 		--height ${HEIGHT} \
-# 		--device ${DEVICE} \
-# 		--dpi ${DPI} \
-# 		--data_type sim
+# FIGURE 3: Feature selection (Simulated Data)
+${FIG_SIM_FS_OUT}: ${FIG3_PLOT_SRC} ${FIG3_SIM_PROCESSED}
+	@echo ${BANNER}
+	@echo "Plotting feature selection (Simulated Data)..."
+	Rscript ${FIG3_PLOT_SRC} \
+		--input_path ${FIG3_SIM_PROCESSED} \
+		--output_path ${FIG_SIM_FS_OUT} \
+		--width ${WIDTH} \
+		--height ${HEIGHT} \
+		--device ${DEVICE} \
+		--dpi ${DPI} \
+		--data_type sim
