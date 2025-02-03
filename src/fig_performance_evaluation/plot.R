@@ -21,10 +21,7 @@ opt <- docopt::docopt(doc)
 # Load libraries
 suppressPackageStartupMessages(library(dplyr))
 library(ggplot2)
-library(tibble)
-library(here)
-library(stringr)
-library(tidyr)
+#library(tibble)
 suppressPackageStartupMessages(library(ComplexHeatmap))
 # ==============================================================================
 
@@ -198,8 +195,8 @@ plot_fig1_sim <- function(
 
 
 # Load the variables from cli
-input_path <- here(opt$input_path)
-output_path <- here(opt$output_path)
+input_path <- here::here(opt$input_path)
+output_path <- here::here(opt$output_path)
 data_type <- opt$data_type
 # Plot params
 method_palette <- "Paired"
