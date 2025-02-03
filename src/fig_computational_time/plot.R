@@ -24,15 +24,17 @@ library(ggplot2)
 
 real_data_theme <- function() {
   list(
-    ggtitle(label = "Computational Time for Real Datasets") +
+    ggtitle(label = "Computational Time for Real Datasets"),
       theme(plot.title = element_text(hjust = 0.5))
   )
 
 }
 
 sim_data_theme <- function() {
-  ggtitle(label = "Computational Time for Simulated Datasets") +
+  list(
+    ggtitle(label = "Computational Time for Simulated Datasets"),
     theme(plot.title = element_text(hjust = 0.5))
+  )
 }
 
 
