@@ -47,8 +47,8 @@ FIG2_REAL_PROCESSED=${DATA_PROCESSED_DIR}/fig_computational_time_real_plot_data.
 FIG2_SIM_PROCESSED=${DATA_PROCESSED_DIR}/fig_computational_time_sim_plot_data.csv
 
 # Feature selection
-FIG3_REAL_PROCESSED=${DATA_PROCESSED_DIR}/fig_feature_selection_real_plot_data.csv
-FIG3_SIM_PROCESSED=${DATA_PROCESSED_DIR}/fig_feature_selection_sim_plot_data.csv
+FIG3_REAL_PROCESSED=${DATA_PROCESSED_DIR}/fig_feature_selection_real_plot_data.rds
+FIG3_SIM_PROCESSED=${DATA_PROCESSED_DIR}/fig_feature_selection_sim_plot_data.rds
 
 # Figure source directories (contain scripts for generating figures)
 # Scripts for performance evaluation figure
@@ -163,7 +163,7 @@ ${FIG3_REAL_PROCESSED}: ${FIG3_WRANGLE_SRC} ${REAL_FS_RESULTS_CSV}
 	@echo "Processing real data for feature selection"
 	Rscript ${FIG3_WRANGLE_SRC} \
 		--input_csv ${REAL_FS_RESULTS_CSV} \
-		--output_csv ${FIG3_REAL_PROCESSED} \
+		--output_path ${FIG3_REAL_PROCESSED} \
 		--data_type real
 
 # Figure 3: Feature selection (Simulated Data)
@@ -172,7 +172,7 @@ ${FIG3_SIM_PROCESSED}: ${FIG3_WRANGLE_SRC} ${SIM_FS_RESULTS_CSV}
 	@echo "Processing simulated data for feature selection"
 	Rscript ${FIG3_WRANGLE_SRC} \
 		--input_csv ${SIM_FS_RESULTS_CSV} \
-		--output_csv ${FIG3_SIM_PROCESSED} \
+		--output_path ${FIG3_SIM_PROCESSED} \
 		--data_type sim
 
 # ==============================================================================
