@@ -18,6 +18,8 @@ library(ggplot2)
 library(stringr)
 library(tidyr)
 
+source(here::here("src/common_helpers.R"))
+
 # Custom function
 wrangle_feat_selection <- function(df) {
   df %>%
@@ -77,19 +79,7 @@ clean_real <- function(df, cor_method="spearman") {
 
 }
 
-retrieve_sim_params <- function(df) {
-  df %>%
-  tidyr::separate(
-    dataset,
-    into = c("type", "strategy", "n", "p", "j", "dt", "rho", "rep"),
-    sep = "_") %>%
-    dplyr::mutate(
-      dplyr::across(n:rep, ~ stringr::str_extract(., "[0-9.]+") %>% as.numeric())
-    ) %>%
-    #mutate(rep = stringr::str_sort(rep, numeric=TRUE)) %>%
-    # Then also sort rep by alpha numeric
-    dplyr::select(-type)
-}
+
 
 # Function to clean data for plotting simulated data
 clean_sim <- function(feat_result_df) {
@@ -162,7 +152,7 @@ clean_sim <- function(feat_result_df) {
 }
 
 #input_path <- "data/raw/real_data_results/all_feature_selection_results.csv"
-input_path <- "data/raw/simulated_data_results/all_feature_selection_results.csv"
+#input_path <- "data/raw/simulated_data_results/all_feature_selection_results.csv"
 
 main <- function(input_path, output_path, data_type=c("real", "sim")) {
   data_type <- match.arg(data_type)

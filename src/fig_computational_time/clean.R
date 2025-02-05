@@ -19,6 +19,8 @@ library(ggplot2)
 library(stringr)
 library(tidyr)
 
+source(here::here("src/common_helpers.R"))
+
 
 
 # Custom functions ===============================================================
@@ -159,7 +161,7 @@ main <- function(metadata_path, trace_path, output_path, data_type) {
 
   # ================================================================
   # Now to combine the trace with the metadata
-  plot_df <- left_join(
+  merged_df <- left_join(
     x = metadata_df,
     y = trace_df,
     by = "dataset"
@@ -170,9 +172,19 @@ main <- function(metadata_path, trace_path, output_path, data_type) {
         dataset_dim < median(metadata_df$dataset_dim),
         "Small",
         "Large"
-      ) %>% factor(levels=c("Small", "Large"))
-    ) %>%
-    select(method, dataset, dataset_dim, size_label, raw_seconds, action)
+      )
+    )
+
+  if (data_type == "real") {
+    plot_df <- merged_df %>%
+      select(method, dataset, dataset_dim, size_label, raw_seconds, action)
+  }
+
+  if (data_type == "sim") {
+    plot_df <- merged_df %>%
+      select(method, dataset, raw_seconds, action) %>%
+      retrieve_sim_params()
+  }
 
   # Lastly write out to file
   write.csv(plot_df, file=output_path, row.names=FALSE)

@@ -18,9 +18,8 @@ Options:
 # Load libraries
 suppressPackageStartupMessages(library(dplyr))
 library(ggplot2)
-library(stringr)
 suppressPackageStartupMessages(library(ComplexHeatmap))
-library(tidyr)
+
 
 #dd <- readRDS("data/processed/fig_feature_selection_sim_plot_data.rds")
 
@@ -112,11 +111,9 @@ plot_real_heatmap <- function(
 # This function plots heatmap of simulated data feature selection ranking
 # stratified by effect and correlation
 plot_sim <- function(input_data) {
-  modify_cols <- c("n", "p","dt", "rho")
-
+  factor_cols <- c("n", "p", "signal", "corr")
   p <- input_data %>%
-    mutate(across(all_of(modify_cols), as.factor)) %>%
-    rename(signal = dt, corr = rho) %>%
+    mutate(across(all_of(factor_cols), as.factor)) %>%
     ggplot(aes(x = signal, y = sensitivity, fill = method)) +
     geom_boxplot(alpha = 0.7) +
     theme_bw() +
