@@ -24,7 +24,7 @@ source(here::here("src/common_helpers.R"))
 
 # ===========================================================================
 # CUSTOM THEMES
-real_data_theme <- function() {
+real_data_theme <- function(text_size) {
   list(
     labs(x = "Dataset Size", y = "Computation time in seconds (log scale)", fill = "Method"),
       theme_classic(),
@@ -43,16 +43,26 @@ real_data_theme <- function() {
 
 }
 
-sim_data_theme <- function() {
+sim_data_theme <- function(text_size) {
   list(
+    labs(x = "Method", y = "Computation time in seconds (log scale)"),
     ggtitle(label = "Computational Time for Simulated Datasets"),
-    theme(plot.title = element_text(hjust = 0.5))
+    theme(
+      # Make sizing
+      plot.title = element_text(hjust = 0.5),
+      axis.text = element_text(size = text_size),
+      axis.title = element_text(size = text_size + 2),
+      legend.title = element_text(size = text_size + 2),
+      axis.text.x = element_text(angle = 35, hjust = 1),
+      legend.position = "none"
+    )
   )
 }
 
 # ===========================================================================
 # PLOTTING FUNCTIONS
-plot_base <- function(plot_df, x_col = "size_label", y_col = "raw_seconds", fill = "method", method_palette="Paired") {
+plot_base <- function(plot_df, x_col = "size_label", y_col = "raw_seconds",
+                      fill = "method", method_palette="Paired") {
   # Ensymbol these
   x_col <- ensym(x_col)
   y_col <- ensym(y_col)
@@ -67,9 +77,8 @@ plot_base <- function(plot_df, x_col = "size_label", y_col = "raw_seconds", fill
 }
 
 
-
-
-plot_real <- function(plot_df, text_size, method_palette) {
+# Create the base plot for real data
+plot_real <- function(plot_df, method_palette) {
   # Factors cannot be retained when reading from csv, so coerce them here
   base_plot <-  plot_df %>%
     mutate(size_label = factor(size_label, levels=c("Small", "Large"))) %>%
@@ -79,22 +88,21 @@ plot_real <- function(plot_df, text_size, method_palette) {
 
 }
 
-plot_sim <- function(plot_df) {
+# Create the base plot for sim data
+plot_sim <- function(plot_df, method_palette) {
   factor_cols <- c("n", "p", "signal", "corr")
+  # # Factors cannot be retained when reading from csv, so coerce them here
   base_plot <- plot_df %>%
     mutate(across(all_of(factor_cols), as.factor)) %>%
-    plot_base(x_col = "method", y_col = "raw_seconds", fill = "method")
+    plot_base(x_col = "method", y_col = "raw_seconds", fill = "method") +
+    theme_classic() +
+    facet_grid(p ~ n , labeller = label_both)
 
-
-aa <-   plot_df %>%
-    as_tibble() %>%
-
-
-plot_base(aa, x_col = "method", fill = "method") +
-  theme_classic() +
-  facet_grid(p ~ n , labeller = label_both)
+  return(base_plot)
 }
 
+# ==============================================================================
+# MAIN LOGIC OF PLOTTING
 # Parse cli
 opt <- docopt::docopt(doc)
 
@@ -117,14 +125,12 @@ plot_df <- data.table::fread(input_path)
 #plot_df <- data.table::fread("data/processed/fig_computational_time_sim_plot_data.csv")
 
 if (data_type == "real") {
-  computation_time_plot <- plot_real(plot_df, text_size = text_size,
-                                     method_palette = method_palette) +
-    real_data_theme()
+  computation_time_plot <- plot_real(plot_df, method_palette = method_palette) +
+    real_data_theme(text_size = text_size)
 } else if (data_type == "sim") {
-  computation_time_plot <- ggplot() + ggtitle("fake plot")
-  #computation_time_plot <- plot_sim(plot_df, text_size = text_size,
-  #                                  method_palette = method_palette) +
-  #  sim_data_theme()
+  #computation_time_plot <- ggplot() + ggtitle("fake plot")
+  computation_time_plot <- plot_sim(plot_df, method_palette = method_palette) +
+    sim_data_theme(text_size = text_size)
 }
 # Lastly save it
 ggsave(output_path, plot=computation_time_plot,
@@ -132,5 +138,3 @@ ggsave(output_path, plot=computation_time_plot,
        create.dir = TRUE)
 message("Saved image of ", width, " x ", height, " to ", output_path)
 
-
-#computation_time_plot
