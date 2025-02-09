@@ -158,7 +158,6 @@ main <- function(metadata_path, trace_path, output_path, data_type) {
   #trace_path <- "data/execution_trace.txt"
   trace_df <- readr::read_tsv(trace_path, col_types = readr::cols()) %>%
     wrangle_trace()
-
   # ================================================================
   # Now to combine the trace with the metadata
   merged_df <- left_join(
