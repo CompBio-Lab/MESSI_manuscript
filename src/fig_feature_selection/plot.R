@@ -19,7 +19,7 @@ Options:
 suppressPackageStartupMessages(library(dplyr))
 library(ggplot2)
 suppressPackageStartupMessages(library(ComplexHeatmap))
-
+library(cowplot)
 
 #dd <- readRDS("data/processed/fig_feature_selection_sim_plot_data.rds")
 
@@ -108,19 +108,124 @@ plot_real_heatmap <- function(
 }
 
 
-# This function plots heatmap of simulated data feature selection ranking
-# stratified by effect and correlation
-plot_sim <- function(input_data) {
-  factor_cols <- c("n", "p", "signal", "corr")
-  p <- input_data %>%
-    mutate(across(all_of(factor_cols), as.factor)) %>%
+
+get_legend_35 <- function(plot) {
+  # return all legend candidates
+  legends <- get_plot_component(plot, "guide-box", return_all = TRUE)
+  # find non-zero legends
+  nonzero <- vapply(legends, \(x) !inherits(x, "zeroGrob"), TRUE)
+  idx <- which(nonzero)
+  # return first non-zero legend if exists, and otherwise first element (which will be a zeroGrob)
+  if (length(idx) > 0) {
+    return(legends[[idx[1]]])
+  } else {
+    return(legends[[1]])
+  }
+}
+
+
+
+plot_corr_grid <- function(plot_data, cor, method_palette) {
+  #title <- paste0("Feature Selection Sensitivity for simulated data with correlation = ", cor)
+  title <- paste0("Correlation = ", cor)
+  plot_data %>%
+    filter(corr == cor) %>%
     ggplot(aes(x = signal, y = sensitivity, fill = method)) +
-    geom_boxplot(alpha = 0.7) +
-    theme_bw() +
-    labs(title="Feature Selection Sensitivity for messi_sim varied n and p",
-         x = "Signal", y = "Sensitivity") +
-    facet_grid(p~n, labeller = label_both, scales = "free")
-  return(p)
+    geom_boxplot(
+      alpha = 0.7,
+      position = position_dodge(width = 0.8), # Adjust dodge width
+      width = 0.6, # Box width
+      outlier.size = 1.5 # Smaller outliers
+    ) +
+    theme_half_open(12) +
+    panel_border() +
+    background_grid() +
+    labs(x = "Signal", y = "Sensitivity") +
+    # we set the left and right margins to 0 to remove
+    # unnecessary spacing in the final plot arrangement.
+    theme(
+      plot.title = element_text(hjust = 0.5),
+      plot.margin = margin(6, 0, 6, 0)
+    ) +
+    scale_fill_brewer(palette = method_palette) +
+    facet_grid(p ~ n, labeller = label_both, scales = "free")
+}
+
+plot_sim <- function(input_data, method_palette) {
+  # This fun depends on the plot_corr_grid
+  # Need to manually fix the levels of some columns
+  # Since bug with mutate across ?
+
+  n_order <- input_data$n %>% unique() %>% sort()
+  p_order <- input_data$p %>% unique() %>% sort()
+  signal_order <- input_data$signal %>% unique() %>% sort()
+  corr_order <- input_data$corr %>% unique() %>% sort()
+  # Then transform it here
+  plot_data <- input_data %>%
+    mutate(
+      n = factor(n, levels = n_order),
+      p = factor(p, levels = p_order),
+      signal = factor(signal, levels = signal_order),
+      corr = factor(corr, levels = corr_order)
+    )
+
+  # KINDA useless here since I knew only 3 corr
+  # https://wilkelab.org/cowplot/articles/shared_legends.html
+  # Make the individual plots first
+  p1 <- plot_corr_grid(plot_data, cor = corr_order[1], method_palette = method_palette) + xlab(NULL)
+  p2 <- plot_corr_grid(plot_data, cor = corr_order[2], method_palette = method_palette) + ylab(NULL)
+  p3 <- plot_corr_grid(plot_data, cor = corr_order[3], method_palette = method_palette) + xlab(NULL) + ylab(NULL)
+  # arrange the three plots in a single row
+  prow <- plot_grid(
+    p1 + theme(legend.position="none"),
+    p2 + theme(legend.position="none"),
+    p3 + theme(legend.position="none"),
+    align = 'vh',
+    labels = c("A", "B", "C"),
+    hjust = -1,
+    nrow = 1
+  )
+  # extract the legend from one of the plots
+  # legend <- get_legend(
+  #   # create some space to the left of the legend
+  #   p1 + theme(legend.box.margin = margin(0, 0, 0, 12))
+  # )
+
+  # extract a legend that is laid out horizontally
+  legend <- get_legend_35(
+    p1 +
+      guides(fill = guide_legend(nrow = 1)) +
+      theme(legend.position = "bottom")
+  )
+
+  # Add legend
+  prow <- plot_grid(prow, legend, ncol = 1, rel_heights = c(1, .1))
+
+  # now add the title
+  title <- ggdraw() +
+    draw_label(
+      "Feature Selection Sensitivity for Simulated data with Varied n, p, signal and correlation",
+      fontface = 'bold',
+      x = 0,
+      hjust = 0
+    ) +
+    theme(
+      # add margin on the left of the drawing canvas,
+      # so title is aligned with left edge of first plot
+      plot.margin = margin(0, 0, 0, 7)
+    )
+
+  # add the legend to the row we made earlier. Give it one-third of
+  # the width of one plot (via rel_widths).
+  # the height via rel_heights
+  sim_plot <- plot_grid(
+    title, prow,
+    ncol = 1,
+    # rel_heights values control vertical title margins
+    rel_heights = c(0.1, 1)
+  )
+
+  return(sim_plot)
 }
 
 
@@ -268,9 +373,10 @@ width <- as.numeric(opt$width)
 height <- as.numeric(opt$height)
 device <- opt$device
 dpi <- as.numeric(opt$dpi)
+method_palette <- "Paired"
 # ==============================================================================
-# Plot it conditionally
 input_data <- readRDS(input_path)
+# Plot it conditionally
 if (data_type == "real") {
   out_plot <- plot_real_heatmap(input_data, text_size = text_size,
                     heatmap_title = NULL)
@@ -278,7 +384,10 @@ if (data_type == "real") {
 
 if (data_type == "sim") {
   #out_plot <- ggplot() + ggtitle("Fake plot placeholder for feature selection (sim)")
-  out_plot <- plot_sim(input_data)
+  const <- 9
+  width <- width + const
+  height <- height + const
+  out_plot <- plot_sim(input_data %>% filter(method != "mofa + glmnet"), method_palette)
 }
 
 
