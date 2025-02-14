@@ -387,7 +387,7 @@ if (data_type == "sim") {
   const <- 9
   width <- width + const
   height <- height + const
-  out_plot <- plot_sim(input_data %>% filter(method != "mofa + glmnet"), method_palette)
+  out_plot <- plot_sim(input_data, method_palette)
 }
 
 
