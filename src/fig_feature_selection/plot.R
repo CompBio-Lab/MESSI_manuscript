@@ -125,7 +125,7 @@ get_legend_35 <- function(plot) {
 
 
 
-plot_corr_grid <- function(plot_data, cor, method_palette) {
+plot_corr_grid <- function(plot_data, cor, method_palette, text_size) {
   #title <- paste0("Feature Selection Sensitivity for simulated data with correlation = ", cor)
   title <- paste0("Correlation = ", cor)
   plot_data %>%
@@ -137,7 +137,7 @@ plot_corr_grid <- function(plot_data, cor, method_palette) {
       width = 0.6, # Box width
       outlier.size = 1.5 # Smaller outliers
     ) +
-    theme_half_open(12) +
+    theme_half_open(text_size) +
     panel_border() +
     background_grid() +
     labs(x = "Signal", y = "Sensitivity") +
@@ -151,7 +151,7 @@ plot_corr_grid <- function(plot_data, cor, method_palette) {
     facet_grid(p ~ n, labeller = label_both, scales = "free")
 }
 
-plot_sim <- function(input_data, method_palette) {
+plot_sim <- function(input_data, method_palette, text_size) {
   # This fun depends on the plot_corr_grid
   # Need to manually fix the levels of some columns
   # Since bug with mutate across ?
@@ -172,9 +172,15 @@ plot_sim <- function(input_data, method_palette) {
   # KINDA useless here since I knew only 3 corr
   # https://wilkelab.org/cowplot/articles/shared_legends.html
   # Make the individual plots first
-  p1 <- plot_corr_grid(plot_data, cor = corr_order[1], method_palette = method_palette) + xlab(NULL)
-  p2 <- plot_corr_grid(plot_data, cor = corr_order[2], method_palette = method_palette) + ylab(NULL)
-  p3 <- plot_corr_grid(plot_data, cor = corr_order[3], method_palette = method_palette) + xlab(NULL) + ylab(NULL)
+  p1 <- plot_corr_grid(plot_data, cor = corr_order[1],
+                       method_palette = method_palette,
+                       text_size=text_size) + xlab(NULL)
+  p2 <- plot_corr_grid(plot_data, cor = corr_order[2],
+                       method_palette = method_palette,
+                       text_size=text_size) + ylab(NULL)
+  p3 <- plot_corr_grid(plot_data, cor = corr_order[3],
+                       method_palette = method_palette,
+                       text_size=text_size) + xlab(NULL) + ylab(NULL)
   # arrange the three plots in a single row
   prow <- plot_grid(
     p1 + theme(legend.position="none"),
@@ -191,15 +197,7 @@ plot_sim <- function(input_data, method_palette) {
   #   p1 + theme(legend.box.margin = margin(0, 0, 0, 12))
   # )
 
-  # extract a legend that is laid out horizontally
-  legend <- get_legend_35(
-    p1 +
-      guides(fill = guide_legend(nrow = 1)) +
-      theme(legend.position = "bottom")
-  )
 
-  # Add legend
-  prow <- plot_grid(prow, legend, ncol = 1, rel_heights = c(1, .1))
 
   # now add the title
   title <- ggdraw() +
@@ -218,12 +216,27 @@ plot_sim <- function(input_data, method_palette) {
   # add the legend to the row we made earlier. Give it one-third of
   # the width of one plot (via rel_widths).
   # the height via rel_heights
-  sim_plot <- plot_grid(
+  prow <- plot_grid(
     title, prow,
     ncol = 1,
     # rel_heights values control vertical title margins
     rel_heights = c(0.1, 1)
   )
+
+
+  # extract a legend that is laid out horizontally
+  legend <- get_legend_35(
+    p1 +
+      guides(fill = guide_legend(nrow = 1)) +
+      theme(
+        legend.direction = "horizontal",
+        legend.justification="center" ,
+        legend.box.just = "bottom"
+      )
+  )
+
+  # Add legend
+  sim_plot <- plot_grid(prow, legend, nrow = 2, rel_heights = c(1, 0.2))
 
   return(sim_plot)
 }
@@ -385,16 +398,17 @@ if (data_type == "real") {
 if (data_type == "sim") {
   #out_plot <- ggplot() + ggtitle("Fake plot placeholder for feature selection (sim)")
   const <- 9
-  width <- width + const
+  text_size <- text_size + 6
+  width <- width + (const * 1.8)
   height <- height + const
-  out_plot <- plot_sim(input_data, method_palette)
+  out_plot <- plot_sim(input_data, method_palette, text_size=text_size)
 }
 
 
 # TODO: making a placeholder now for sim data
 
 ggsave(output_path, plot = out_plot,
-      width = width, height = height, device=device, dpi=dpi)
+      width = width, height = height, device=device, dpi=dpi, bg="white")
 message("Saved image of ", width, " x ", height, " to ", output_path)
 
 
