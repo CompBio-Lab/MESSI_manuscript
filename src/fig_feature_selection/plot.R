@@ -147,6 +147,8 @@ plot_corr_grid <- function(plot_data, cor, method_palette, text_size) {
       plot.title = element_text(hjust = 0.5),
       plot.margin = margin(6, 0, 6, 0)
     ) +
+    # remove extra space between panel and axis
+    #scale_y_continuous(expand = c(1, 1)) +
     scale_fill_brewer(palette = method_palette) +
     facet_grid(p ~ n, labeller = label_both, scales = "free")
 }

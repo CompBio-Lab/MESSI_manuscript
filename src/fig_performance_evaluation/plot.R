@@ -156,20 +156,21 @@ plot_fig1_sim <- function(
     geom_boxplot()+
     scale_fill_brewer(palette = method_palette) +
     facet_grid(
-      signal~corr,
-      labeller = labeller(signal = signal_labels, corr = corr_labels),
-      scales = "free"
+      corr ~ signal,
+      #scales = "free",
+      labeller = labeller(signal = signal_labels, corr = corr_labels)
     ) +
     theme_bw() +
     # And change Grid label names
     theme(
       # Rotate text of methods names
       #axis.text.x = element_text(angle = 45, hjust=1),
-      axis.text.x = element_blank(),
       axis.text.y = element_text(
         size = text_size
       ),
-      axis.title = element_text(size = text_size + 2),
+      axis.title.y = element_text(size = text_size + 2),
+      axis.title.x = element_blank(),
+      axis.text.x = element_blank(),
       axis.ticks.x = element_blank(),
       strip.text.x = element_text(
         size = text_size, color = "red", face = "bold.italic"
