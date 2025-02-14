@@ -1,0 +1,58 @@
+---
+title: "Report"
+output: 
+  bookdown::html_document2: default
+---
+
+This is a testing report to host figures
+
+
+```{r setup, echo=FALSE, include=FALSE}
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(here)
+# Set global options for code chunks
+knitr::opts_chunk$set(echo=FALSE)
+
+# Convenient variables
+fig_path <- here("results/figures")
+# Figs on real dataset
+comp_time_real <- here(fig_path, "fig_computational_time_real.png")
+feat_sel_real <- here(fig_path, "fig_feature_selection_real.png")
+perf_real <- here(fig_path, "fig_performance_evaluation_real.png")
+# Figs on sim dataset
+comp_time_sim <- here(fig_path, "fig_computational_time_sim.png")
+feat_sel_sim <- here(fig_path, "fig_feature_selection_sim.png")
+perf_sim <- here(fig_path, "fig_performance_evaluation_sim.png")
+```
+## Real Datasets
+
+```{r plot-comp-time-real}
+include_graphics(comp_time_real)
+```
+
+```{r plot-feat-sel-real}
+include_graphics(feat_sel_real)
+```
+
+```{r plot-perf-real}
+include_graphics(perf_real)
+```
+
+
+## Simulated Datasets
+
+
+```{r plot-comp-time-sim}
+include_graphics(comp_time_sim)
+```
+
+```{r plot-feat-sel-sim}
+include_graphics(feat_sel_sim)
+```
+
+```{r plot-perf-sim}
+include_graphics(perf_sim)
+```
+
