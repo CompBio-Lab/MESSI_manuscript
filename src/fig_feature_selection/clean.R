@@ -149,9 +149,6 @@ clean_sim <- function(feat_result_df) {
     retrieve_sim_params()
 }
 
-input_path <- "data/raw/real_data_results/all_feature_selection_results.csv"
-#input_path <- "data/raw/simulated_data_results/all_feature_selection_results.csv"
-
 main <- function(input_path, output_path, data_type=c("real", "sim")) {
   data_type <- match.arg(data_type)
 
@@ -159,7 +156,7 @@ main <- function(input_path, output_path, data_type=c("real", "sim")) {
   feat_result_df <- data.table::fread(input_path) %>%
     as_tibble() %>%
     wrangle_feat_selection()
-
+  feat_result_df
 
   # # Handle data type-specific processing
   clean_rds <- switch(
@@ -169,8 +166,6 @@ main <- function(input_path, output_path, data_type=c("real", "sim")) {
   )
 
   saveRDS(clean_rds, file = output_path)
-
-
 }
 
 
