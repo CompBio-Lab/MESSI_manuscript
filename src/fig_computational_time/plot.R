@@ -27,18 +27,18 @@ source(here::here("src/common_helpers.R"))
 real_data_theme <- function(text_size) {
   list(
     labs(x = "Dataset Size", y = "Computation time in seconds (log scale)", fill = "Method"),
-      theme_classic(),
-      theme(
-        # Make sizing
-        axis.text = element_text(size = text_size),
-        axis.title = element_text(size = text_size + 2),
-        legend.title = element_text(size = text_size + 2),
-        legend.text = element_text(size = text_size),
-        legend.position = "bottom"
-      ),
-    guides(fill=guide_legend(nrow=2)),
     ggtitle(label = "Computational Time for Real Datasets"),
-      theme(plot.title = element_text(hjust = 0.5))
+    theme_classic(),
+    theme(
+      # Make sizing
+      axis.text = element_text(size = text_size),
+      axis.title = element_text(size = text_size + 2),
+      legend.title = element_text(size = text_size + 2),
+      legend.text = element_text(size = text_size),
+      legend.position = "bottom",
+      plot.title = element_text(hjust = 0.5)
+    ),
+    guides(fill=guide_legend(nrow=2))
   )
 
 }
@@ -50,13 +50,18 @@ sim_data_theme <- function(text_size) {
     theme(
       # Make sizing
       plot.title = element_text(hjust = 0.5),
-      axis.text = element_text(size = text_size),
+      axis.text.y = element_text(size = text_size),
       axis.title = element_text(size = text_size + 2),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      #axis.text.x = element_text(angle = 35, hjust = 1),
+      #legend.position = "none",
       legend.title = element_text(size = text_size + 2),
-      axis.text.x = element_text(angle = 35, hjust = 1),
-      legend.position = "none"
+      legend.text = element_text(size = text_size),
+      legend.position = "bottom"
+    ),
+    guides(fill = guide_legend(nrow = 2))
     )
-  )
 }
 
 # ===========================================================================
