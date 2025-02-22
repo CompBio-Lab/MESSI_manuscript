@@ -47,7 +47,8 @@ plot_real_heatmap <- function(
       Method = method_colors
       #Dataset = dataset_colors
     ),
-    show_annotation_name = F
+    show_annotation_name = F,
+    show_legend = F
   )
 
   row_ha <- rowAnnotation(
@@ -281,6 +282,11 @@ if (data_type == "sim") {
 
 ggsave(output_path, plot = out_plot,
       width = width, height = height, device=device, dpi=dpi, bg="white")
+
+
+saveRDS(out_plot,
+        file = paste0("data/processed/feature_selection_", data_type, ".rds") |>
+          here::here())
 message("Saved image of ", width, " x ", height, " to ", output_path)
 
 

@@ -94,7 +94,7 @@ plot_fig1_real <- function(
     column_title = heatmap_title,
     column_title_gp = gpar(fontsize=text_size, fontface="bold"),
     row_names_rot = 0,
-    column_names_rot = 45,
+    column_names_rot = 50,
     #column_labels = rownames(rank_matrix),
     row_title = NULL,
     cluster_rows = T,
@@ -121,6 +121,9 @@ plot_fig1_real <- function(
     #top_annotation = col_ha,
     #right_annotation = row_ha
   )
+
+
+
 
   heatmap_p <- grid.grabExpr(
     #draw(ht, heatmap_legend_side="bottom", annotation_legend_side="right",
@@ -241,6 +244,11 @@ if (data_type == "sim") {
 # Lastly save it to output
 ggsave(output_path, plot = out_plot, width = width, height = height,
        device = device, dpi = dpi, create.dir = TRUE)
+
+saveRDS(out_plot,
+        file = paste0("data/processed/perf_evaluation_", data_type, ".rds") |>
+          here::here())
+
 message("Saved image of ", width, " x ", height, " to ", output_path)
 
 

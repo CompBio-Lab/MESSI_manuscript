@@ -141,5 +141,10 @@ if (data_type == "real") {
 ggsave(output_path, plot=computation_time_plot,
        width=width, height=height, device=device, dpi=dpi,
        create.dir = TRUE)
+
+# Also save this to RDS for further processing
+saveRDS(computation_time_plot,
+        file = paste0("data/processed/computational_time_", data_type, ".rds") |>
+          here::here())
 message("Saved image of ", width, " x ", height, " to ", output_path)
 
