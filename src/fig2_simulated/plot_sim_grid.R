@@ -27,7 +27,7 @@ perf_sim <- here(fig_path, "perf_evaluation_sim.rds") |> readRDS()
 # Perf and time together top, with feature sel bottom
 plot_sim_grid_top_row <- plot_grid(
   perf_sim + theme(legend.position = "none"),
-  comp_time_sim + theme(legend.position = "none"),
+  comp_time_sim + theme(legend.position = "none") + xlab(NULL),
   labels = c("A", "B"),
   hjust = -1,
   nrow = 1
@@ -38,12 +38,10 @@ plot_sim_grid <- plot_grid(
   labels = c("", "C"),
   ncol = 1,
   # vjust adjust label position vertically
-  vjust = 2,
+  vjust = 3,
   # 1.2 or 1 works fine?
   rel_heights = c(1.2, 2)
 )
-
-
 
 width <- 16
 height <- 18
