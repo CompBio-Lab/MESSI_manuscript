@@ -1,9 +1,9 @@
 doc <- "
 
-This script is used to create figure 3 of feature selection.
+This script is used to create figure 3 of feature selection for sim data.
 
 Usage:
-  fig_feature_selection.R [options]
+  plot_sim.R [options]
 
 Options:
   --input_path=INPUT      Path to read in the feature selection result
@@ -12,7 +12,6 @@ Options:
   --height=height         Height of the graph [default: 7]
   --device=DEVICE         Device to print out [default: png]
   --dpi=DPI               Dots per inch [default: 300]
-  --data_type=DATA_TYPE   Type of data to processed. One of real, sim [default: real]
 "
 
 # Load libraries
@@ -22,94 +21,6 @@ suppressPackageStartupMessages(library(ComplexHeatmap))
 library(cowplot)
 
 #dd <- readRDS("data/processed/fig_feature_selection_sim_plot_data.rds")
-
-# This function plots heatmap for visualizing real data feature
-# selection ranking and taken the spearson correlation
-plot_real_heatmap <- function(
-    cor_mat, heatmap_title="Spearson rank correlation on real datasets",
-    text_size=12, method_palette="Paired", dataset_palette="Pastel1") {
-
-  methods <- rownames(cor_mat)
-  # Assign the colors
-  # For the method to use default Paired
-  method_colors <- RColorBrewer::brewer.pal(n=length(methods), method_palette)
-  names(method_colors) <- methods
-  # For the dataset to use default Pastel 2
-  dataset_palette <- "Pastel1"
-  datasets <- colnames(cor_mat)
-  dataset_colors <- RColorBrewer::brewer.pal(n=256, dataset_palette) |> tail(length(datasets))
-  names(dataset_colors) <- datasets
-  # Col wise
-  col_ha <- columnAnnotation(
-    Method = methods,
-    #Dataset = datasets,
-    col = list(
-      Method = method_colors
-      #Dataset = dataset_colors
-    ),
-    show_annotation_name = F,
-    show_legend = F
-  )
-
-  row_ha <- rowAnnotation(
-    #Dataset = datasets,
-    Method = methods,
-
-    col = list(
-      Method = method_colors
-      #Dataset = dataset_colors
-    ),
-    show_annotation_name = F,
-    show_legend = F
-  )
-  # Custom color
-  # Create the color mapping function
-  col_fun <- circlize::colorRamp2(c(-1, 0, 1), c("blue", "white", "red"))
-  #col_fun <- RColorBrewer::brewer.pal(n=11, "RdYlBu")
-  # Plot the heatmap
-
-  set.seed(1)
-  real_ht <- Heatmap(
-    cor_mat,
-    col = col_fun,
-    heatmap_legend_param = list(
-      title = "Spearman correlation",
-      legend_direction = "horizontal"
-    ),
-    #name = "Spearman Correlation",
-    row_title = NULL,
-    column_title = heatmap_title,
-    column_title_gp = gpar(fontsize=text_size, fontface="bold"),
-    show_row_dend = T,
-    column_km = 2,
-    row_km = 2,
-    border = T,
-    column_dend_height = unit(2, "cm"),
-    cluster_rows = T,
-    cluster_columns =  T,
-    row_dend_side = 'left',
-    row_dend_reorder = T,
-    row_dend_width = unit(1, "cm"),
-    column_dend_reorder = T,
-    column_names_rot = 45,
-    show_row_names = F,
-    show_column_names = T,
-    show_parent_dend_line = FALSE,
-    top_annotation = col_ha,
-    right_annotation = row_ha
-  )
-
-  #return(real_ht)
-  real_data_heatmap_plot <- grid.grabExpr(
-    draw(real_ht, merge_legends = TRUE,
-         heatmap_legend_side = "bottom",
-         annotation_legend_side = "bottom")
-  )
-  return(real_data_heatmap_plot)
-}
-
-
-
 get_legend_35 <- function(plot) {
   # return all legend candidates
   legends <- get_plot_component(plot, "guide-box", return_all = TRUE)
@@ -124,8 +35,7 @@ get_legend_35 <- function(plot) {
   }
 }
 
-
-
+# Base grid plot for simulated dataset filter by cor
 plot_corr_grid <- function(plot_data, cor, method_palette, text_size) {
   #title <- paste0("Feature Selection Sensitivity for simulated data with correlation = ", cor)
   title <- paste0("Correlation = ", cor)
@@ -240,14 +150,13 @@ plot_sim <- function(input_data, method_palette, text_size) {
 }
 
 # ==============================================================================
-# Parse the hli
+# Parse the cli
 
 opt <- docopt::docopt(doc)
 
 # Convenient vars
 input_path <- opt$input_path
 output_path <- opt$output_path
-data_type <- opt$data_type
 # Plot params
 text_size <- 12
 width <- as.numeric(opt$width)
@@ -257,20 +166,14 @@ dpi <- as.numeric(opt$dpi)
 method_palette <- "Paired"
 # ==============================================================================
 input_data <- readRDS(input_path)
-# Plot it conditionally
-if (data_type == "real") {
-  out_plot <- plot_real_heatmap(input_data, text_size = text_size,
-                    heatmap_title = NULL)
-}
+# Plot it
+#out_plot <- ggplot() + ggtitle("Fake plot placeholder for feature selection (sim)")
+const <- 9
+text_size <- text_size + 6
+width <- width + (const * 1.8)
+height <- height + const
+out_plot <- plot_sim(input_data, method_palette, text_size=text_size)
 
-if (data_type == "sim") {
-  #out_plot <- ggplot() + ggtitle("Fake plot placeholder for feature selection (sim)")
-  const <- 9
-  text_size <- text_size + 6
-  width <- width + (const * 1.8)
-  height <- height + const
-  out_plot <- plot_sim(input_data, method_palette, text_size=text_size)
-}
 
 
 # TODO: making a placeholder now for sim data
@@ -280,8 +183,8 @@ ggsave(output_path, plot = out_plot,
 
 
 saveRDS(out_plot,
-        file = paste0("data/processed/feature_selection_", data_type, ".rds") |>
-          here::here())
+        file = here::here("data/processed/feature_selection_sim.rds")
+)
 message("Saved image of ", width, " x ", height, " to ", output_path)
 
 

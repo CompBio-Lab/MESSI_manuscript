@@ -1,0 +1,79 @@
+doc <- "
+
+This script is used to prepare plot data for performance evaluation at real data
+
+Usage:
+  clean_real.R [options]
+
+Options:
+  --input_csv=INPUT_CSV       File to load the csv
+  --output_path=OUTPUT_PATH   File to output plot data as rds
+"
+
+# Parse doc
+opt <- docopt::docopt(doc)
+
+# Load libraries
+suppressPackageStartupMessages(library(dplyr))
+library(tibble)
+library(here)
+library(stringr)
+library(tidyr)
+
+
+source(here::here("src/common_helpers.R"))
+source(here::here("src/fig_performance_evaluation/_performance_evaluation_utils.R"))
+
+
+# Function to clean real data for plot
+clean_real <- function(wr_df) {
+  auc_matrix <- wr_df %>%
+    select(method, dataset, auc_mean) %>%
+    pivot_wider(names_from = dataset, values_from = auc_mean) %>%
+    arrange(method) %>%
+    select(order(colnames(.))) %>%
+    tibble::column_to_rownames(var="method") %>%
+    as.matrix()
+
+  rank_matrix <- wr_df %>%
+    select(method, dataset, ranking) %>%
+    pivot_wider(names_from = dataset, values_from = ranking) %>%
+    arrange(method) %>%
+    select(order(colnames(.))) %>%
+    tibble::column_to_rownames(var="method") %>%
+    as.matrix()
+
+  return(list(auc_matrix=auc_matrix, rank_matrix=rank_matrix))
+}
+
+# ==================================================
+# First load data and clean it for plotting
+
+#input_path <- "data/metrics.csv"
+
+
+
+main <- function(input_path, output_path) {
+  # First do common wrangling on the input data
+  wrangle_df <- read.csv(input_path) %>%
+    as_tibble() %>%
+    wrangle_data()
+
+
+  # Handle data type-specific processing
+  clean_rds <- clean_real(wrangle_df)
+
+  # Then this to disk as rds
+  saveRDS(clean_rds, file = output_path)
+  message("\nWritten data to: ", output_path)
+}
+
+
+
+# Execute the main function here
+
+main(input_path = here(opt$input_csv),
+     output_path = here(opt$output_path)
+)
+
+
