@@ -51,6 +51,7 @@ wrangle_data <- function(df) {
       method = case_when(
         str_detect(method, "mofa") ~ "mofa + glmnet",
         str_detect(method, "sgcca") ~ "sgcca + lda",
+        str_detect(method, "cooperative") ~ "multiview",
         TRUE ~ method
         )
     ) %>%

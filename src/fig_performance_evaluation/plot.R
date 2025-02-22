@@ -102,7 +102,7 @@ plot_fig1_real <- function(
     row_dend_reorder = T,
     show_parent_dend_line = F,
     #row_labels = datasets,
-    column_dend_height = unit(2.5, "cm"),
+    column_dend_height = unit(1, "cm"),
     show_row_names = T,  show_column_names = T,
     cell_fun = function(j, i, x, y, width, height, fill) {
       grid.text(sprintf("%.2f", t(auc_matrix)[i, j]), x, y,
@@ -121,8 +121,6 @@ plot_fig1_real <- function(
     #top_annotation = col_ha,
     #right_annotation = row_ha
   )
-
-
 
 
   heatmap_p <- grid.grabExpr(
@@ -164,6 +162,7 @@ plot_fig1_sim <- function(
       labeller = labeller(signal = signal_labels, corr = corr_labels)
     ) +
     theme_bw() +
+    ggtitle("Performance evaluation on simulated datasets") +
     # And change Grid label names
     theme(
       # Rotate text of methods names
@@ -183,6 +182,7 @@ plot_fig1_sim <- function(
       strip.text.y = element_text(
         size = text_size, color = "red", face = "bold.italic"
       ),
+      plot.title = element_text(hjust = 0.5),
       legend.title = element_text(size = text_size + 2),
       legend.text = element_text(size = text_size),
       legend.position = "bottom"

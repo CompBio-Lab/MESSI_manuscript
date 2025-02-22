@@ -84,7 +84,7 @@ wrangle_trace <- function(
       process = str_replace(process, workflow_prefix, "") |> tolower()
     ) %>%
     # Need to fix the cooperative learning name for regex matching later
-    mutate(process = str_replace_all(process, "cooperative_learning", "cooperative-learning")) %>%
+    mutate(process = str_replace_all(process, "cooperative_learning", "multiview")) %>%
     # Get the ones of select feature and cross validation only
     # Since there are other jobs like prepare metadata
     filter(
