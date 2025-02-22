@@ -141,7 +141,7 @@ plot_corr_grid <- function(plot_data, cor, method_palette, text_size) {
     theme_half_open(text_size) +
     panel_border() +
     background_grid() +
-    labs(x = "Signal", y = "Sensitivity") +
+    labs(x = "Signal", y = "Sensitivity", fill = "Method") +
     # we set the left and right margins to 0 to remove
     # unnecessary spacing in the final plot arrangement.
     theme(
@@ -190,7 +190,7 @@ plot_sim <- function(input_data, method_palette, text_size) {
     p2 + theme(legend.position="none"),
     p3 + theme(legend.position="none"),
     align = 'vh',
-    labels = c("A", "B", "C"),
+    labels = c("i", "ii", "iii"),
     hjust = -1,
     nrow = 1
   )
@@ -200,22 +200,17 @@ plot_sim <- function(input_data, method_palette, text_size) {
   #   p1 + theme(legend.box.margin = margin(0, 0, 0, 12))
   # )
 
-
-
   # now add the title
   title <- ggdraw() +
     draw_label(
-      "Feature Selection Sensitivity for Simulated data with Varied n, p, signal and correlation",
-      fontface = 'bold',
-      x = 0,
-      hjust = 0
+      "Feature Selection Sensitivity for simulated data with varied n, p, signal and correlation",
+      #fontface = 'bold',
+      x = 0.5,
+      hjust = 0.5
     ) +
     theme(
-      # add margin on the left of the drawing canvas,
-      # so title is aligned with left edge of first plot
-      plot.margin = margin(0, 0, 0, 7)
+      # Possible themes to add on later
     )
-
   # add the legend to the row we made earlier. Give it one-third of
   # the width of one plot (via rel_widths).
   # the height via rel_heights
