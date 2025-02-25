@@ -53,9 +53,6 @@ plot_real_grid <- plot_grid(
   rel_heights = c(0.8, 0.6)
 )
 
-
-?plot_grid
-
 width <- 12
 height <- 12
 
