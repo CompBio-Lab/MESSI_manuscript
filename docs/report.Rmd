@@ -1,9 +1,18 @@
 ---
 title: "MESSI: A Nextflow pipeline for benchmarking multiomics integration methods for disease classification
 "
+author:
+  - "Chunqing Tony Liang"
+  - "Amrit Singh"
+csl: assets/nature.csl
+bibliography: assets/reference.bib
+linkcolor: blue
+link-citations: true
+geometry: margin=2cm
 output: 
   bookdown::pdf_document2:
     number_sections: false
+    toc: false
 ---
 
 
@@ -14,7 +23,12 @@ library(knitr)
 library(here)
 library(cowplot)
 # Set global options for code chunks
-knitr::opts_chunk$set(echo=FALSE)
+
+# https://stackoverflow.com/questions/74538080/cannot-change-size-of-images-using-include-graphics-in-r-markdown
+
+# You need to change the size of displayed figures by setting the chunk options out.width/out.height. 
+# You can set only one of these two options if you want to keep the aspect ratio of the figures.
+knitr::opts_chunk$set(echo=FALSE, fig.align = "center")
 
 # Convenient variables
 fig_path <- here("results/figures")
@@ -28,9 +42,9 @@ To address this, we propose a new automated framework to systematically benchmar
 
 ## Methods
 
-We introduce here the MESSI pipeline, *Multiple Experiments with SyStematic Interrogation*, implemented with Nextflow (8). This proposed pipeline ensures full reproducibility of any method by using an independent container environment with Singularity (17). We propose to publish this pipeline on the nf-core (10) platform, a community of Nextflow users, to ensure easy access and usability for researchers worldwide, as shown in figure \@ref(fig:messi-workflow-plot).
+We introduce here the MESSI pipeline, *Multiple Experiments with SyStematic Interrogation*, implemented with Nextflow (8). This proposed pipeline ensures full reproducibility of any method by using an independent container environment with Singularity (17). We propose to publish this pipeline on the nf-core (10) platform, a community of Nextflow users, to ensure easy access and usability for researchers worldwide, as shown in Fig \@ref(fig:messi-workflow-plot).
 
-```{r messi-workflow-plot, fig.cap="Workflow design of MESSI.", fig.align="centere", echo=FALSE}
+```{r messi-workflow-plot, fig.cap="Workflow design of MESSI.", fig.align="centere", echo=FALSE, out.width="90%"}
 include_graphics(here("docs/assets", "messi_workflow.png"))
 ```
 
@@ -43,15 +57,17 @@ Through MESSI, we could systematically identify the top-performing methods with 
 
 ## Results
 
-In our study, we presented benchmark results for various multiomics data and methods at figure \@ref(fig:real-grid-plot). We observed notable variations in the computation time of most methods with changing dataset sizes (categorized as small if the size of dataset is less than median of all), while DIABLO exhibited consistent performance regardless of dataset size. Conversely, Cooperative Learning displayed a comparatively longer median time than other methods. (Fig 1A). Regarding classification performance, we employed the area under the curve (AUC) score for method comparison across datasets (Fig 1B). Mogonet emerged as the weakest performer, with MOFA + glmnet showing only marginal improvement. In contrast, Cooperative Learning demonstrated the highest performance, followed by DIABLO and RGCCA. Interestingly, DIABLO with a null design outperformed than its full design choice. Nevertheless, all methods performed poorly on the tcga-thca dataset. We further investigated each method's ability to identify significant biomarkers and examined the overlap between them, calculating the similarity in their feature sets (Fig 1C). Most methods identified similar biomarkers in TCGA datasets but exhibited minimal overlap in the rosmap and gse71669 datasets. Notably, DIABLO and RGCCA tended to select similar biomarkers due to their shared backend framework of canonical correlation analysis.
+In our study, we presented benchmark results for various multiomics data and methods at Fig \@ref(fig:real-grid-plot). We observed notable variations in the computation time of most methods with changing dataset sizes (categorized as small if the size of dataset is less than median of all), while DIABLO exhibited consistent performance regardless of dataset size. Conversely, Cooperative Learning displayed a comparatively longer median time than other methods. (Fig 1A). Regarding classification performance, we employed the area under the curve (AUC) score for method comparison across datasets (Fig 1B). Mogonet emerged as the weakest performer, with MOFA + glmnet showing only marginal improvement. In contrast, Cooperative Learning demonstrated the highest performance, followed by DIABLO and RGCCA. Interestingly, DIABLO with a null design outperformed than its full design choice. Nevertheless, all methods performed poorly on the tcga-thca dataset. We further investigated each method's ability to identify significant biomarkers and examined the overlap between them, calculating the similarity in their feature sets (Fig 1C). Most methods identified similar biomarkers in TCGA datasets but exhibited minimal overlap in the rosmap and gse71669 datasets. Notably, DIABLO and RGCCA tended to select similar biomarkers due to their shared backend framework of canonical correlation analysis.
+
+<!---
 Fig1. Benchmark results of multiomics data and integration methods. (A) Computation time for each multiomics method of varying data size. (B) Classification performances by area under the curve of method and dataset combination. (C) Similarity in feature selection between methods and datasets.
+---->
 
-
-```{r real-grid-plot, fig.cap="Benchmark results on real datasets.", echo=FALSE}
+```{r real-grid-plot, fig.cap="Benchmark results on real datasets.", echo=FALSE, out.width="95%"}
 include_graphics(here(fig_path, "fig_real_grid.png"))
 ```
 
-Moreover, we examined the methods on controlled setting of simulation studies. Methods were tested against multiomics data with varying signal, correlation, number of samples, and number of predictors on figure \@ref(fig:sim-grid-plot).
+Moreover, we examined the methods on controlled setting of simulation studies. Methods were tested against multiomics data with varying signal, correlation, number of samples, and number of predictors on Fig \@ref(fig:sim-grid-plot).
 
 More details to be filled in here ...
 
@@ -59,7 +75,7 @@ More details to be filled in here ...
 
 
 
-```{r sim-grid-plot, fig.cap="Simulation studies on signal, correlation, number of samples and number of predictors", echo=FALSE}
+```{r sim-grid-plot, fig.cap="Simulation studies on signal, correlation, number of samples and number of predictors", echo=FALSE, out.width="96%"}
 include_graphics(here(fig_path, "fig_sim_grid.png"))
 ```
 
@@ -67,7 +83,7 @@ include_graphics(here(fig_path, "fig_sim_grid.png"))
 
 ## Conclusion
 
-Overall, Cooperative Learning emerged as the top performer in terms of classification performance, disregarding its computational time overhead. Conversely, MOGONET, leveraging deep neural networks, displayed the weakest performance. While acknowledging the potential for further enhancements through exploration of additional datasets and methodologies, we encountered a significant challenge of no publicly available repository/data portal with curated multiomics data. To address this gap, we have begun to curate multiomics studies for various omics data (e.g., transcriptomics, methylation, proteomics) and associated clinical metadata across a range of cancer and non-cancer diseases from various public sources to create the first data portal for multiomics data (∼ 100 studies) in both standard formats mentioned such that they can easily be used by other researchers. We anticipate this exercise to be highly relevant to the community utilizing multiomics data for their research, such will help inform the development of a new integrative method that is applicable to different types (bulk, single-cell, or spatial) of multiomics data with the extensibility of our proposed MESSI pipeline.
+Overall, Cooperative Learning emerged as the top performer in terms of classification performance, disregarding its computational time overhead. Conversely, MOGONET, leveraging deep neural networks, displayed the weakest performance. While acknowledging the potential for further enhancements through exploration of additional datasets and methodologies, we encountered a significant challenge of no publicly available repository/data portal with curated multiomics data. To address this gap, we have begun to curate multiomics studies for various omics data (e.g., transcriptomics, methylation, proteomics) and associated clinical metadata across a range of cancer and non-cancer diseases from various public sources to create the first data portal for multiomics data (~ 100 studies) in both standard formats mentioned such that they can easily be used by other researchers. We anticipate this exercise to be highly relevant to the community utilizing multiomics data for their research, such will help inform the development of a new integrative method that is applicable to different types (bulk, single-cell, or spatial) of multiomics data with the extensibility of our proposed MESSI pipeline.
 
 
 
