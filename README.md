@@ -2,7 +2,13 @@
 
 This repository contains scripts and sample data file to generate the figures for the MESSI project.
 
-Tony Liang
+Tony Liang, Amrit Singh
+
+---
+
+The rendered pdf is located [here](docs/report.pdf)
+
+The source file of the report is located [here](docs/report.Rmd)
 
 
 For these tables and figures, should have a link to the script file
