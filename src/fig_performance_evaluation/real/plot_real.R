@@ -20,9 +20,19 @@ opt <- docopt::docopt(doc)
 # Load libraries
 suppressPackageStartupMessages(library(dplyr))
 library(ggplot2)
+library(grid)
 #library(tibble)
 suppressPackageStartupMessages(library(ComplexHeatmap))
 # ==============================================================================
+
+
+# Function to determine text color based on background color
+get_text_color <- function(fill_color) {
+  rgb <- col2rgb(fill_color)
+  luminance <- (0.299 * rgb[1] + 0.587 * rgb[2] + 0.114 * rgb[3]) / 255
+  ifelse(luminance < 0.5, "white", "black")
+}
+
 
 
 # This function has the details of making heatmap to ilustrate
@@ -43,15 +53,15 @@ plot_fig1_real <- function(
   rank_matrix <- input_data$rank_matrix
 
   methods <- rownames(rank_matrix)
-  datasets <- colnames(rank_matrix)
+  #datasets <- colnames(rank_matrix)
 
   # Assign the colors
   # For the method to use default Paired
   method_colors <- RColorBrewer::brewer.pal(n=length(methods), method_palette)
   names(method_colors) <- methods
   # For the dataset to use default Pastel1
-  dataset_colors <- RColorBrewer::brewer.pal(n=256, dataset_palette) %>% tail(length(datasets))
-  names(dataset_colors) <- datasets
+  #dataset_colors <- RColorBrewer::brewer.pal(n=256, dataset_palette) %>% tail(length(datasets))
+  #names(dataset_colors) <- datasets
 
   # Then annotations of the heatmap to use
 
@@ -68,23 +78,31 @@ plot_fig1_real <- function(
 
 
   # Row wise
-  row_ha <- rowAnnotation(
-    Dataset = datasets,
-    #Method = methods,
-    col = list(
-      #Method = method_colors
-      Dataset = dataset_colors
-    ),
-    show_legend = T,
-    show_annotation_name = FALSE
-  )
+  # row_ha <- rowAnnotation(
+  #   Dataset = datasets,
+  #   #Method = methods,
+  #   col = list(
+  #     #Method = method_colors
+  #     Dataset = dataset_colors
+  #   ),
+  #   show_legend = T,
+  #   show_annotation_name = FALSE
+  # )
+
+  # Useful vars to use later
+  min_rank <- min(rank_matrix)
+  med_rank <- median(rank_matrix) |> floor()
+  max_rank <- max(rank_matrix)
+
+  n_colors <- length(methods)
 
   # Plot the heatmap
   #col_fun <- viridis::cividis(256)
   #RColorBrewer::brewer.pal(n=11, name="RdYlBu")
-  col_fun = circlize::colorRamp2(c(1, 3 , 6), c("white", "#FFCCCC", "#8B0000"))
-  #col_fun <- viridis::mako(256)
-  #col_fun <- viridis::rocket(256)
+  #col_fun = circlize::colorRamp2(c(1, 3 , 6), c("white", "#FFCCCC", "#8B0000"))
+  col_fun = viridis::mako(n = 256)
+  #col_fun = viridis::inferno(n = 256)
+  #col_fun = viridis::magma(n = 256)
   #col_fun <- circlize::colorRamp2()
   ht <- Heatmap(
     t(rank_matrix),
@@ -101,21 +119,34 @@ plot_fig1_real <- function(
     row_dend_reorder = T,
     show_parent_dend_line = F,
     #row_labels = datasets,
-    column_dend_height = unit(1, "cm"),
+    column_dend_height = unit(0.75, "cm"),
     show_row_names = T,  show_column_names = T,
+    # cell_fun = function(j, i, x, y, width, height, fill) {
+    #   grid.text(sprintf("%.2f", t(auc_matrix)[i, j]), x, y,
+    #             gp = gpar(fontsize = 10,
+    #                       col="darkblue",
+    #                       fontface="bold"
+    #                       )
+    #             )
+    #   },
     cell_fun = function(j, i, x, y, width, height, fill) {
-      grid.text(sprintf("%.2f", t(auc_matrix)[i, j]), x, y,
-                gp = gpar(fontsize = 10,
-                          col="darkblue",
-                          fontface="bold"
-                          )
-                )
-      },
+      text_color <- get_text_color(fill)
+      grid.text(
+        sprintf("%.3f", t(auc_matrix)[i, j]),
+        x, y,
+        gp = gpar(col = text_color, fontsize = 12)
+      )
+    },
     # Assign legend
     heatmap_legend_param = list(
       title = "Ranking",
       legend_direction = "horizontal",
-      at = seq(1, 6, 1)
+      at = c(min_rank, med_rank, max_rank),
+      labels = c(
+        paste0(min_rank, " (Worst) "),
+        med_rank,
+        paste0(max_rank, " (Best) ")
+        )
     ),
     #top_annotation = col_ha,
     #right_annotation = row_ha
