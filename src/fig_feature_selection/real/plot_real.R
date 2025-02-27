@@ -17,10 +17,20 @@ Options:
 # Load libraries
 suppressPackageStartupMessages(library(dplyr))
 library(ggplot2)
+library(grid)
 suppressPackageStartupMessages(library(ComplexHeatmap))
 library(cowplot)
 
 #dd <- readRDS("data/processed/fig_feature_selection_sim_plot_data.rds")
+
+# Function to determine text color based on background color
+get_text_color <- function(fill_color) {
+  rgb <- col2rgb(fill_color)
+  luminance <- (0.299 * rgb[1] + 0.587 * rgb[2] + 0.114 * rgb[3]) / 255
+  ifelse(luminance < 0.5, "white", "black")
+}
+
+
 
 # This function plots heatmap for visualizing real data feature
 # selection ranking and taken the spearson correlation
@@ -34,7 +44,7 @@ plot_real_heatmap <- function(
   method_colors <- RColorBrewer::brewer.pal(n=length(methods), method_palette)
   names(method_colors) <- methods
   # For the dataset to use default Pastel 2
-  dataset_palette <- "Pastel1"
+  #dataset_palette <- "Pastel1"
   datasets <- colnames(cor_mat)
   dataset_colors <- RColorBrewer::brewer.pal(n=256, dataset_palette) |> tail(length(datasets))
   names(dataset_colors) <- datasets
@@ -83,12 +93,20 @@ plot_real_heatmap <- function(
     column_km = 2,
     row_km = 2,
     border = T,
-    column_dend_height = unit(2, "cm"),
+    column_dend_height = unit(0.75, "cm"),
     cluster_rows = T,
     cluster_columns =  T,
     row_dend_side = 'left',
     row_dend_reorder = T,
     row_dend_width = unit(1, "cm"),
+    cell_fun = function(j, i, x, y, width, height, fill) {
+      text_color <- get_text_color(fill)
+      grid.text(
+        sprintf("%.3f", cor_mat[i, j]),
+        x, y,
+        gp = gpar(col = text_color, fontsize = 12)
+      )
+    },
     column_dend_reorder = T,
     column_names_rot = 45,
     show_row_names = F,
