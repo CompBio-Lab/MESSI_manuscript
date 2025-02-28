@@ -28,7 +28,8 @@ library(cowplot)
 
 # You need to change the size of displayed figures by setting the chunk options out.width/out.height. 
 # You can set only one of these two options if you want to keep the aspect ratio of the figures.
-knitr::opts_chunk$set(echo=FALSE, fig.align = "center")
+knitr::opts_chunk$set(echo=FALSE, fig.align = "center", results="asis")
+
 
 # Convenient variables
 fig_path <- here("results/figures")
@@ -44,7 +45,7 @@ To address this, we propose a new automated framework to systematically benchmar
 
 We introduce here the MESSI pipeline, *Multiple Experiments with SyStematic Interrogation*, implemented with Nextflow (8). This proposed pipeline ensures full reproducibility of any method by using an independent container environment with Singularity (17). We propose to publish this pipeline on the nf-core (10) platform, a community of Nextflow users, to ensure easy access and usability for researchers worldwide, as shown in Fig \@ref(fig:messi-workflow-plot).
 
-```{r messi-workflow-plot, fig.cap="Workflow design of MESSI.", fig.align="centere", echo=FALSE, out.width="90%"}
+```{r messi-workflow-plot,fig.cap="Workflow design of MESSI.",fig.align="center",echo=FALSE, out.width="60%"}
 include_graphics(here("docs/assets", "messi_workflow.png"))
 ```
 
@@ -63,9 +64,11 @@ In our study, we presented benchmark results for various multiomics data and met
 Fig1. Benchmark results of multiomics data and integration methods. (A) Computation time for each multiomics method of varying data size. (B) Classification performances by area under the curve of method and dataset combination. (C) Similarity in feature selection between methods and datasets.
 ---->
 
-```{r real-grid-plot, fig.cap="Benchmark results on real datasets.", echo=FALSE, out.width="95%"}
+```{r real-grid-plot, fig.cap="Benchmark results on real datasets.", echo=FALSE, out.width="92%"}
 include_graphics(here(fig_path, "fig_real_grid.png"))
 ```
+
+\newpage    
 
 Moreover, we examined the methods on controlled setting of simulation studies. Methods were tested against multiomics data with varying signal, correlation, number of samples, and number of predictors on Fig \@ref(fig:sim-grid-plot).
 
@@ -79,7 +82,7 @@ More details to be filled in here ...
 include_graphics(here(fig_path, "fig_sim_grid.png"))
 ```
 
-
+\newpage
 
 ## Conclusion
 
