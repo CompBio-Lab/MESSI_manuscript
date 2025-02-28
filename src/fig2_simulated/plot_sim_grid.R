@@ -40,7 +40,7 @@ plot_sim_grid <- plot_grid(
   # vjust adjust label position vertically
   vjust = 3,
   # 1.2 or 1 works fine?
-  rel_heights = c(1.2, 2)
+  rel_heights = c(1, 0.9)
 )
 
 width <- 16

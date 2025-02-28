@@ -110,13 +110,14 @@ plot_sim <- function(input_data, method_palette, text_size) {
     ) +
     theme(
       plot.title = element_text(hjust = 0.5),
-      plot.margin = margin(6, 0, 6, 0),
+      #plot.margin = margin(6, 0, 6, 0),
       axis.text.x = element_blank(),
       axis.ticks.x = element_blank(),
       axis.title.x = element_blank(),
       legend.title = element_text(size = text_size + 2),
       legend.text = element_text(size = text_size),
-      legend.position = "bottom"
+      legend.position = "bottom",
+      legend.justification = "center"
     ) +
     guides(fill = guide_legend(nrow = 1))
 
@@ -207,7 +208,7 @@ method_palette <- "Paired"
 input_data <- readRDS(input_path)
 # Plot it
 #out_plot <- ggplot() + ggtitle("Fake plot placeholder for feature selection (sim)")
-const <- 9
+const <- 2
 text_size <- text_size + 6
 width <- width + (const * 1.8)
 height <- height + const
