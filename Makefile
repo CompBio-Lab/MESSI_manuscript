@@ -111,7 +111,15 @@ ifneq ($(wildcard ${SIM_FS_RESULTS_CSV}),)
 OUTPUTS+= ${FIG_SIM_FS_OUT}
 endif
 
-all: ${OUTPUTS}
+# The report file containing the figures
+REPORT_SRC=docs/report.Rmd
+REPORT_PDF=docs/report.pdf
+
+# The report depends on the outputs files
+${REPORT_PDF}: ${OUTPUTS} ${REPORT_SRC}
+	Rscript -e 'rmarkdown::render("${REPORT_SRC}")'
+
+all: ${OUTPUTS} ${REPORT_PDF}
 
 .PHONY: clean
 clean: clean_figures clean_data
@@ -127,7 +135,7 @@ clean_data:
 # ==============================================================================
 # PREPROCESSING
 
-Figure 1: Performance evaluation (Real Data)
+# Figure 1: Performance evaluation (Real Data)
 ${FIG1_REAL_PROCESSED}: ${FIG1_WRANGLE_REAL_SRC} ${COMMON_R} ${REAL_METRICS_CSV}
 	@echo ${BANNER}
 	@echo "Processing real data for performance evaluation"
@@ -190,7 +198,7 @@ ${FIG_REAL_PERF_OUT}: ${FIG1_PLOT_REAL_SRC} ${COMMON_R} ${FIG1_REAL_PROCESSED}
 		--device ${DEVICE} \
 		--dpi ${DPI}
 
-FIGURE 1: Performance evaluation (Simulated Data)
+# FIGURE 1: Performance evaluation (Simulated Data)
 ${FIG_SIM_PERF_OUT}: ${FIG1_PLOT_SIM_SRC} ${COMMON_R} ${FIG1_SIM_PROCESSED}
 	@echo ${BANNER}
 	@echo "Plotting performance evaluation (Simulated Data)..."
