@@ -154,14 +154,14 @@ plot_fig1_real <- function(
     #                       )
     #             )
     #   },
-    #cell_fun = function(j, i, x, y, width, height, fill) {
-    #  text_color <- get_text_color(fill)
-    #  grid.text(
-    #    sprintf("%.3f", t(auc_matrix)[i, j]),
-    #    x, y,
-    #    gp = gpar(col = text_color, fontsize = text_size)
-    #  )
-    #},
+    cell_fun = function(j, i, x, y, width, height, fill) {
+     text_color <- get_text_color(fill)
+     grid.text(
+       sprintf("%.3f", t(auc_matrix)[i, j]),
+       x, y,
+       gp = gpar(col = text_color, fontsize = text_size)
+     )
+    },
     # Assign legend
     heatmap_legend_param = list(
       title = "Mean AUC",

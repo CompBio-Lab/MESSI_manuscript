@@ -35,8 +35,10 @@ get_text_color <- function(fill_color) {
 # This function plots heatmap for visualizing real data feature
 # selection ranking and taken the spearson correlation
 plot_real_heatmap <- function(
-    cor_mat, heatmap_title="Spearson rank correlation on real datasets",
+    input_data, heatmap_title="Spearson rank correlation on real datasets",
     text_size=12, method_palette="Paired", dataset_palette="Pastel1") {
+
+  cor_mat <- input_data
 
   methods <- rownames(cor_mat)
   # Assign the colors
@@ -69,7 +71,7 @@ plot_real_heatmap <- function(
       #Dataset = dataset_colors
     ),
     show_annotation_name = F,
-    show_legend = F
+    show_legend = T
   )
   # Custom color
   # Create the color mapping function
@@ -83,12 +85,16 @@ plot_real_heatmap <- function(
     col = col_fun,
     heatmap_legend_param = list(
       title = "Spearman correlation",
-      legend_direction = "horizontal"
+      title_gp = gpar(fontsize = text_size - 4, fontface = "bold"),
+      #legend_direction = "horizontal"
+      legend_direction = "vertical"
     ),
     #name = "Spearman Correlation",
     row_title = NULL,
     column_title = heatmap_title,
     column_title_gp = gpar(fontsize=text_size, fontface="bold"),
+    row_names_gp = gpar(fontsize = text_size),
+    column_names_gp = gpar(fontsize = text_size),
     show_row_dend = T,
     column_km = 2,
     row_km = 2,
@@ -119,8 +125,10 @@ plot_real_heatmap <- function(
   #return(real_ht)
   real_data_heatmap_plot <- grid.grabExpr(
     draw(real_ht, merge_legends = TRUE,
-         heatmap_legend_side = "bottom",
-         annotation_legend_side = "bottom")
+         #heatmap_legend_side = "bottom",
+         #annotation_legend_side = "bottom")
+         heatmap_legend_side = "right",
+         annotation_legend_side = "right")
   )
   return(real_data_heatmap_plot)
 }
@@ -133,7 +141,8 @@ opt <- docopt::docopt(doc)
 input_path <- opt$input_path
 output_path <- opt$output_path
 # Plot params
-text_size <- 12
+# text_size <- 12 # For doc knitting
+text_size <- 14 # For slide
 width <- as.numeric(opt$width)
 height <- as.numeric(opt$height)
 device <- opt$device
