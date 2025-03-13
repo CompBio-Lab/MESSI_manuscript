@@ -16,7 +16,7 @@ library(stringr)
 library(tidyr)
 
 source(here::here("src/common_helpers.R"))
-  source(here::here("src/fig_feature_selection/sim_fs_helpers.R"))
+source(here::here("src/fig_feature_selection/sim_fs_helpers.R"))
 source(here::here("src/fig_feature_selection/_feature_selection_utils.R"))
 
 # Function to clean data for plotting simulated data

@@ -52,7 +52,8 @@ plot_fig1_real <- function(
   auc_matrix <- input_data$auc_matrix
   rank_matrix <- input_data$rank_matrix
 
-  methods <- rownames(rank_matrix)
+  #methods <- rownames(rank_matrix)
+  methods <- rownames(auc_matrix)
   #datasets <- colnames(rank_matrix)
 
   # Assign the colors
@@ -90,9 +91,9 @@ plot_fig1_real <- function(
   # )
 
   # Useful vars to use later
-  min_rank <- min(rank_matrix)
-  med_rank <- median(rank_matrix) |> floor()
-  max_rank <- max(rank_matrix)
+  #min_rank <- min(rank_matrix)
+  #med_rank <- median(rank_matrix) |> floor()
+  #max_rank <- max(rank_matrix)
 
   n_colors <- length(methods)
 
@@ -104,14 +105,38 @@ plot_fig1_real <- function(
   #col_fun = viridis::inferno(n = 256)
   #col_fun = viridis::magma(n = 256)
   #col_fun <- circlize::colorRamp2()
+
+  # ============= Determine some params here ======================
+  # if (to_plot = "ranking") {
+  #
+    # heatmap_legend_param <- list(
+    #   title = "Ranking",
+    #   legend_direction = "horizontal",
+    #   at = c(min_rank, med_rank, max_rank),
+    #   labels = c(
+    #     paste0(min_rank, " (Worst) "),
+    #     med_rank,
+    #     paste0(max_rank, " (Best) ")
+    #   )
+    # )
+  # }
+
+
+
+  # Actual heatmap
+
+
   ht <- Heatmap(
-    t(rank_matrix),
+    t(auc_matrix),
     col = col_fun,
     border = T,
     column_title = heatmap_title,
     column_title_gp = gpar(fontsize=text_size, fontface="bold"),
     row_names_rot = 0,
     column_names_rot = 50,
+    # Change size of column and row names
+    row_names_gp = gpar(fontsize = text_size),
+    column_names_gp = gpar(fontsize = text_size),
     #column_labels = rownames(rank_matrix),
     row_title = NULL,
     cluster_rows = T,
@@ -129,28 +154,37 @@ plot_fig1_real <- function(
     #                       )
     #             )
     #   },
-    cell_fun = function(j, i, x, y, width, height, fill) {
-      text_color <- get_text_color(fill)
-      grid.text(
-        sprintf("%.3f", t(auc_matrix)[i, j]),
-        x, y,
-        gp = gpar(col = text_color, fontsize = 12)
-      )
-    },
+    #cell_fun = function(j, i, x, y, width, height, fill) {
+    #  text_color <- get_text_color(fill)
+    #  grid.text(
+    #    sprintf("%.3f", t(auc_matrix)[i, j]),
+    #    x, y,
+    #    gp = gpar(col = text_color, fontsize = text_size)
+    #  )
+    #},
     # Assign legend
     heatmap_legend_param = list(
-      title = "Ranking",
-      legend_direction = "horizontal",
-      at = c(min_rank, med_rank, max_rank),
-      labels = c(
-        paste0(min_rank, " (Worst) "),
-        med_rank,
-        paste0(max_rank, " (Best) ")
-        )
+      title = "Mean AUC",
+      title_gp = gpar(fontsize = text_size - 4, fontface = "bold"),
+      title_position = "leftcenter",
+      # THIS IS FOR RANK and not AUC value
+      # at = c(min_rank, med_rank, max_rank),
+      # labels = c(
+      #   paste0(min_rank, " (Worst) "),
+      #   med_rank,
+      #   paste0(max_rank, " (Best) ")
+      at = c(round(min(auc_matrix), 1), round(median(auc_matrix), 1), ceiling(max(auc_matrix))),
+      grid_height = unit(1, "cm"), grid_width = unit(3, "cm"),
+      legend_width = unit(5, "cm"),
+      labels_gp = gpar(fontsize = text_size - 5),
+      legend_direction = "horizontal"
+      #legend_direction = "vertical"
     ),
     #top_annotation = col_ha,
     #right_annotation = row_ha
   )
+
+
 
 
   heatmap_p <- grid.grabExpr(
@@ -172,7 +206,9 @@ output_path <- here::here(opt$output_path)
 # Plot params
 method_palette <- "Paired"
 dataset_palette <- "Pastel1"
-text_size <- 12
+# Use new text size
+text_size <- 16 # For slides
+# text_size <- 12 # For pdf
 width <- as.numeric(opt$width)
 height <- as.numeric(opt$height)
 device <- opt$device
