@@ -68,10 +68,14 @@ metadata_df$diseases <- diseases
 #   num_vars = NUM_VARS
 # )
 
+
+# =======================================
+write.csv(metadata_df, file = "data/processed/metadata_real.csv", row.names = F)
+
+
+
 # Create the table with flextable
-
-
-table <- flextable(metadata_df) %>%
+flex_table <- flextable(metadata_df) %>%
   # Optionally set header
   set_header_labels(
     dataset = "Dataset",
@@ -86,16 +90,23 @@ table <- flextable(metadata_df) %>%
     sex = "Sex"
   ) %>%
   theme_box() %>%
-  autofit() %>%
+  autofit()
+
+
+
+
+color_table <- flex_table %>%
   bg(i = seq(1, nrow(metadata_df), by = 2), bg = "lightblue") %>%  # Light grey for alternate rows
   bg(part = "header", bg = "grey20") %>%                 # Dark color for header background
   color(part = "header", color = "white")
 
-table_gg <- gen_grob(table)
 
-table
 
- ggsave("new_table.png", plot=table_gg, width = 6, height = 4)
+
+ggsave("new_table.png", plot = gen_grob(color_table), width = 6, height = 4)
 
 # Lastly should save this to output
 save_as_image(table, "real_table.png")
+
+
+

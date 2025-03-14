@@ -174,6 +174,7 @@ plot_fig1_real <- function(
       #   med_rank,
       #   paste0(max_rank, " (Best) ")
       at = c(round(min(auc_matrix), 1), round(median(auc_matrix), 1), ceiling(max(auc_matrix))),
+      labels = c("Low", "", "High"),
       grid_height = unit(1, "cm"), grid_width = unit(3, "cm"),
       legend_width = unit(5, "cm"),
       labels_gp = gpar(fontsize = text_size - 5),
