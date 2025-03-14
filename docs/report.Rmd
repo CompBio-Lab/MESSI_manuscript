@@ -29,23 +29,24 @@ library(kableExtra)
 
 # You need to change the size of displayed figures by setting the chunk options out.width/out.height. 
 # You can set only one of these two options if you want to keep the aspect ratio of the figures.
-knitr::opts_chunk$set(echo=FALSE, fig.align = "center", results="asis", eval=F)
+knitr::opts_chunk$set(echo=FALSE, fig.align = "center", results="asis", eval=T)
 
 
 # Convenient variables
 fig_path <- here("results/figures")
 ```
 
-## Background
+# Background
 
 Technological advances have allowed for the profiling of different molecular measurements (e.g., genes, proteins, metabolites) from the same biological samples; termed multiomics (14; 30). The majority of multiomics data are obtained for samples from individual patients (bulk multiomics data) and more recently with single-cell and spatial resolution. Many methods have been developed to jointly analyze multiomics data to identify common patterns between datasets, and to identify biomarkers of disease (32). This integrative approach of multiomics data may strengthen the understanding of the molecular dynamics underlying the biological processes of diseases and may lead to novel strategies for early detection, prevention, and treatment of human diseases (31).
+
+
 Researchers face difficulties in choosing the right method due to the varying nature of analytical tasks such as clustering analysis, factor analysis, or cancer type prediction. Hence, numerous reviews have benchmarked various integrative methods (26; 4; 14; 15; 18; 23; 35; 36; 7; 19; 20). However, these studies often focus on methods for specific tasks or data types and may lack reproducibility.
+
+
 To address this, we propose a new automated framework to systematically benchmark and analyze multiomics methods with varying data types. This framework ensures full reproducibility and provides standardized input for any analytical task, with the capability to run on any computing platform.
 
-
-- Add table of benchmark dataset
-
-```{r tbl-benchmark-data, eval=T}
+```{r benchmark-data-table, eval=T}
 real_data_tbl <- read.csv(here("data/processed/metadata_real.csv")) %>%
   as_tibble()
 
@@ -65,9 +66,35 @@ real_data_tbl %>%
   #column_spec(5, width="10px") %>%
   footnote(symbol = "Features represents number of predictors in invididual omics", footnote_as_chunk = T)
 ```
-## Results
+# Results
 
-In our study, we presented benchmark results for various multiomics data and methods at Fig \@ref(fig:real-grid-plot). We observed notable variations in the computation time of most methods with changing dataset sizes (categorized as small if the size of dataset is less than median of all), while DIABLO exhibited consistent performance regardless of dataset size. Conversely, Cooperative Learning displayed a comparatively longer median time than other methods. (Fig 1A). Regarding classification performance, we employed the area under the curve (AUC) score for method comparison across datasets (Fig 1B). Mogonet emerged as the weakest performer, with MOFA + glmnet showing only marginal improvement. In contrast, Cooperative Learning demonstrated the highest performance, followed by DIABLO and RGCCA. Interestingly, DIABLO with a null design outperformed than its full design choice. Nevertheless, all methods performed poorly on the tcga-thca dataset. We further investigated each method's ability to identify significant biomarkers and examined the overlap between them, calculating the similarity in their feature sets (Fig 1C). Most methods identified similar biomarkers in TCGA datasets but exhibited minimal overlap in the rosmap and gse71669 datasets. Notably, DIABLO and RGCCA tended to select similar biomarkers due to their shared backend framework of canonical correlation analysis.
+In our study, we presented benchmark results for various multiomics data and methods at Fig \@ref(fig:real-grid-plot) with real datasets from table \@ref(tab:benchmark-data-table). 
+
+
+## Simulation studies
+
+We examined the methods on controlled setting of simulation studies. Methods were tested against multiomics data with varying signal, correlation, number of samples, and number of predictors on Fig \@ref(fig:sim-grid-plot).
+
+```{r sim-grid-plot, fig.cap="Simulation studies on signal, correlation, number of samples and number of predictors", echo=FALSE, out.width="96%"}
+include_graphics(here(fig_path, "fig_sim_grid.png"))
+```
+
+
+
+
+## Computational time
+
+We observed notable variations in the computation time of most methods with changing dataset sizes (categorized as small if the size of dataset is less than median of all), while DIABLO exhibited consistent performance regardless of dataset size. Conversely, Cooperative Learning displayed a comparatively longer median time than other methods. (Fig 1A). 
+
+
+## Real data classification performance
+
+Regarding classification performance, we employed the area under the curve (AUC) score for method comparison across datasets (Fig 1B). Mogonet emerged as the weakest performer, with MOFA + glmnet showing only marginal improvement. In contrast, Cooperative Learning demonstrated the highest performance, followed by DIABLO and RGCCA. Interestingly, DIABLO with a null design outperformed than its full design choice. Nevertheless, all methods performed poorly on the tcga-thca dataset. 
+
+
+## Feature performance
+
+We further investigated each method's ability to identify significant biomarkers and examined the overlap between them, calculating the similarity in their feature sets (Fig 1C). Most methods identified similar biomarkers in TCGA datasets but exhibited minimal overlap in the rosmap and gse71669 datasets. Notably, DIABLO and RGCCA tended to select similar biomarkers due to their shared backend framework of canonical correlation analysis.
 
 <!---
 Fig1. Benchmark results of multiomics data and integration methods. (A) Computation time for each multiomics method of varying data size. (B) Classification performances by area under the curve of method and dataset combination. (C) Similarity in feature selection between methods and datasets.
@@ -77,27 +104,15 @@ Fig1. Benchmark results of multiomics data and integration methods. (A) Computat
 include_graphics(here(fig_path, "fig_real_grid.png"))
 ```
 
-\newpage    
-
-Moreover, we examined the methods on controlled setting of simulation studies. Methods were tested against multiomics data with varying signal, correlation, number of samples, and number of predictors on Fig \@ref(fig:sim-grid-plot).
-
-More details to be filled in here ...
 
 
-
-
-
-```{r sim-grid-plot, fig.cap="Simulation studies on signal, correlation, number of samples and number of predictors", echo=FALSE, out.width="96%"}
-include_graphics(here(fig_path, "fig_sim_grid.png"))
-```
-
-
-## Discussion
+# Discussion
 
 - Explain results, and relevant comments to these
 
 
-## Conclusion
+
+# Conclusion
 
 Overall, Cooperative Learning emerged as the top performer in terms of classification performance, disregarding its computational time overhead. Conversely, MOGONET, leveraging deep neural networks, displayed the weakest performance. While acknowledging the potential for further enhancements through exploration of additional datasets and methodologies, we encountered a significant challenge of no publicly available repository/data portal with curated multiomics data. To address this gap, we have begun to curate multiomics studies for various omics data (e.g., transcriptomics, methylation, proteomics) and associated clinical metadata across a range of cancer and non-cancer diseases from various public sources to create the first data portal for multiomics data (~ 100 studies) in both standard formats mentioned such that they can easily be used by other researchers. We anticipate this exercise to be highly relevant to the community utilizing multiomics data for their research, such will help inform the development of a new integrative method that is applicable to different types (bulk, single-cell, or spatial) of multiomics data with the extensibility of our proposed MESSI pipeline.
 
@@ -107,7 +122,10 @@ Overall, Cooperative Learning emerged as the top performer in terms of classific
 
 
 
-## Methods
+
+# Methods
+
+## MESSI pipeline
 
 We introduce here the MESSI pipeline, *Multiple Experiments with SyStematic Interrogation*, implemented with Nextflow (8). This proposed pipeline ensures full reproducibility of any method by using an independent container environment with Singularity (17). We propose to publish this pipeline on the nf-core (10) platform, a community of Nextflow users, to ensure easy access and usability for researchers worldwide, as shown in Fig \@ref(fig:messi-workflow-plot).
 
@@ -119,12 +137,64 @@ include_graphics(here("docs/assets", "messi_workflow.png"))
 
 The usage of Nextflow makes the pipeline runnable without changing the logic on any mainstream high-performance computing cluster (HPC) like SLURM, PBS, or popular cloud platforms like AWS and Google Cloud. Additionally, Nextflow provides internal parallelization, which can speed up the benchmarking process by running all methods simultaneously. With each method, cross-validation can be further parallelized provided enough computing resources.
 
+### Standardized data input in both R and Python
+
 To ensure the standardized input, we incorporated the MultiAssayExperiment (25) package of the Bioconductor community (11) for R (24) and MuData (5) for Python (27). These tools are easily transferable, meaning users familiar with one can have the pipeline automatically convert to the other. Currently, we are benchmarking existing methods like DIABLO (28), Cooperative Learning (9), MOGONET (34), RGCCA (12), MOFA (2; 3). The current pipeline focuses on testing this selection of integrative methods against a series of real multiomics datasets, particularly for classification tasks. The results are compared using metrics like balanced classification error, F1 score, and biological enrichment results. 
+
 
 Through MESSI, we could systematically identify the top-performing methods with respect to classification performance and identifying molecular drivers of disease. Furthermore, this could extend to regression tasks or clustering tasks. This project can greatly benefit the community, either by developing new methods to assess their strength or finding a method that best suits custom multiomics data. 
 
 
-### Evaluation
+### Benchmark analysis
+
+We applied the pipeline on the described methods upon the real datasets
+
+### Metric 
+
+First, defined the metrics used in benchmark analysis ...
+
+- TP: true positive
+
+- TN: true negative
+
+- FP: false positive
+
+- FN: false negative
+
+
+wheras, it could be constructed to the following:
+
+$$\text{accuracy} = \frac{TP + TN}{TP +TN + FP +FN}$$
+
+
+## Method Algorithms
+
+We present here the mathematical details of the integration methods benchmarked ...
+
+### DIABLO
+
+DIABLO is ...
+
+### Multiview
+
+Multiview is ...
+
+
+### MOFA
+
+MOFA is ...
+
+
+### MOGONET
+
+MOGONET is ...
+
+### RGCCA
+
+RGCCA is ...
+
+
+### TODO
 
 - Explain what is the data input in mathematical form
 
@@ -144,5 +214,5 @@ Through MESSI, we could systematically identify the top-performing methods with 
 \newpage
 
 
-## References
+# References
 
