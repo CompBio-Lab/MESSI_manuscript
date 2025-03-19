@@ -3,6 +3,8 @@ title: "MESSI: A Nextflow pipeline for benchmarking multiomics integration metho
 "
 author:
   - "Chunqing Tony Liang"
+  - "Tajveer Grewal"
+  - "Asees Singh"
   - "Amrit Singh"
 csl: assets/nature.csl
 bibliography: assets/reference.bib
@@ -38,10 +40,19 @@ fig_path <- here("results/figures")
 
 # Background
 
-Technological advances have allowed for the profiling of different molecular measurements (e.g., genes, proteins, metabolites) from the same biological samples; termed multiomics (14; 30). The majority of multiomics data are obtained for samples from individual patients (bulk multiomics data) and more recently with single-cell and spatial resolution. Many methods have been developed to jointly analyze multiomics data to identify common patterns between datasets, and to identify biomarkers of disease (32). This integrative approach of multiomics data may strengthen the understanding of the molecular dynamics underlying the biological processes of diseases and may lead to novel strategies for early detection, prevention, and treatment of human diseases (31).
+Technological advances have allowed for the profiling of different molecular measurements (e.g., genes, proteins, metabolites) from the same biological samples; termed multiomics [@hasin2017multi; @subramanian2020multi]. 
+
+The majority of multiomics data are obtained for samples from individual patients (bulk multiomics data) and more recently with single-cell and spatial resolution. 
+
+Many methods have been developed to jointly analyze multiomics data to identify common patterns between datasets, and to identify biomarkers of disease [@vandereyken2023methods]. 
+
+This integrative approach of multiomics data may strengthen the understanding of the molecular dynamics underlying the biological processes of diseases and may lead to novel strategies for early detection, prevention, and treatment of human diseases [@sun2016integrative].
 
 
-Researchers face difficulties in choosing the right method due to the varying nature of analytical tasks such as clustering analysis, factor analysis, or cancer type prediction. Hence, numerous reviews have benchmarked various integrative methods (26; 4; 14; 15; 18; 23; 35; 36; 7; 19; 20). However, these studies often focus on methods for specific tasks or data types and may lack reproducibility.
+Researchers face difficulties in choosing the right method due to the varying nature of analytical tasks such as clustering analysis, factor analysis, or cancer type prediction. 
+
+
+Hence, numerous reviews have benchmarked various integrative methods [@bersanelli2016methods; @cantini2021benchmarking; @hasin2017multi; @huang2017more; @li2018review; @li2022benchmark; @luecken2022benchmarking; @pucher2019comparison; @richardson2016statistical; @yu2018integrative; @zeng2018review]. However, these studies often focus on methods for specific tasks or data types and may lack reproducibility.
 
 
 To address this, we propose a new automated framework to systematically benchmark and analyze multiomics methods with varying data types. This framework ensures full reproducibility and provides standardized input for any analytical task, with the capability to run on any computing platform.
@@ -57,9 +68,9 @@ real_data_tbl %>%
   kbl(caption = "Overview of real datasets to benchmark", booktab=T,
       col.names = c(
         "Dataset",
-        "# Subjects",
-        "# Features",
-        "P(Y = 1)",
+        "N",
+        "P",
+        "Prop(Y = 1)",
         "Disease"
       ),
       escape = T) %>%
@@ -71,7 +82,7 @@ real_data_tbl %>%
 
 ## MESSI pipeline
 
-We introduce here the MESSI pipeline, *Multiple Experiments with SyStematic Interrogation*, implemented with Nextflow (8). This proposed pipeline ensures full reproducibility of any method by using an independent container environment with Singularity (17). We propose to publish this pipeline on the nf-core (10) platform, a community of Nextflow users, to ensure easy access and usability for researchers worldwide, as shown in Fig \@ref(fig:messi-workflow-plot).
+We introduce here the MESSI pipeline, *Multiple Experiments with SyStematic Interrogation*, implemented with Nextflow [@di2017nextflow]. This proposed pipeline ensures full reproducibility of any method by using an independent container environment with Singularity [@kurtzer2017singularity]. We propose to publish this pipeline on the nf-core [@ewels2020nf] platform, a community of Nextflow users, to ensure easy access and usability for researchers worldwide, as shown in Fig \@ref(fig:messi-workflow-plot).
 
 ```{r messi-workflow-plot,fig.cap="Workflow design of MESSI.",fig.align="center",echo=FALSE, out.width="60%"}
 include_graphics(here("docs/assets", "messi_workflow.png"))
@@ -83,7 +94,11 @@ The usage of Nextflow makes the pipeline runnable without changing the logic on 
 
 ### Standardized data input in both R and Python
 
-To ensure the standardized input, we incorporated the MultiAssayExperiment (25) package of the Bioconductor community (11) for R (24) and MuData (5) for Python (27). These tools are easily transferable, meaning users familiar with one can have the pipeline automatically convert to the other. Currently, we are benchmarking existing methods like DIABLO (28), Cooperative Learning (9), MOGONET (34), RGCCA (12), MOFA (2; 3). The current pipeline focuses on testing this selection of integrative methods against a series of real multiomics datasets, particularly for classification tasks. The results are compared using metrics like balanced classification error, F1 score, and biological enrichment results. 
+To ensure the standardized input, we incorporated the MultiAssayExperiment [@ramos2017software] package of the Bioconductor community [@gentleman2004bioconductor] for R [@r2013r] and MuData [@bredikhin2022muon] for Python [@sanner1999python]. These tools are easily transferable, meaning users familiar with one can have the pipeline automatically convert to the other. 
+
+Currently, we are benchmarking existing methods like DIABLO [@singh2019diablo], Cooperative Learning [@ding2022cooperative], MOGONET [@wang2021mogonet], RGCCA [@girka2023multiblock], MOFA [@Argelaguet2018; @Argelaguet2020] . The current pipeline focuses on testing this selection of integrative methods against a series of real multiomics datasets, particularly for classification tasks. 
+
+The results are compared using metrics like balanced classification error, F1 score, and biological enrichment results. 
 
 
 Through MESSI, we could systematically identify the top-performing methods with respect to classification performance and identifying molecular drivers of disease. Furthermore, this could extend to regression tasks or clustering tasks. This project can greatly benefit the community, either by developing new methods to assess their strength or finding a method that best suits custom multiomics data. 
@@ -99,7 +114,7 @@ We applied the pipeline on the described methods upon the real datasets. We pres
 We examined the methods on controlled setting of simulation studies. Methods were tested against multiomics data with varying signal, correlation, number of samples, and number of predictors on Fig \@ref(fig:sim-grid-plot).
 
 ```{r sim-grid-plot, fig.cap="Simulation studies on signal, correlation, number of samples and number of predictors", echo=FALSE, out.width="96%"}
-include_graphics(here(fig_path, "fig_sim_grid.png"))
+#include_graphics(here(fig_path, "fig_sim_grid.png"))
 ```
 
 
@@ -216,4 +231,16 @@ RGCCA is ...
 
 
 # References
+
+<div id="refs"></div>
+
+# (APPENDIX) Appendix {-} 
+
+# More information
+
+This will be Appendix A.
+
+# One more thing
+
+This will be Appendix B.
 
