@@ -106,7 +106,7 @@ color_table <- flex_table %>%
 ggsave("new_table.png", plot = gen_grob(color_table), width = 6, height = 4)
 
 # Lastly should save this to output
-save_as_image(table, "real_table.png")
+save_as_image(flex_table, "real_table.png")
 
 
 

@@ -12,6 +12,7 @@ Options:
   --height=height         Height of the graph [default: 7]
   --device=DEVICE         Device to print out [default: png]
   --dpi=DPI               Dots per inch [default: 300]
+  --show_title=ST         Show plot title [default: 1]
 "
 
 # Parse doc
@@ -84,7 +85,7 @@ plot_fig1_sim <- function(
 
 
 # ==============================================================================
-# Plot here 
+# Plot here
 # Load the variables from cli
 input_path <- here::here(opt$input_path)
 output_path <- here::here(opt$output_path)
@@ -96,6 +97,8 @@ width <- as.numeric(opt$width)
 height <- as.numeric(opt$height)
 device <- opt$device
 dpi <- as.numeric(opt$dpi)
+show_title <- opt$show_title |> as.integer() |> as.logical()
+
 
 # ================================
 # And load the input data
@@ -113,6 +116,10 @@ out_plot <- plot_fig1_sim(
 )
 
 
+
+if (!show_title) {
+  out_plot <- out_plot + theme(legend.title = element_blank())
+}
 
 # Lastly save it to output
 ggsave(output_path, plot = out_plot, width = width, height = height,

@@ -2,10 +2,11 @@
 # Important variables
 # ==========================
 # Plotting params
-WIDTH=7
-HEIGHT=7
+WIDTH=9
+HEIGHT=9
 DEVICE=png # default is png
 DPI=700 # default is 300
+SHOW_TITLE=1 # 1 for show title, 0 for disable it
 
 # ==========================================================================
 # Data has raw dir and processed
@@ -196,7 +197,8 @@ ${FIG_REAL_PERF_OUT}: ${FIG1_PLOT_REAL_SRC} ${COMMON_R} ${FIG1_REAL_PROCESSED}
 		--width ${WIDTH} \
 		--height ${HEIGHT} \
 		--device ${DEVICE} \
-		--dpi ${DPI}
+		--dpi ${DPI} \
+		--show_title ${SHOW_TITLE}
 
 # FIGURE 1: Performance evaluation (Simulated Data)
 ${FIG_SIM_PERF_OUT}: ${FIG1_PLOT_SIM_SRC} ${COMMON_R} ${FIG1_SIM_PROCESSED}
@@ -208,7 +210,8 @@ ${FIG_SIM_PERF_OUT}: ${FIG1_PLOT_SIM_SRC} ${COMMON_R} ${FIG1_SIM_PROCESSED}
 		--width ${WIDTH} \
 		--height ${HEIGHT} \
 		--device ${DEVICE} \
-		--dpi ${DPI}
+		--dpi ${DPI} \
+		--show_title ${SHOW_TITLE}
 
 # ==============================================================================
 # FIGURE 2: Computational time (Real Data)
@@ -221,7 +224,8 @@ ${FIG_REAL_TIME_OUT}: ${FIG2_PLOT_REAL_SRC} ${COMMON_R} ${FIG2_REAL_PROCESSED}
 		--width ${WIDTH} \
 		--height ${HEIGHT} \
 		--device ${DEVICE} \
-		--dpi ${DPI}
+		--dpi ${DPI} \
+		--show_title ${SHOW_TITLE}
 
 # FIGURE 2: Computational time (Simulated Data)
 ${FIG_SIM_TIME_OUT}: ${FIG2_PLOT_SIM_SRC} ${COMMON_R} ${FIG2_SIM_PROCESSED}
@@ -233,7 +237,8 @@ ${FIG_SIM_TIME_OUT}: ${FIG2_PLOT_SIM_SRC} ${COMMON_R} ${FIG2_SIM_PROCESSED}
 		--width ${WIDTH} \
 		--height ${HEIGHT} \
 		--device ${DEVICE} \
-		--dpi ${DPI}
+		--dpi ${DPI} \
+		--show_title ${SHOW_TITLE}
 
 # ==============================================================================
 # FIGURE 3: Feature selection (Real Data)
@@ -246,7 +251,8 @@ ${FIG_REAL_FS_OUT}: ${FIG3_PLOT_REAL_SRC} ${COMMON_R} ${FIG3_REAL_PROCESSED}
 		--width ${WIDTH} \
 		--height ${HEIGHT} \
 		--device ${DEVICE} \
-		--dpi ${DPI}
+		--dpi ${DPI} \
+		--show_title ${SHOW_TITLE}
 
 # # FIGURE 3: Feature selection (Simulated Data)
 ${FIG_SIM_FS_OUT}: ${FIG3_PLOT_SIM_SRC} ${COMMON_R} ${FIG3_SIM_PROCESSED}
@@ -258,4 +264,5 @@ ${FIG_SIM_FS_OUT}: ${FIG3_PLOT_SIM_SRC} ${COMMON_R} ${FIG3_SIM_PROCESSED}
 		--width ${WIDTH} \
 		--height ${HEIGHT} \
 		--device ${DEVICE} \
-		--dpi ${DPI}
+		--dpi ${DPI} \
+		--show_title ${SHOW_TITLE}

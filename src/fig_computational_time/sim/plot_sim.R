@@ -12,6 +12,7 @@ Options
   --height=HEIGHT             Height of the graph [default: 7]
   --device=DEVICE             Device to print out [default: png]
   --dpi=DPI                   Dots per inch [default: 300]
+  --show_title=ST             Show plot title [default: 1]
 "
 
 # Load libraries
@@ -92,6 +93,8 @@ device <- opt$device
 dpi <- as.numeric(opt$dpi)
 text_size <- 12
 method_palette <- "Paired"
+show_title <- opt$show_title |> as.integer() |> as.logical()
+
 
 # First load in data
 plot_df <- data.table::fread(input_path)
@@ -101,6 +104,12 @@ plot_df <- data.table::fread(input_path)
 #computation_time_plot <- ggplot() + ggtitle("fake plot")
 computation_time_plot <- plot_sim(plot_df, method_palette = method_palette) +
   sim_data_theme(text_size = text_size)
+
+if (!show_title) {
+  computation_time_plot <- computation_time_plot +
+    theme(legend.title = element_blank())
+}
+
 
 # Lastly save it
 ggsave(output_path, plot=computation_time_plot,

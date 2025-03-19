@@ -12,6 +12,7 @@ Options:
   --height=height         Height of the graph [default: 7]
   --device=DEVICE         Device to print out [default: png]
   --dpi=DPI               Dots per inch [default: 300]
+  --show_title=ST         Show plot title [default: 1]
 "
 
 # Load libraries
@@ -209,6 +210,8 @@ height <- as.numeric(opt$height)
 device <- opt$device
 dpi <- as.numeric(opt$dpi)
 method_palette <- "Paired"
+show_title <- opt$show_title |> as.integer() |> as.logical()
+
 # ==============================================================================
 input_data <- readRDS(input_path)
 # Plot it
@@ -219,6 +222,9 @@ width <- width + (const * 1.8)
 height <- height + const
 out_plot <- plot_sim(input_data, method_palette, text_size=text_size)
 
+if (!show_title) {
+  out_plot <- out_plot + theme(legend.title = element_blank())
+}
 
 
 # TODO: making a placeholder now for sim data
