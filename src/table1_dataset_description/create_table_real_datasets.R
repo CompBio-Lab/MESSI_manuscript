@@ -58,7 +58,7 @@ metadata_df
 # Need to manually add the disease that it studies ....
 diseases <- c("Bladder cancer", "Alzheimer Disease",
               "Bladder cancer", "Breast cancer",
-              "Pan-Kidney", "Thyroid cancer")
+              "Kidney cancer", "Thyroid cancer")
 
 metadata_df$diseases <- diseases
 # Create sample data

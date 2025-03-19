@@ -83,6 +83,11 @@ plot_sim <- function(input_data, method_palette, text_size) {
     )
 
 
+  signal_labels <- paste0("Signal = ", plot_data$signal |> unique())
+  names(signal_labels) <- plot_data$signal |> unique()
+  corr_labels <- paste0("Cor = ", plot_data$corr |> unique())
+  names(corr_labels) <- plot_data$corr |> unique()
+
 
 
   sim_plot <- plot_data %>%
@@ -106,7 +111,7 @@ plot_sim <- function(input_data, method_palette, text_size) {
     facet_grid(
       corr ~ signal,
       #scales = "free",
-      labeller = label_both
+      labeller = labeller(signal = signal_labels, corr = corr_labels)
     ) +
     theme(
       plot.title = element_text(hjust = 0.5),

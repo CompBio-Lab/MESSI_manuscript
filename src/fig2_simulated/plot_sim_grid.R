@@ -13,29 +13,19 @@ library(cowplot)
 # Subpanels of simulated sensitivity grid be i, ii, iii
 # Convenient variables
 fig_path <- here("data/processed/")
-# Figs on real dataset
-#comp_time_real <- here(fig_path, "computational_time_real.rds") |> readRDS()
-#feat_sel_real <- here(fig_path, "feature_selection_real.rds") |> readRDS()
-#perf_real <- here(fig_path, "perf_evaluation_real.rds") |> readRDS() |> ggplotify::as.ggplot()
 # Figs on sim dataset
-comp_time_sim <- here(fig_path, "computational_time_sim.rds") |> readRDS()
+#comp_time_sim <- here(fig_path, "computational_time_sim.rds") |> readRDS()
 feat_sel_sim <- here(fig_path, "feature_selection_sim.rds") |> readRDS()
 perf_sim <- here(fig_path, "perf_evaluation_sim.rds") |> readRDS()
 
 # Join the plot here
 # 2 Row, first row 2 col, second row 1 col
 # Perf and time together top, with feature sel bottom
-plot_sim_grid_top_row <- plot_grid(
-  perf_sim + theme(legend.position = "none"),
-  comp_time_sim + theme(legend.position = "none") + xlab(NULL),
-  labels = c("A", "B"),
-  hjust = -1,
-  nrow = 1
-)
 
 plot_sim_grid <- plot_grid(
-  plot_sim_grid_top_row, feat_sel_sim,
-  labels = c("", "C"),
+  perf_sim + theme(legend.position = "none"),
+  feat_sel_sim,
+  labels = c("A", "B"),
   ncol = 1,
   # vjust adjust label position vertically
   vjust = 3,
