@@ -1,38 +1,406 @@
-References
-[1]	Julián N Acosta, Guido J Falcone, Pranav Rajpurkar, and Eric J Topol. Multimodal biomedical ai. Nature Medicine, 28(9):1773–1784, 2022.
-[2]	R. Argelaguet, B. Velten, D. Arnol, S. Dietrich, T. Zenz, J. C. Marioni, F. Buettner, W. Huber, and O. Stegle. Multi-omics factor analysis-a framework for unsupervised integration of multi-omics data sets. Mol Syst Biol, 14 (6):e8124, 2018.
-[3]	R. Argelaguet, D. Arnol, D. Bredikhin, Y. Deloro, B. Velten, J.C. Marioni, and O. Stegle. Mofa+: a statistical framework for comprehensive integration of multi-modal single-cell data. Genome Biology, 21(1):111, 2020.
-[4]	Matteo Bersanelli, Ettore Mosca, Daniel Remondini, Enrico Giampieri, Claudia Sala, Gastone Castellani, and Luciano Milanesi. Methods for the integration of multi-omics data: mathematical aspects. BMC bioinformatics, 17:167–177, 2016.
-[5]	Danila Bredikhin, Ilia Kats, and Oliver Stegle. Muon: multimodal omics analysis framework. Genome Biology, 23(1):42, 2022.
-[6]	Zhaoxiang Cai, Rebecca C Poulos, Jia Liu, and Qing Zhong. Machine learning for multi-omics data integration in cancer. Iscience, 25(2), 2022.
-[7]	Laura Cantini, Pooya Zakeri, Celine Hernandez, Aurelien Naldi, Denis Thieffry, Elisabeth Remy, and Anaïs Baudot. Benchmarking joint multi-omics dimensionality reduction approaches for the study of cancer. Nature communications, 12(1):124, 2021.
-[8]	Paolo Di Tommaso, Maria Chatzou, Evan W Floden, Pablo Prieto Barja, Emilio Palumbo, and Cedric Notredame. Nextflow enables reproducible computational workflows. Nature biotechnology, 35(4):316–319, 2017.
-[9]	Daisy Yi Ding, Shuangning Li, Balasubramanian Narasimhan, and Robert Tibshirani. Cooperative learning for multiview analysis. Proceedings of the National Academy of Sciences, 119(38):e2202113119, 2022.
-[10]	Philip A Ewels, Alexander Peltzer, Sven Fillinger, Harshil Patel, Johannes Alneberg, Andreas Wilm, Maxime Ulysse Garcia, Paolo Di Tommaso, and Sven Nahnsen. The nf-core framework for community-curated bioinformatics pipelines. Nature biotechnology, 38(3):276–278, 2020.
-[11]	Robert C Gentleman, Vincent J Carey, Douglas M Bates, Ben Bolstad, Marcel Dettling, Sandrine Dudoit, Byron Ellis, Laurent Gautier, Yongchao Ge, Jeff Gentry, et al. Bioconductor: open software development for computational biology and bioinformatics. Genome biology, 5:1–16, 2004.
-[12]	Fabien Girka, Etienne Camenen, Caroline Peltier, Arnaud Gloaguen, Vincent Guillemot, Laurent Le Brusquet, and Arthur Tenenhaus. Multiblock data analysis with the rgcca package. Journal of Statistical Software, pages 1–36, 2023.
-[13]	Zongbo Han, Changqing Zhang, Huazhu Fu, and Joey Tianyi Zhou. Trusted multi-view classification with dynamic evidential fusion. IEEE transactions on pattern analysis and machine intelligence, 45(2):2551–2566, 2022.
-[14]	Yehudit Hasin, Marcus Seldin, and Aldons Lusis. Multi-omics approaches to disease. Genome biology, 18:1–15, 2017.
-[15]	Sijia Huang, Kumardeep Chaudhary, and Lana X Garmire. More is better: recent progress in multi-omics data integration methods. Frontiers in genetics, 8:268903, 2017.
-[16]	Michal Krassowski, Vivek Das, Sangram K Sahu, and Biswapriya B Misra. State of the field in multi-omics research: from computational needs to data mining and sharing. Frontiers in Genetics, 11:610798, 2020.
-[17]	Gregory M Kurtzer, Vanessa Sochat, and Michael W Bauer. Singularity: Scientific containers for mobility of compute. PloS one, 12(5):e0177459, 2017.
-[18]	Yifeng Li, Fang-Xiang Wu, and Alioune Ngom. A review on machine learning principles for multi-view biological data integration. Briefings in bioinformatics, 19(2):325–340, 2018.
-[19]	Yingxia Li, Ulrich Mansmann, Shangming Du, and Roman Hornung. Benchmark study of feature selection strategies for multi-omics data. BMC bioinformatics, 23(1):1–18, 2022.
+@article{sun2016integrative,
+  title={Integrative analysis of multi-omics data for discovery and functional studies of complex human diseases},
+  author={Sun, Yan V and Hu, Yi-Juan},
+  journal={Advances in genetics},
+  volume={93},
+  pages={147--190},
+  year={2016},
+  publisher={Elsevier}
+}
 
-[20]	Malte D Luecken, Maren Büttner, Kridsadakorn Chaichoompu, Anna Danese, Marta Interlandi, Michaela F Müller, Daniel C Strobl, Luke Zappia, Martin Dugas, Maria Colomé-Tatché, et al. Benchmarking atlas-level data integration in single-cell genomics. Nature methods, 19(1):41–50, 2022.
-[21]	Chen Meng, Bernhard Kuster, Aedín C Culhane, and Amin Moghaddas Gholami. A multivariate approach to the integration of multi-omics datasets. BMC bioinformatics, 15:1–13, 2014.
-[22]	Chen Meng, Oana A Zeleznik, Gerhard G Thallinger, Bernhard Kuster, Amin M Gholami, and Aedín C Culhane. Dimension reduction techniques for the integrative analysis of multi-omics data. Briefings in bioinformatics, 17 (4):628–641, 2016.
-[23]	Bettina M Pucher, Oana A Zeleznik, and Gerhard G Thallinger. Comparison and evaluation of integrative methods for the analysis of multilevel omics data: a study based on simulated and experimental cancer data. Briefings in bioinformatics, 20(2):671–681, 2019.
-[24]	R R Core Team et al. R: A language and environment for statistical computing. 2013.
-[25]	Marcel Ramos, Lucas Schiffer, Angela Re, Rimsha Azhar, Azfar Basunia, Carmen Rodriguez, Tiffany Chan, Phil Chapman, Sean R Davis, David Gomez-Cabrero, et al. Software for the integration of multiomics experiments in bioconductor. Cancer research, 77(21):e39–e42, 2017.
-[26]	Sylvia Richardson, George C Tseng, and Wei Sun. Statistical methods in integrative genomics. Annual review of statistics and its application, 3:181–209, 2016.
-[27]	Michel F Sanner et al. Python: a programming language for software integration and development. J Mol Graph Model, 17(1):57–61, 1999.
-[28]	Amrit Singh, Casey P Shannon, Benoît Gautier, Florian Rohart, Michaël Vacher, Scott J Tebbutt, and Kim- Anh Lê Cao. Diablo: an integrative approach for identifying key molecular drivers from multi-omics assays. Bioinformatics, 35(17):3055–3062, 2019.
-[29]	Mervyn Stone. Cross-validation: A review. Statistics: A Journal of Theoretical and Applied Statistics, 9(1): 127–139, 1978.
-[30]	Indhupriya Subramanian, Srikant Verma, Shiva Kumar, Abhay Jere, and Krishanpal Anamika. Multi-omics data integration, interpretation, and its application. Bioinformatics and biology insights, 14:1177932219899051, 2020.
-[31]	Yan V Sun and Yi-Juan Hu. Integrative analysis of multi-omics data for discovery and functional studies of complex human diseases. Advances in genetics, 93:147–190, 2016.
-[32]	Katy Vandereyken, Alejandro Sifrim, Bernard Thienpont, and Thierry Voet. Methods and applications for single-cell and spatial multi-omics. Nature Reviews Genetics, 24(8):494–515, 2023.
-[33]	Sezen Vatansever, Avner Schlessinger, Daniel Wacker, HÜmit Kaniskan, Jian Jin, Ming-Ming Zhou, and Bin Zhang. Artificial intelligence and machine learning-aided drug discovery in central nervous system diseases: State-of-the-arts and future directions. Medicinal research reviews, 41(3):1427–1473, 2021.
-[34]	Tongxin Wang, Wei Shao, Zhi Huang, Haixu Tang, Jie Zhang, Zhengming Ding, and Kun Huang. Mogonet integrates multi-omics data using graph convolutional networks allowing patient classification and biomarker identification. Nature Communications, 12(1):3445, 2021.
-[35]	Xiang-Tian Yu and Tao Zeng. Integrative analysis of omics big data. Computational Systems Biology: Methods and Protocols, pages 109–135, 2018.
-[36]	Irene Sui Lan Zeng and Thomas Lumley. Review of statistical learning methods in integrated omics studies (an integrated information science). Bioinformatics and biology insights, 12:1177932218759292, 2018.
+@article{hasin2017multi,
+  title={Multi-omics approaches to disease},
+  author={Hasin, Yehudit and Seldin, Marcus and Lusis, Aldons},
+  journal={Genome biology},
+  volume={18},
+  pages={1--15},
+  year={2017},
+  publisher={Springer}
+}
+
+@article{huang2017more,
+  title={More is better: recent progress in multi-omics data integration methods},
+  author={Huang, Sijia and Chaudhary, Kumardeep and Garmire, Lana X},
+  journal={Frontiers in genetics},
+  volume={8},
+  pages={268903},
+  year={2017},
+  publisher={Frontiers}
+}
+
+@article{li2018review,
+  title={A review on machine learning principles for multi-view biological data integration},
+  author={Li, Yifeng and Wu, Fang-Xiang and Ngom, Alioune},
+  journal={Briefings in bioinformatics},
+  volume={19},
+  number={2},
+  pages={325--340},
+  year={2018},
+  publisher={Oxford University Press}
+}
+
+@article{yu2018integrative,
+  title={Integrative analysis of omics big data},
+  author={Yu, Xiang-Tian and Zeng, Tao},
+  journal={Computational Systems Biology: Methods and Protocols},
+  pages={109--135},
+  year={2018},
+  publisher={Springer}
+}
+
+@article{zeng2018review,
+  title={Review of statistical learning methods in integrated omics studies (an integrated information science)},
+  author={Zeng, Irene Sui Lan and Lumley, Thomas},
+  journal={Bioinformatics and biology insights},
+  volume={12},
+  pages={1177932218759292},
+  year={2018},
+  publisher={SAGE Publications Sage UK: London, England}
+}
+
+@article{pucher2019comparison,
+  title={Comparison and evaluation of integrative methods for the analysis of multilevel omics data: a study based on simulated and experimental cancer data},
+  author={Pucher, Bettina M and Zeleznik, Oana A and Thallinger, Gerhard G},
+  journal={Briefings in bioinformatics},
+  volume={20},
+  number={2},
+  pages={671--681},
+  year={2019},
+  publisher={Oxford University Press}
+}
+
+@article{bersanelli2016methods,
+  title={Methods for the integration of multi-omics data: mathematical aspects},
+  author={Bersanelli, Matteo and Mosca, Ettore and Remondini, Daniel and Giampieri, Enrico and Sala, Claudia and Castellani, Gastone and Milanesi, Luciano},
+  journal={BMC bioinformatics},
+  volume={17},
+  pages={167--177},
+  year={2016},
+  publisher={Springer}
+}
+
+@article{richardson2016statistical,
+  title={Statistical methods in integrative genomics},
+  author={Richardson, Sylvia and Tseng, George C and Sun, Wei},
+  journal={Annual review of statistics and its application},
+  volume={3},
+  pages={181--209},
+  year={2016},
+  publisher={Annual Reviews}
+}
+
+@article{jeong2023goat,
+  title={GOAT: Gene-level biomarker discovery from multi-Omics data using graph ATtention neural network for eosinophilic asthma subtype},
+  author={Jeong, Dabin and Koo, Bonil and Oh, Minsik and Kim, Tae-Bum and Kim, Sun},
+  journal={Bioinformatics},
+  pages={btad582},
+  year={2023},
+  publisher={Oxford University Press}
+}
+
+@article{ramos2017software,
+  title={Software for the integration of multiomics experiments in bioconductor},
+  author={Ramos, Marcel and Schiffer, Lucas and Re, Angela and Azhar, Rimsha and Basunia, Azfar and Rodriguez, Carmen and Chan, Tiffany and Chapman, Phil and Davis, Sean R and Gomez-Cabrero, David and others},
+  journal={Cancer research},
+  volume={77},
+  number={21},
+  pages={e39--e42},
+  year={2017},
+  publisher={AACR}
+}
+
+@article{sanner1999python,
+  title={Python: a programming language for software integration and development},
+  author={Sanner, Michel F and others},
+  journal={J Mol Graph Model},
+  volume={17},
+  number={1},
+  pages={57--61},
+  year={1999}
+}
+
+@article{r2013r,
+  title={R: A language and environment for statistical computing},
+  author={R Core Team, R and others},
+  year={2013},
+  publisher={Vienna, Austria}
+}
+
+@article{gentleman2004bioconductor,
+  title={Bioconductor: open software development for computational biology and bioinformatics},
+  author={Gentleman, Robert C and Carey, Vincent J and Bates, Douglas M and Bolstad, Ben and Dettling, Marcel and Dudoit, Sandrine and Ellis, Byron and Gautier, Laurent and Ge, Yongchao and Gentry, Jeff and others},
+  journal={Genome biology},
+  volume={5},
+  pages={1--16},
+  year={2004},
+  publisher={Springer}
+}
+
+@article{vandereyken2023methods,
+  title={Methods and applications for single-cell and spatial multi-omics},
+  author={Vandereyken, Katy and Sifrim, Alejandro and Thienpont, Bernard and Voet, Thierry},
+  journal={Nature Reviews Genetics},
+  volume={24},
+  number={8},
+  pages={494--515},
+  year={2023},
+  publisher={Nature Publishing Group UK London}
+}
+
+@article{girka2023multiblock,
+  title={Multiblock data analysis with the RGCCA package},
+  author={Girka, Fabien and Camenen, Etienne and Peltier, Caroline and Gloaguen, Arnaud and Guillemot, Vincent and Le Brusquet, Laurent and Tenenhaus, Arthur},
+  journal={Journal of Statistical Software},
+  pages={1--36},
+  year={2023}
+}
+
+@article{krassowski2020state,
+  title={State of the field in multi-omics research: from computational needs to data mining and sharing},
+  author={Krassowski, Michal and Das, Vivek and Sahu, Sangram K and Misra, Biswapriya B},
+  journal={Frontiers in Genetics},
+  volume={11},
+  pages={610798},
+  year={2020},
+  publisher={Frontiers}
+}
+
+@article{meng2014multivariate,
+  title={A multivariate approach to the integration of multi-omics datasets},
+  author={Meng, Chen and Kuster, Bernhard and Culhane, Aed{\'\i}n C and Gholami, Amin Moghaddas},
+  journal={BMC bioinformatics},
+  volume={15},
+  pages={1--13},
+  year={2014},
+  publisher={Springer}
+}
+
+@article{meng2016dimension,
+  title={Dimension reduction techniques for the integrative analysis of multi-omics data},
+  author={Meng, Chen and Zeleznik, Oana A and Thallinger, Gerhard G and Kuster, Bernhard and Gholami, Amin M and Culhane, Aed{\'\i}n C},
+  journal={Briefings in bioinformatics},
+  volume={17},
+  number={4},
+  pages={628--641},
+  year={2016},
+  publisher={Oxford University Press}
+}
+
+@article{han2022trusted,
+  title={Trusted multi-view classification with dynamic evidential fusion},
+  author={Han, Zongbo and Zhang, Changqing and Fu, Huazhu and Zhou, Joey Tianyi},
+  journal={IEEE transactions on pattern analysis and machine intelligence},
+  volume={45},
+  number={2},
+  pages={2551--2566},
+  year={2022},
+  publisher={IEEE}
+}
+
+@article{acosta2022multimodal,
+  title={Multimodal biomedical AI},
+  author={Acosta, Juli{\'a}n N and Falcone, Guido J and Rajpurkar, Pranav and Topol, Eric J},
+  journal={Nature Medicine},
+  volume={28},
+  number={9},
+  pages={1773--1784},
+  year={2022},
+  publisher={Nature Publishing Group US New York}
+}
+
+@article{vatansever2021artificial,
+  title={Artificial intelligence and machine learning-aided drug discovery in central nervous system diseases: State-of-the-arts and future directions},
+  author={Vatansever, Sezen and Schlessinger, Avner and Wacker, Daniel and Kaniskan, H {\"U}mit and Jin, Jian and Zhou, Ming-Ming and Zhang, Bin},
+  journal={Medicinal research reviews},
+  volume={41},
+  number={3},
+  pages={1427--1473},
+  year={2021},
+  publisher={Wiley Online Library}
+}
+
+@article{cai2022machine,
+  title={Machine learning for multi-omics data integration in cancer},
+  author={Cai, Zhaoxiang and Poulos, Rebecca C and Liu, Jia and Zhong, Qing},
+  journal={Iscience},
+  volume={25},
+  number={2},
+  year={2022},
+  publisher={Elsevier}
+}
+
+@article{ewels2020nf,
+  title={The nf-core framework for community-curated bioinformatics pipelines},
+  author={Ewels, Philip A and Peltzer, Alexander and Fillinger, Sven and Patel, Harshil and Alneberg, Johannes and Wilm, Andreas and Garcia, Maxime Ulysse and Di Tommaso, Paolo and Nahnsen, Sven},
+  journal={Nature biotechnology},
+  volume={38},
+  number={3},
+  pages={276--278},
+  year={2020},
+  publisher={Nature Publishing Group US New York}
+}
+
+@article{Argelaguet2018,
+    author = {Argelaguet, R. and Velten, B. and Arnol, D. and Dietrich, S. and Zenz, T. and Marioni, J. C. and Buettner, F. and Huber, W. and Stegle, O.},
+    title = {Multi-Omics Factor Analysis-a framework for unsupervised integration of multi-omics data sets},
+    journal = {Mol Syst Biol},
+    year = {2018},
+    volume = {14},
+    number = {6},
+    pages = {e8124}
+}
+
+@article{Argelaguet2020,
+    author = {Argelaguet, R. and Arnol, D. and Bredikhin, D. and Deloro, Y. and Velten, B. and Marioni, J.C. and Stegle, O.},
+    title = {MOFA+: a statistical framework for comprehensive integration of multi-modal single-cell data},
+    journal = {Genome Biology},
+    year = {2020},
+    volume = {21},
+    number = {1},
+    pages = {111}
+}
+
+@article{stone1978cross,
+  title={Cross-validation: A review},
+  author={Stone, Mervyn},
+  journal={Statistics: A Journal of Theoretical and Applied Statistics},
+  volume={9},
+  number={1},
+  pages={127--139},
+  year={1978},
+  publisher={Taylor \& Francis}
+}
+
+@article{bredikhin2022muon,
+  title={MUON: multimodal omics analysis framework},
+  author={Bredikhin, Danila and Kats, Ilia and Stegle, Oliver},
+  journal={Genome Biology},
+  volume={23},
+  number={1},
+  pages={42},
+  year={2022},
+  publisher={Springer}
+}
+
+@article{kurtzer2017singularity,
+  title={Singularity: Scientific containers for mobility of compute},
+  author={Kurtzer, Gregory M and Sochat, Vanessa and Bauer, Michael W},
+  journal={PloS one},
+  volume={12},
+  number={5},
+  pages={e0177459},
+  year={2017},
+  publisher={Public Library of Science San Francisco, CA USA}
+}
+
+
+@misc{sockeye,
+  doi = {10.14288/SOCKEYE},
+  url = {https://arc.ubc.ca/ubc-arc-sockeye},
+  author = {{UBC Advanced Research Computing}},
+  language = {en},
+  title = {UBC ARC Sockeye},
+  publisher = {UBC Advanced Research Computing},
+  year = {2019}
+}
+
+@article{luecken2022benchmarking,
+  title={Benchmarking atlas-level data integration in single-cell genomics},
+  author={Luecken, Malte D and B{\"u}ttner, Maren and Chaichoompu, Kridsadakorn and Danese, Anna and Interlandi, Marta and M{\"u}ller, Michaela F and Strobl, Daniel C and Zappia, Luke and Dugas, Martin and Colom{\'e}-Tatch{\'e}, Maria and others},
+  journal={Nature methods},
+  volume={19},
+  number={1},
+  pages={41--50},
+  year={2022},
+  publisher={Nature Publishing Group US New York}
+}
+
+@article{li2022benchmark,
+  title={Benchmark study of feature selection strategies for multi-omics data},
+  author={Li, Yingxia and Mansmann, Ulrich and Du, Shangming and Hornung, Roman},
+  journal={BMC bioinformatics},
+  volume={23},
+  number={1},
+  pages={1--18},
+  year={2022},
+  publisher={BioMed Central}
+}
+
+@article{cantini2021benchmarking,
+  title={Benchmarking joint multi-omics dimensionality reduction approaches for the study of cancer},
+  author={Cantini, Laura and Zakeri, Pooya and Hernandez, Celine and Naldi, Aurelien and Thieffry, Denis and Remy, Elisabeth and Baudot, Ana{\"\i}s},
+  journal={Nature communications},
+  volume={12},
+  number={1},
+  pages={124},
+  year={2021},
+  publisher={Nature Publishing Group UK London}
+}
+
+
+
+
+@article{singh2019diablo,
+  title={DIABLO: an integrative approach for identifying key molecular drivers from multi-omics assays},
+  author={Singh, Amrit and Shannon, Casey P and Gautier, Beno{\^\i}t and Rohart, Florian and Vacher, Micha{\"e}l and Tebbutt, Scott J and L{\^e} Cao, Kim-Anh},
+  journal={Bioinformatics},
+  volume={35},
+  number={17},
+  pages={3055--3062},
+  year={2019},
+  publisher={Oxford University Press}
+}
+
+@article{ding2022cooperative,
+  title={Cooperative learning for multiview analysis},
+  author={Ding, Daisy Yi and Li, Shuangning and Narasimhan, Balasubramanian and Tibshirani, Robert},
+  journal={Proceedings of the National Academy of Sciences},
+  volume={119},
+  number={38},
+  pages={e2202113119},
+  year={2022},
+  publisher={National Acad Sciences}
+}
+
+@article{wang2021mogonet,
+  title={MOGONET integrates multi-omics data using graph convolutional networks allowing patient classification and biomarker identification},
+  author={Wang, Tongxin and Shao, Wei and Huang, Zhi and Tang, Haixu and Zhang, Jie and Ding, Zhengming and Huang, Kun},
+  journal={Nature Communications},
+  volume={12},
+  number={1},
+  pages={3445},
+  year={2021},
+  publisher={Nature Publishing Group UK London}
+}
+
+@article{di2017nextflow,
+  title={Nextflow enables reproducible computational workflows},
+  author={Di Tommaso, Paolo and Chatzou, Maria and Floden, Evan W and Barja, Pablo Prieto and Palumbo, Emilio and Notredame, Cedric},
+  journal={Nature biotechnology},
+  volume={35},
+  number={4},
+  pages={316--319},
+  year={2017},
+  publisher={Nature Publishing Group}
+}
+
+@article{subramanian2020multi,
+  title={Multi-omics data integration, interpretation, and its application},
+  author={Subramanian, Indhupriya and Verma, Srikant and Kumar, Shiva and Jere, Abhay and Anamika, Krishanpal},
+  journal={Bioinformatics and biology insights},
+  volume={14},
+  pages={1177932219899051},
+  year={2020},
+  publisher={SAGE Publications Sage UK: London, England}
+}
+
+@article{hasin2017multi,
+  title={Multi-omics approaches to disease},
+  author={Hasin, Yehudit and Seldin, Marcus and Lusis, Aldons},
+  journal={Genome biology},
+  volume={18},
+  number={1},
+  pages={1--15},
+  year={2017},
+  publisher={BioMed Central}
+}
