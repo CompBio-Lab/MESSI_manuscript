@@ -38,7 +38,9 @@ clean_real <- function(df, cor_method="spearman") {
     as.matrix() %>%
     cor(method = cor_method)
   # And specifically let the colnames to be dataset
-  colnames(cor_mat) <- ranking_df$dataset |> unique() |> sort()
+  # TODO: this is not entirely working on the dataset
+  # Only works if number of dataset = number of method
+  #colnames(cor_mat) <- ranking_df$dataset |> unique() |> sort()
 
   return(cor_mat)
 
