@@ -8,6 +8,17 @@ DATASET_NAMES <- c(".")
 NUM_PATIENTS <- c(".")
 NUM_VARS <- c(".")
 
+
+# Need to manually add the disease that it studies ....
+# In this order:
+# GSE38609, GSE47592, GSE71669, rosmap, tcga-blca, tcga-brca, tcga-kipan, tcga-thca
+# GSE47592 is checking normal or cancerous tissue
+diseases <- c(
+  "Autistic disorder", "Cancer","Bladder cancer",
+  "Alzheimer's Disease", "Bladder cancer", "Breast cancer",
+  "Kidney cancer", "Thyroid cancer")
+
+
 metadata_path <- here("data/raw/real_data_results/parsed_metadata.csv")
 # TODO: remember to add sex
 
@@ -43,9 +54,15 @@ metadata_df <- read.csv(metadata_path) |>
   mutate(omics_names = str_remove_all(omics_names, "_Gene_[lL]evel")) %>%
   # This is from kipan?
   mutate(omics_names = str_remove_all(omics_names, "gene_level")) %>%
-  select(c("dataset", "obs", "var", "positive_prop", "omics_names")) %>%
+  mutate(diseases = diseases) %>%
+  mutate(dataset = toupper(dataset)) %>%
+  distinct() %>%                       # Remove duplicate rows
+  # Lastly expand omic names and number of predictors
+  tidyr::separate_rows(omics_names, var, sep = ",") %>%  # Split into rows
+  mutate(across(c(omics_names, var), trimws)) %>%
+  select(c("dataset", "obs", "diseases", "positive_prop", "omics_names", "var")) %>%
   as_tibble()
-metadata_df
+
   # mutate(
   #   class1 = paste0("positive, ", sample(14:25, size=1)),
   #   class2 = paste0("normal, ", sample(14:25, size=1)),
@@ -54,13 +71,6 @@ metadata_df
   # select(-c("is_simulated", "positive_prop",
   #           "total_number_feature", "dataset_dim"))
 
-
-# Need to manually add the disease that it studies ....
-diseases <- c("Bladder cancer", "Alzheimer Disease",
-              "Bladder cancer", "Breast cancer",
-              "Kidney cancer", "Thyroid cancer")
-
-metadata_df$diseases <- diseases
 # Create sample data
 # data <- data.frame(
 #   dataset = DATASET_NAMES,
@@ -76,34 +86,45 @@ write.csv(metadata_df, file = "data/processed/metadata_real.csv", row.names = F)
 
 # Create the table with flextable
 flex_table <- flextable(metadata_df) %>%
+  # Merge cells
+  merge_v(j = c("dataset", "obs", "diseases", "positive_prop")) %>%  # Merge grouped cells
+  theme_box() %>%                                                    # Add borders
   # Optionally set header
   set_header_labels(
     dataset = "Dataset",
     omics_names = "Omics",
     diseases = "Disease",
-    var = "Number of predictors",
-    obs = "Number of subjects",
-    positive_prop = "Proportion of positive cases",
+    var = "# of predictors",
+    obs = "# of subjects",
+    positive_prop = "Prop(Y=1)",
     #type = "Type",
     #class1 = "Pos Class",
     #class2 = "Neg Class",
     sex = "Sex"
   ) %>%
-  theme_box() %>%
   autofit()
 
 
-
-
 color_table <- flex_table %>%
-  bg(i = seq(1, nrow(metadata_df), by = 2), bg = "lightblue") %>%  # Light grey for alternate rows
-  bg(part = "header", bg = "grey20") %>%                 # Dark color for header background
-  color(part = "header", color = "white")
+  theme_vanilla() %>%
+  bg(bg = "#44B29C", part = "header") %>%
+  #align(i = 1, j = NULL, align = "center", part = "header") %>%
+  align(align="center", part="all") %>%
+  fontsize(size=16, part="all") %>%
+  fit_to_width(max_width = 9) %>%
+  fix_border_issues()
+
+
+  #
+  # flex_table %>%
+  # bg(i = seq(1, nrow(metadata_df), by = 2), bg = "lightblue") %>%  # Light grey for alternate rows
+  # bg(part = "header", bg = "grey20") %>%                 # Dark color for header background
+  # color(part = "header", color = "white")
 
 
 
 
-ggsave("new_table.png", plot = gen_grob(color_table), width = 6, height = 4)
+ggsave("new_table.png", plot = gen_grob(color_table), width = 9, height = 12)
 
 # Lastly should save this to output
 save_as_image(flex_table, "real_table.png")
