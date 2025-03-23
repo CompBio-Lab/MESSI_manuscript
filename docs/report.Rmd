@@ -17,7 +17,6 @@ output:
     toc: false
 ---
 
-
 ```{r setup, echo=FALSE, include=FALSE}
 library(dplyr)
 library(ggplot2)
@@ -40,49 +39,86 @@ fig_path <- here("results/figures")
 
 # Background
 
-Technological advances have allowed for the profiling of different molecular measurements (e.g., genes, proteins, metabolites) from the same biological samples; termed multiomics [@hasin2017multi; @subramanian2020multi]. 
+Technological advances have allowed for the profiling of different molecular measurements (e.g., genes, proteins, metabolites) from the same biological samples; termed multiomics [@hasin2017multi; @subramanian2020multi].
 
-The majority of multiomics data are obtained for samples from individual patients (bulk multiomics data) and more recently with single-cell and spatial resolution. 
+The majority of multiomics data are obtained for samples from individual patients (bulk multiomics data) and more recently with single-cell and spatial resolution.
 
-Many methods have been developed to jointly analyze multiomics data to identify common patterns between datasets, and to identify biomarkers of disease [@vandereyken2023methods]. 
+Many methods have been developed to jointly analyze multiomics data to identify common patterns between datasets, and to identify biomarkers of disease [@vandereyken2023methods].
 
 This integrative approach of multiomics data may strengthen the understanding of the molecular dynamics underlying the biological processes of diseases and may lead to novel strategies for early detection, prevention, and treatment of human diseases [@sun2016integrative].
 
-
-Researchers face difficulties in choosing the right method due to the varying nature of analytical tasks such as clustering analysis, factor analysis, or cancer type prediction. 
-
+Researchers face difficulties in choosing the right method due to the varying nature of analytical tasks such as clustering analysis, factor analysis, or cancer type prediction.
 
 Hence, numerous reviews have benchmarked various integrative methods [@bersanelli2016methods; @cantini2021benchmarking; @hasin2017multi; @huang2017more; @li2018review; @li2022benchmark; @luecken2022benchmarking; @pucher2019comparison; @richardson2016statistical; @yu2018integrative; @zeng2018review]. However, these studies often focus on methods for specific tasks or data types and may lack reproducibility.
 
-
 To address this, we propose a new automated framework to systematically benchmark and analyze multiomics methods with varying data types. This framework ensures full reproducibility and provides standardized input for any analytical task, with the capability to run on any computing platform.
 
-```{r benchmark-data-table, eval=T}
-real_data_tbl <- read.csv(here("data/processed/metadata_real.csv")) %>%
-  as_tibble()
 
 
-real_data_tbl %>%
-  dplyr::select(-c("omics_names")) %>%
-  dplyr::mutate(dataset = toupper(dataset)) %>%
-  kbl(caption = "Overview of real datasets to benchmark", booktab=T,
-      col.names = c(
-        "Dataset",
-        "N",
-        "P",
-        "Prop(Y = 1)",
-        "Disease"
-      ),
-      escape = T) %>%
-  kable_styling(latex_options = "hold_position", full_width = F) %>%
-  #column_spec(5, width="10px") %>%
-  footnote(symbol = "Features represents number of predictors in invididual omics", footnote_as_chunk = T)
-```
 # Results
 
 ## MESSI pipeline
 
-We introduce here the MESSI pipeline, *Multiple Experiments with SyStematic Interrogation*, implemented with Nextflow [@di2017nextflow]. This proposed pipeline ensures full reproducibility of any method by using an independent container environment with Singularity [@kurtzer2017singularity]. We propose to publish this pipeline on the nf-core [@ewels2020nf] platform, a community of Nextflow users, to ensure easy access and usability for researchers worldwide, as shown in Fig \@ref(fig:messi-workflow-plot).
+We introduce here the MESSI pipeline, *Multiple Experiments with SyStematic Interrogation* (Fig \@ref(fig:messi-workflow-plot), and additional supplementary), which comprises of 4 main steps: 1) [Prepare data], 2) [Data splitting], 3) [Cross validation], 4) [Feature selection].
+
+
+MESSI is implemented with Nextflow [@di2017nextflow], a domain specific language (DSL) primarily used by bioinformaticians. Compared to traditional workflow management systems like Snakemake [@koster2012snakemake] or GNU make [@stallman1988gnu], Nextflow breaks down complex workflows into modular components, and connect them with channels which determines the flow of pipeline. This feature allows us to customize each module, extending the pipeline to not only benchmark purposes but also multi-purpose usage. Additionally, This modular design enables rapid, efficient and reproducible way to test and maintain codebases.
+
+Moreover, the core feature of Nextflow of using containerization for modules like Docker [@docker2020docker] and Singularity [@kurtzer2017singularity] solves the reproducibility issue in replicating papers. Each time the pipeline is executed, containers are created for each process defined in the workflows that constitute the pipeline. These containers follow same sets of operating system configurations, software versions of the desired computation performed. Hence, it fulfills reproducibility and portability of our results as each time we run these independently on its own encapsulated environment. Furthermore, the independence between each process leads nature of parallelizable computations. This characteristic of the pipeline along with the resumability of re-executing interrupted or failed processes make debugging or changing computational settings for certain methods only atomic and simple. Ultimately, reducing time complexity of dealing with large datasets or long runtime computations, compared to standard way of sequentially executing complex scripts.
+
+In terms of interoperability, Nextflow is capable to run the pipeline on various computing platforms including and not limited to our own personal computer, mainstream high-performance computing clusters (HPC) like SLURM, PBS or popular cloud platforms like AWS and Google cloud without modifying code logics. This is enabled from resource and parameters configurations, making user to only worry about configurations to carry out and the code logic itself.
+
+
+<!-- This proposed pipeline ensures full reproducibility of any method by using an independent container environment with Singularity [@kurtzer2017singularity]. We propose to publish this pipeline on the nf-core [@ewels2020nf] platform, a community of Nextflow users, to ensure easy access and usability for researchers worldwide. -->
+
+
+
+
+
+### Standardized data input in both R and Python
+
+To ensure the standardized input, we incorporated the MultiAssayExperiment [@ramos2017software] package of the Bioconductor community [@gentleman2004bioconductor] for R [@r2013r] and MuData [@bredikhin2022muon] for Python [@sanner1999python]. These tools are easily transferable, meaning users familiar with one can have the pipeline automatically convert to the other.
+
+Currently, we are benchmarking existing methods like DIABLO [@singh2019diablo], Cooperative Learning [@ding2022cooperative], MOGONET [@wang2021mogonet], RGCCA [@girka2023multiblock], MOFA [@Argelaguet2018; @Argelaguet2020] . The current pipeline focuses on testing this selection of integrative methods against a series of real multiomics datasets, particularly for classification tasks.
+
+The results are compared using metrics like balanced classification error, F1 score, and biological enrichment results.
+
+Through MESSI, we could systematically identify the top-performing methods with respect to classification performance and identifying molecular drivers of disease. Furthermore, this could extend to regression tasks or clustering tasks. This project can greatly benefit the community, either by developing new methods to assess their strength or finding a method that best suits custom multiomics data.
+
+
+
+### Prepare data
+
+- Mention how data expect to be in tar gz containing the MAE and MuData
+- These data goes to a preprocess step of filtering
+- And cleaning up "columns" or metadata of it
+- Describe some parameters used here, that could be controlled through nextflow config
+- So from here, we come to commonly used and cleaned mae and mudata for respective language method
+
+
+### Data Splitting 
+
+- This splitting is because not all methods carry a built in cv
+- Moreover, this make sure all method start with same data setup, since cv in each method might vary due to random seed problem
+- Stratified to make sure of handling class imbalance, possible to go into discussion
+
+### Cross Validation 
+
+- Have a more detail flow of how here works, given could parallel per method, data, fold
+- Show some plot from each method or data
+- Then this makes each method as one workflow, where each can contain different number of modules, but requirement is just produce some kind of csv as end result
+that follows some format
+- each workflow works in parallel and group by languages
+
+
+### Feature Selection
+
+- This is an additional workflow that go directly after prepare data rather than splitting
+- also makes it parallel by method
+- then just talk how collect stuff in common format and produce series of metrics file that could be visualize downstream
+
+
+
 
 ```{r messi-workflow-plot,fig.cap="Workflow design of MESSI.",fig.align="center",echo=FALSE, out.width="60%"}
 include_graphics(here("docs/assets", "messi_workflow.png"))
@@ -90,24 +126,63 @@ include_graphics(here("docs/assets", "messi_workflow.png"))
 
 
 
-The usage of Nextflow makes the pipeline runnable without changing the logic on any mainstream high-performance computing cluster (HPC) like SLURM, PBS, or popular cloud platforms like AWS and Google Cloud. Additionally, Nextflow provides internal parallelization, which can speed up the benchmarking process by running all methods simultaneously. With each method, cross-validation can be further parallelized provided enough computing resources.
-
-### Standardized data input in both R and Python
-
-To ensure the standardized input, we incorporated the MultiAssayExperiment [@ramos2017software] package of the Bioconductor community [@gentleman2004bioconductor] for R [@r2013r] and MuData [@bredikhin2022muon] for Python [@sanner1999python]. These tools are easily transferable, meaning users familiar with one can have the pipeline automatically convert to the other. 
-
-Currently, we are benchmarking existing methods like DIABLO [@singh2019diablo], Cooperative Learning [@ding2022cooperative], MOGONET [@wang2021mogonet], RGCCA [@girka2023multiblock], MOFA [@Argelaguet2018; @Argelaguet2020] . The current pipeline focuses on testing this selection of integrative methods against a series of real multiomics datasets, particularly for classification tasks. 
-
-The results are compared using metrics like balanced classification error, F1 score, and biological enrichment results. 
 
 
-Through MESSI, we could systematically identify the top-performing methods with respect to classification performance and identifying molecular drivers of disease. Furthermore, this could extend to regression tasks or clustering tasks. This project can greatly benefit the community, either by developing new methods to assess their strength or finding a method that best suits custom multiomics data. 
+
 
 
 ### Benchmark analysis
 
-We applied the pipeline on the described methods upon the real datasets. We presented benchmark results for various multiomics data and methods at Fig \@ref(fig:real-grid-plot) with real datasets from table \@ref(tab:benchmark-data-table). 
+We applied the pipeline on the described methods upon the real datasets. We presented benchmark results for various multiomics data and methods at Fig \@ref(fig:real-grid-plot) with real datasets from table \@ref(tab:benchmark-data-table).
 
+
+```{r benchmark-data-table, eval=T}
+real_data_tbl <- read.csv(here("data/processed/metadata_real.csv")) %>%
+  as_tibble()
+
+is_longer <- TRUE
+# shorter cols
+if (!is_longer) {
+  select_cols <- c("dataset", "obs", "positive_prop", "omics_names", "var", "diseases")
+  tbl_col <-  c(
+        "Dataset",
+        "N",
+        "Prop(Y = 1)",
+        "Omic",
+        "P",
+        "Disease"
+      )
+} else {
+  select_cols <- c("dataset", "obs", "neg_class", "pos_class", "positive_prop", "omics_names", "var", "diseases")
+  tbl_col <-  c(
+        "Dataset",
+        "N",
+        "Y=0",
+        "Y=1",
+        "Prop(Y = 1)",
+        "Omic",
+        "P",
+        "Disease"
+      )
+}
+# longer cols
+
+real_data_tbl %>%
+  dplyr::mutate(dataset = toupper(dataset)) %>%
+  dplyr::mutate(
+    pos_class = stringr::str_extract(diseases, "[A-Za-z]+(?: [A-Za-z]+)*"),
+    neg_class = paste0("Non-", tolower(pos_class))
+  ) %>%
+  dplyr::select(all_of(select_cols)) %>%
+  # Change ordering
+  kbl(caption = "Overview of real datasets to benchmark", booktab=T,
+      col.names = tbl_col,
+      escape = T) %>%
+  kable_styling(latex_options = "scale_down", full_width = F) %>%
+  collapse_rows(valign = "middle") %>%
+  #column_spec(5, width="10px") %>%
+  footnote(symbol = "Features represents number of predictors in invididual omics", footnote_as_chunk = T)
+```
 
 ## Simulation studies
 
@@ -117,71 +192,54 @@ We examined the methods on controlled setting of simulation studies. Methods wer
 #include_graphics(here(fig_path, "fig_sim_grid.png"))
 ```
 
-
-
-
 ## Computational time
 
-We observed notable variations in the computation time of most methods with changing dataset sizes (categorized as small if the size of dataset is less than median of all), while DIABLO exhibited consistent performance regardless of dataset size. Conversely, Cooperative Learning displayed a comparatively longer median time than other methods. (Fig 1A). 
-
+We observed notable variations in the computation time of most methods with changing dataset sizes (categorized as small if the size of dataset is less than median of all), while DIABLO exhibited consistent performance regardless of dataset size. Conversely, Cooperative Learning displayed a comparatively longer median time than other methods. (Fig 1A).
 
 ## Real data classification performance
 
-Regarding classification performance, we employed the area under the curve (AUC) score for method comparison across datasets (Fig 1B). Mogonet emerged as the weakest performer, with MOFA + glmnet showing only marginal improvement. In contrast, Cooperative Learning demonstrated the highest performance, followed by DIABLO and RGCCA. Interestingly, DIABLO with a null design outperformed than its full design choice. Nevertheless, all methods performed poorly on the tcga-thca dataset. 
-
+Regarding classification performance, we employed the area under the curve (AUC) score for method comparison across datasets (Fig 1B). Mogonet emerged as the weakest performer, with MOFA + glmnet showing only marginal improvement. In contrast, Cooperative Learning demonstrated the highest performance, followed by DIABLO and RGCCA. Interestingly, DIABLO with a null design outperformed than its full design choice. Nevertheless, all methods performed poorly on the tcga-thca dataset.
 
 ## Feature performance
 
 We further investigated each method's ability to identify significant biomarkers and examined the overlap between them, calculating the similarity in their feature sets (Fig 1C). Most methods identified similar biomarkers in TCGA datasets but exhibited minimal overlap in the rosmap and gse71669 datasets. Notably, DIABLO and RGCCA tended to select similar biomarkers due to their shared backend framework of canonical correlation analysis.
 
+```{=html}
 <!---
 Fig1. Benchmark results of multiomics data and integration methods. (A) Computation time for each multiomics method of varying data size. (B) Classification performances by area under the curve of method and dataset combination. (C) Similarity in feature selection between methods and datasets.
 ---->
-
+```
 ```{r real-grid-plot, fig.cap="Benchmark results on real datasets.", echo=FALSE, out.width="92%"}
 include_graphics(here(fig_path, "fig_real_grid.png"))
 ```
 
-
-
 # Discussion
 
-- Explain results, and relevant comments to these
-
-
+-   Explain results, and relevant comments to these
 
 # Conclusion
 
-Overall, Cooperative Learning emerged as the top performer in terms of classification performance, disregarding its computational time overhead. Conversely, MOGONET, leveraging deep neural networks, displayed the weakest performance. While acknowledging the potential for further enhancements through exploration of additional datasets and methodologies, we encountered a significant challenge of no publicly available repository/data portal with curated multiomics data. To address this gap, we have begun to curate multiomics studies for various omics data (e.g., transcriptomics, methylation, proteomics) and associated clinical metadata across a range of cancer and non-cancer diseases from various public sources to create the first data portal for multiomics data (~ 100 studies) in both standard formats mentioned such that they can easily be used by other researchers. We anticipate this exercise to be highly relevant to the community utilizing multiomics data for their research, such will help inform the development of a new integrative method that is applicable to different types (bulk, single-cell, or spatial) of multiomics data with the extensibility of our proposed MESSI pipeline.
-
-
+Overall, Cooperative Learning emerged as the top performer in terms of classification performance, disregarding its computational time overhead. Conversely, MOGONET, leveraging deep neural networks, displayed the weakest performance. While acknowledging the potential for further enhancements through exploration of additional datasets and methodologies, we encountered a significant challenge of no publicly available repository/data portal with curated multiomics data. To address this gap, we have begun to curate multiomics studies for various omics data (e.g., transcriptomics, methylation, proteomics) and associated clinical metadata across a range of cancer and non-cancer diseases from various public sources to create the first data portal for multiomics data (\~ 100 studies) in both standard formats mentioned such that they can easily be used by other researchers. We anticipate this exercise to be highly relevant to the community utilizing multiomics data for their research, such will help inform the development of a new integrative method that is applicable to different types (bulk, single-cell, or spatial) of multiomics data with the extensibility of our proposed MESSI pipeline.
 
 \newpage
 
-
-
-
 # Methods
 
-
-
-### Metric 
+### Metric
 
 First, defined the metrics used in benchmark analysis ...
 
-- TP: true positive
+-   TP: true positive
 
-- TN: true negative
+-   TN: true negative
 
-- FP: false positive
+-   FP: false positive
 
-- FN: false negative
-
+-   FN: false negative
 
 wheras, it could be constructed to the following:
 
 $$\text{accuracy} = \frac{TP + TN}{TP +TN + FP +FN}$$
-
 
 ## Method Algorithms
 
@@ -195,11 +253,9 @@ DIABLO is ...
 
 Multiview is ...
 
-
 ### MOFA
 
 MOFA is ...
-
 
 ### MOGONET
 
@@ -209,32 +265,29 @@ MOGONET is ...
 
 RGCCA is ...
 
-
 ### TODO
 
-- Explain what is the data input in mathematical form
+-   Explain what is the data input in mathematical form
 
-- Then introduce the integration methods used here
+-   Then introduce the integration methods used here
 
-- Each should have their unique characterisitic, and what problem it solves in math, with proper citation
+-   Each should have their unique characterisitic, and what problem it solves in math, with proper citation
 
+-   Then on how data was simulated, hopefully add math details
 
-- Then on how data was simulated, hopefully add math details
+-   Then explain what metrics to be used in both simulated data and real datasets
 
-
-- Then explain what metrics to be used in both simulated data and real datasets
-  - Define what is TP, FP, FN, TN
-  - and the the actual formulas of the metrics
-
+    -   Define what is TP, FP, FN, TN
+    -   and the the actual formulas of the metrics
 
 \newpage
 
-
 # References
 
-<div id="refs"></div>
+::: {#refs}
+:::
 
-# (APPENDIX) Appendix {-} 
+# (APPENDIX) Appendix {.unnumbered}
 
 # More information
 
@@ -243,4 +296,3 @@ This will be Appendix A.
 # One more thing
 
 This will be Appendix B.
-
