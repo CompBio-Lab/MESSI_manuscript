@@ -202,10 +202,14 @@ real_data_tbl %>%
   ) %>%
   dplyr::select(all_of(select_cols)) %>%
   # Change ordering
-  kbl(caption = "Overview of real datasets to benchmark", booktab=T,
-      col.names = tbl_col,
-      escape = T) %>%
-  kable_styling(latex_options = "scale_down", full_width = F) %>%
+  kbl(
+    caption = "Overview of real datasets to benchmark",
+    booktab = T,
+    longtable = T,
+    col.names = tbl_col,
+    escape = T) %>%
+  # Previously scale down
+  kable_styling(latex_options = c("repeat_header", "scale_down"), full_width = F, font_size = 8) %>%
   collapse_rows(valign = "middle") %>%
   #column_spec(5, width="10px") %>%
   footnote(symbol = "Features represents number of predictors in invididual omics", footnote_as_chunk = T)
