@@ -97,10 +97,16 @@ FIG_SIM_TIME_OUT=${FIG_DIR}/fig_computational_time_sim.${DEVICE}
 FIG_REAL_FS_OUT=${FIG_DIR}/fig_feature_selection_real.${DEVICE}
 FIG_SIM_FS_OUT=${FIG_DIR}/fig_feature_selection_sim.${DEVICE}
 
+
+# ================================================
+# TABLES
+TABLE_METHOD=${DATA_PROCESSED_DIR}/method_metadata.csv
+TABLE_DATASET=${DATA_PROCESSED_DIR}/real_dataset_metadata.csv
+
 # ====================================================================================
 # All the outputs
 # Real data targets are always included
-OUTPUTS=${FIG_REAL_PERF_OUT} ${FIG_REAL_TIME_OUT} ${FIG_REAL_FS_OUT}
+OUTPUTS=${FIG_REAL_PERF_OUT} ${FIG_REAL_TIME_OUT} ${FIG_REAL_FS_OUT} ${TABLE_METHOD} ${TABLE_DATASET}
 # Conditionally include simulated data targets if input files exist
 ifneq ($(wildcard ${SIM_METRICS_CSV}),)
 OUTPUTS+= ${FIG_SIM_PERF_OUT}
@@ -254,7 +260,7 @@ ${FIG_REAL_FS_OUT}: ${FIG3_PLOT_REAL_SRC} ${COMMON_R} ${FIG3_REAL_PROCESSED}
 		--dpi ${DPI} \
 		--show_title ${SHOW_TITLE}
 
-# # FIGURE 3: Feature selection (Simulated Data)
+# FIGURE 3: Feature selection (Simulated Data)
 ${FIG_SIM_FS_OUT}: ${FIG3_PLOT_SIM_SRC} ${COMMON_R} ${FIG3_SIM_PROCESSED}
 	@echo ${BANNER}
 	@echo "Plotting feature selection (Simulated Data)..."
@@ -266,3 +272,12 @@ ${FIG_SIM_FS_OUT}: ${FIG3_PLOT_SIM_SRC} ${COMMON_R} ${FIG3_SIM_PROCESSED}
 		--device ${DEVICE} \
 		--dpi ${DPI} \
 		--show_title ${SHOW_TITLE}
+# ==============================================================================
+# TABLES
+TABLE_METHOD_SRC=src/table2_method_description/create_method.R
+${TABLE_METHOD}: ${TABLE_METHOD_SRC}
+	Rscript ${TABLE_METHOD_SRC}
+
+TABLE_DATASET_SRC=src/table1_dataset_description/create_table_real_datasets.R
+${TABLE_DATASET}: ${TABLE_DATASET_SRC}
+	Rscript ${TABLE_DATASET_SRC}
