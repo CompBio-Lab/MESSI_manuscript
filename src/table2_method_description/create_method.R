@@ -1,6 +1,7 @@
 # Load required libraries
 library(flextable)
-library(tidyverse)
+library(dplyr)
+library(stringr)
 library(here)
 # ==================================
 # These are to edit variables
