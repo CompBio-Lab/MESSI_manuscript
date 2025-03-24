@@ -15,6 +15,11 @@ output:
   bookdown::pdf_document2:
     number_sections: false
     toc: false
+header-includes:
+  \usepackage{lscape}
+  \usepackage{pdfpages}
+  \usepackage{graphicx}
+  \usepackage[figuresright]{rotating}
 ---
 
 ```{r setup, echo=FALSE, include=FALSE}
@@ -51,7 +56,30 @@ Researchers face difficulties in choosing the right method due to the varying na
 
 Hence, numerous reviews have benchmarked various integrative methods [@bersanelli2016methods; @cantini2021benchmarking; @hasin2017multi; @huang2017more; @li2018review; @li2022benchmark; @luecken2022benchmarking; @pucher2019comparison; @richardson2016statistical; @yu2018integrative; @zeng2018review]. However, these studies often focus on methods for specific tasks or data types and may lack reproducibility.
 
-To address this, we propose a new automated framework to systematically benchmark and analyze multiomics methods with varying data types. This framework ensures full reproducibility and provides standardized input for any analytical task, with the capability to run on any computing platform.
+To address this, we propose a new automated framework to systematically benchmark and analyze multiomics methods \@ref(tab:method-meta-table) with varying data types. This framework ensures full reproducibility and provides standardized input for any analytical task, with the capability to run on any computing platform.
+
+
+```{r method-meta-table, results="asis"}
+method_table <- read.csv(here("data/processed/method_metadata.csv"))
+method_table |>
+   # Change ordering
+  kbl(caption = "Overview of real datasets to benchmark", booktab=T,
+      col.names = c(
+        "Method", 
+        "Type",
+        "Language",
+        "Package available",
+        "Paper link",
+        "Code link"
+      ),
+      escape = T) %>%
+  kable_styling(latex_options = "scale_down", full_width = F) %>%
+  kableExtra::landscape()
+  #collapse_rows(valign = "middle") %>%
+  #column_spec(5, width="10px") %>%
+  
+  
+```
 
 
 
@@ -60,6 +88,11 @@ To address this, we propose a new automated framework to systematically benchmar
 ## MESSI pipeline
 
 We introduce here the MESSI pipeline, *Multiple Experiments with SyStematic Interrogation* (Fig \@ref(fig:messi-workflow-plot), and additional supplementary), which comprises of 4 main steps: 1) [Prepare data], 2) [Data splitting], 3) [Cross validation], 4) [Feature selection].
+
+```{r messi-workflow-plot,fig.cap="Workflow design of MESSI.",fig.align="center",echo=FALSE, out.width="60%"}
+include_graphics(here("docs/assets", "messi_workflow.png"))
+```
+
 
 
 MESSI is implemented with Nextflow [@di2017nextflow], a domain specific language (DSL) primarily used by bioinformaticians. Compared to traditional workflow management systems like Snakemake [@koster2012snakemake] or GNU make [@stallman1988gnu], Nextflow breaks down complex workflows into modular components, and connect them with channels which determines the flow of pipeline. This feature allows us to customize each module, extending the pipeline to not only benchmark purposes but also multi-purpose usage. Additionally, This modular design enables rapid, efficient and reproducible way to test and maintain codebases.
@@ -120,12 +153,6 @@ that follows some format
 
 
 
-```{r messi-workflow-plot,fig.cap="Workflow design of MESSI.",fig.align="center",echo=FALSE, out.width="60%"}
-include_graphics(here("docs/assets", "messi_workflow.png"))
-```
-
-
-
 
 
 
@@ -137,7 +164,7 @@ We applied the pipeline on the described methods upon the real datasets. We pres
 
 
 ```{r benchmark-data-table, eval=T}
-real_data_tbl <- read.csv(here("data/processed/metadata_real.csv")) %>%
+real_data_tbl <- read.csv(here("data/processed/real_dataset_metadata.csv")) %>%
   as_tibble()
 
 is_longer <- TRUE
@@ -169,9 +196,9 @@ if (!is_longer) {
 
 real_data_tbl %>%
   dplyr::mutate(dataset = toupper(dataset)) %>%
-  dplyr::mutate(
-    pos_class = stringr::str_extract(diseases, "[A-Za-z]+(?: [A-Za-z]+)*"),
-    neg_class = paste0("Non-", tolower(pos_class))
+  dplyr::rename(
+    pos_class = pos_col,
+    neg_class = neg_col
   ) %>%
   dplyr::select(all_of(select_cols)) %>%
   # Change ordering
@@ -183,6 +210,7 @@ real_data_tbl %>%
   #column_spec(5, width="10px") %>%
   footnote(symbol = "Features represents number of predictors in invididual omics", footnote_as_chunk = T)
 ```
+
 
 ## Simulation studies
 
@@ -210,7 +238,7 @@ Fig1. Benchmark results of multiomics data and integration methods. (A) Computat
 ---->
 ```
 ```{r real-grid-plot, fig.cap="Benchmark results on real datasets.", echo=FALSE, out.width="92%"}
-include_graphics(here(fig_path, "fig_real_grid.png"))
+#include_graphics(here(fig_path, "fig_real_grid.png"))
 ```
 
 # Discussion
