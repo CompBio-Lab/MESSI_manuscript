@@ -9,12 +9,44 @@ NUM_PATIENTS <- c(".")
 NUM_VARS <- c(".")
 
 
+# =================================================
+# DATASET MANUAL ADD ON
+# GSE38609, GSE71669, rosmap, tcga-blca,
+# tcga-brca, tcga-kipan, tcga-thca
+# =================================================
+# Come in this order:
+
+
+# And the response column labels
+# The neg are comma separated
+tcga_neg <- "stagei,stageii"
+tcga_pos <- "stageiii,stageiv"
+neg_col <- c(
+  "control Cer" , # GSE38609
+  "non-invasive bladder cancer", # GSE71669
+  "normal control", # rosmap
+  tcga_neg, # tcga-blca
+  tcga_neg, # tcga-brca
+  tcga_neg, # tcga-kipan
+  tcga_neg # tcga-thca
+)
+
+pos_col <- c(
+  "autistic" , # GSE38609
+  "invasive bladder cancer", # GSE71669
+  "alzheimer's disease", # rosmap
+  tcga_pos, # tcga-blca
+  tcga_pos, # tcga-brca
+  tcga_pos, # tcga-kipan
+  tcga_pos # tcga-thca
+)
+
 # Need to manually add the disease that it studies ....
 # In this order:
-# GSE38609, GSE47592, GSE71669, rosmap, tcga-blca, tcga-brca, tcga-kipan, tcga-thca
+# GSE38609, GSE71669, rosmap, tcga-blca, tcga-brca, tcga-kipan, tcga-thca
 # GSE47592 is checking normal or cancerous tissue
 diseases <- c(
-  "Autistic disorder", "Cancer","Bladder cancer",
+  "Autistic disorder", "Bladder cancer",
   "Alzheimer's Disease", "Bladder cancer", "Breast cancer",
   "Kidney cancer", "Thyroid cancer")
 
@@ -27,6 +59,7 @@ metadata_path <- here("data/raw/real_data_results/parsed_metadata.csv")
 metadata_df <- read.csv(metadata_path) |>
   #filter(!str_detect(dataset_name, "sim")) %>%
   dplyr::rename(dataset = dataset_name) %>%
+  dplyr::filter(toupper(dataset) != "GSE47592") %>%
   mutate(dataset = str_remove(dataset, "_processed")) %>%
   mutate(subject_dimensions_list = str_split(subject_dimensions, ",")) %>%
   mutate(
@@ -54,13 +87,17 @@ metadata_df <- read.csv(metadata_path) |>
   mutate(omics_names = str_remove_all(omics_names, "_Gene_[lL]evel")) %>%
   # This is from kipan?
   mutate(omics_names = str_remove_all(omics_names, "gene_level")) %>%
-  mutate(diseases = diseases) %>%
+  mutate(diseases = diseases,
+         pos_col = pos_col,
+         neg_col = neg_col) %>%
   mutate(dataset = toupper(dataset)) %>%
   distinct() %>%                       # Remove duplicate rows
   # Lastly expand omic names and number of predictors
   tidyr::separate_rows(omics_names, var, sep = ",") %>%  # Split into rows
+  #tidyr::separate_rows(neg_col, sep=",") %>%
+  #tidyr::separate_rows(pos_col, sep=",") %>%
   mutate(across(c(omics_names, var), trimws)) %>%
-  select(c("dataset", "obs", "diseases", "positive_prop", "omics_names", "var")) %>%
+  select(c("dataset", "obs", "diseases", "positive_prop", "omics_names", "var", "pos_col", "neg_col")) %>%
   as_tibble()
 
   # mutate(
@@ -77,7 +114,6 @@ metadata_df <- read.csv(metadata_path) |>
 #   num_patients = NUM_PATIENTS,
 #   num_vars = NUM_VARS
 # )
-
 
 # =======================================
 write.csv(metadata_df, file = "data/processed/metadata_real.csv", row.names = F)
