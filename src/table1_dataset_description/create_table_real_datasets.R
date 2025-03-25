@@ -124,11 +124,12 @@ metadata_df <- read.csv(metadata_path) |>
   distinct() %>%                       # Remove duplicate rows
   # Lastly expand omic names and number of predictors
   tidyr::separate_rows(omics_names, var, sep = ",") %>%  # Split into rows
-  tidyr::separate_rows(neg_col, sep=",") %>%
-  tidyr::separate_rows(pos_col, sep=",") %>%
+  #tidyr::separate_rows(neg_col, sep=",") %>%
+  #tidyr::separate_rows(pos_col, sep=",") %>%
   mutate(across(c(omics_names, var), trimws)) %>%
   dplyr::select(c("dataset", "obs", "diseases", "positive_prop", "omics_names", "var", "pos_col", "neg_col")) %>%
   as_tibble()
+
 
   # mutate(
 
