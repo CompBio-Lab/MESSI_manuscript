@@ -124,7 +124,10 @@ REPORT_PDF=docs/report.pdf
 
 # The report depends on the outputs files
 ${REPORT_PDF}: ${OUTPUTS} ${REPORT_SRC}
+	echo "==========================================="
+	echo "Rendering report now..."
 	Rscript -e 'rmarkdown::render("${REPORT_SRC}")'
+	echo "==========================================="
 
 all: ${OUTPUTS} ${REPORT_PDF}
 
