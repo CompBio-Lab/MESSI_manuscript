@@ -2,3 +2,5 @@
 Rplots.pdf
 *.tiff
 .Rhistory
+docs/report.log
+docs/report.aux
