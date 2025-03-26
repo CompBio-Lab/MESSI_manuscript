@@ -63,7 +63,7 @@ To address this, we propose a new automated framework to systematically benchmar
 method_table <- read.csv(here("data/processed/method_metadata.csv"))
 method_table |>
    # Change ordering
-  kbl(caption = "Overview of real datasets to benchmark", booktab=T,
+  kbl(caption = "List of available multiomics integration methods", booktab=T,
       col.names = c(
         "Method", 
         "Type",
@@ -74,7 +74,8 @@ method_table |>
       ),
       escape = T) %>%
   kable_styling(latex_options = "scale_down", full_width = F) %>%
-  kableExtra::landscape()
+  {.}
+  #kableExtra::landscape()
   #collapse_rows(valign = "middle") %>%
   #column_spec(5, width="10px") %>%
   
@@ -119,6 +120,9 @@ The results are compared using metrics like balanced classification error, F1 sc
 Through MESSI, we could systematically identify the top-performing methods with respect to classification performance and identifying molecular drivers of disease. Furthermore, this could extend to regression tasks or clustering tasks. This project can greatly benefit the community, either by developing new methods to assess their strength or finding a method that best suits custom multiomics data.
 
 
+- Explain its hard to comprae method directly due to diffent input of method
+- and their downstream output are not same, so need to standardize data and meethod
+- These method are open source
 
 ### Prepare data
 
@@ -153,10 +157,18 @@ that follows some format
 
 
 
+### Model Assessment
+
+- Describe how to evaluate the methods, but full technical details refer to methods instead
+
+To comprehensively assess the performances of these methods, simulated data were evaluated. With this base, then evaluated on the real world datasets also from public source like GEO [cite here], and TCGA[ cite] with 2 geo datasets and 12 dataset and 1 custom source (rosmap).
+
+## Simulation studies
+
+We examined the methods on controlled setting of simulation studies with varying parameters like number of observations, number of predictors in each omics, proportion of signal and correlation between omics and fixed number omics at 3. The detailed simulation method and relevant mathematical details are outlined in the [Methods] section.
 
 
-
-
+  
 
 ### Benchmark analysis
 
@@ -167,33 +179,20 @@ We applied the pipeline on the described methods upon the real datasets. We pres
 real_data_tbl <- read.csv(here("data/processed/real_dataset_metadata.csv")) %>%
   as_tibble()
 
-is_longer <- TRUE
-# shorter cols
-if (!is_longer) {
-  select_cols <- c("dataset", "obs", "positive_prop", "omics_names", "var", "diseases")
-  tbl_col <-  c(
-        "Dataset",
-        "N",
-        "Prop(Y = 1)",
-        "Omic",
-        "P",
-        "Disease"
-      )
-} else {
-  select_cols <- c("dataset", "obs", "neg_class", "pos_class", "positive_prop", "omics_names", "var", "diseases")
-  tbl_col <-  c(
-        "Dataset",
-        "N",
-        "Y=0",
-        "Y=1",
-        "Prop(Y = 1)",
-        "Omic",
-        "P",
-        "Disease"
-      )
-}
-# longer cols
 
+select_cols <- c("dataset", "obs", "neg_class", "pos_class", "positive_prop", "omics_names", "var", "diseases")
+tbl_col <-  c(
+  "Dataset",
+  "N",
+  "Y=0",
+  "Y=1",
+  "Prop(Y = 1)",
+  "Omic",
+  "P",
+  "Disease"
+  )
+
+# longer cols
 real_data_tbl %>%
   dplyr::mutate(dataset = toupper(dataset)) %>%
   dplyr::rename(
@@ -201,6 +200,7 @@ real_data_tbl %>%
     neg_class = neg_col
   ) %>%
   dplyr::select(all_of(select_cols)) %>%
+  arrange(obs) %>%
   # Change ordering
   kbl(
     caption = "Overview of real datasets to benchmark",
@@ -209,16 +209,25 @@ real_data_tbl %>%
     col.names = tbl_col,
     escape = T) %>%
   # Previously scale down
-  kable_styling(latex_options = c("repeat_header", "scale_down"), full_width = F, font_size = 8) %>%
-  collapse_rows(valign = "middle") %>%
-  #column_spec(5, width="10px") %>%
-  footnote(symbol = "Features represents number of predictors in invididual omics", footnote_as_chunk = T)
+  kable_styling(latex_options = c("repeat_header"), full_width = F, font_size = 7) %>%
+  column_spec(1, width = "0.75in") %>%
+  column_spec(3:4, width = "0.7in") %>%
+  # middle would not work if merging too many cells
+  collapse_rows(valign = "bottom", longtable_clean_cut = F,
+                latex_hline = "custom",
+                custom_latex_hline = c(1, 3, 4)) %>%
+  {.}
+  #footnote(symbol = "Features represents number of predictors in invididual omics", footnote_as_chunk = T)
 ```
 
 
-## Simulation studies
 
-We examined the methods on controlled setting of simulation studies. Methods were tested against multiomics data with varying signal, correlation, number of samples, and number of predictors on Fig \@ref(fig:sim-grid-plot).
+
+Methods were tested against multiomics data with varying signal, correlation, number of samples, and number of predictors on Fig \@ref(fig:sim-perf-plot).
+
+```{r sim-perf-plot, fig.cap="Simulation studies performance", echo=FALSE, out.width="96%"}
+knitr::include_graphics(here(fig_path, "fig_performance_evaluation_sim.png"))
+```
 
 ```{r sim-grid-plot, fig.cap="Simulation studies on signal, correlation, number of samples and number of predictors", echo=FALSE, out.width="96%"}
 #include_graphics(here(fig_path, "fig_sim_grid.png"))
@@ -232,9 +241,18 @@ We observed notable variations in the computation time of most methods with chan
 
 Regarding classification performance, we employed the area under the curve (AUC) score for method comparison across datasets (Fig 1B). Mogonet emerged as the weakest performer, with MOFA + glmnet showing only marginal improvement. In contrast, Cooperative Learning demonstrated the highest performance, followed by DIABLO and RGCCA. Interestingly, DIABLO with a null design outperformed than its full design choice. Nevertheless, all methods performed poorly on the tcga-thca dataset.
 
+
+```{r real-perf-plot, fig.cap="Heatmap of mean AUC from 5 fold-cv", echo=FALSE, out.width="96%"}
+include_graphics(here(fig_path, "fig_performance_evaluation_real.png"))
+```
+
 ## Feature performance
 
 We further investigated each method's ability to identify significant biomarkers and examined the overlap between them, calculating the similarity in their feature sets (Fig 1C). Most methods identified similar biomarkers in TCGA datasets but exhibited minimal overlap in the rosmap and gse71669 datasets. Notably, DIABLO and RGCCA tended to select similar biomarkers due to their shared backend framework of canonical correlation analysis.
+
+```{r real-feat-sel-plot, fig.cap="Feature selection result", out.width="95%"}
+include_graphics(here(fig_path, "fig_feature_selection_real.png"))
+```
 
 ```{=html}
 <!---

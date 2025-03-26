@@ -20,8 +20,8 @@ NUM_VARS <- c(".")
 
 # And the response column labels
 # The neg are comma separated
-tcga_neg <- "stagei,stageii"
-tcga_pos <- "stageiii,stageiv"
+tcga_neg <- "stagei/stageii"
+tcga_pos <- "stageiii/stageiv"
 neg_col <- c(
   "control Cer" , # GSE38609
   "non-invasive bladder cancer", # GSE71669
@@ -32,7 +32,7 @@ neg_col <- c(
   tcga_neg, # tcga-chol
   tcga_neg, # tcga-esca
   tcga_neg, # tcga-kich
-  tcga_neg, # tcga-kipan
+  #tcga_neg, # tcga-kipan
   tcga_neg, # tcga-kirc
   tcga_neg, # tcga-meso
   tcga_neg, # tcga-skcm
@@ -50,7 +50,7 @@ pos_col <- c(
   tcga_pos, # tcga-chol
   tcga_pos, # tcga-esca
   tcga_pos, # tcga-kich
-  tcga_pos, # tcga-kipan
+  #tcga_pos, # tcga-kipan
   tcga_pos, # tcga-kirc
   tcga_pos, # tcga-meso
   tcga_pos, # tcga-skcm
@@ -72,13 +72,16 @@ diseases <- c(
   "Cholangiocarcinoma", # tcga-chol
   "Esophageal Carcinoma", # tcga-esca
   "Adenomas and Adenocarcinomas", # tcga-kich
-  "Kidney Cancer", # tcga-kipan
+  #"Kidney Cancer", # tcga-kipan
   "Kidney Renal Clear Cell Carcinoma", # tcga-kirc
   "Mesothelioma", # tcga-meso
   "Skin Cutaneous Melanoma", # tcga-skcm
   "Stomach and Esophageal Carcinoma", # tcga-stes
   "Thyroid Carcinoma" # tcga-thca
 )
+
+
+
 
 
 metadata_path <- here("data/raw/real_data_results/parsed_metadata.csv")
@@ -89,8 +92,9 @@ metadata_path <- here("data/raw/real_data_results/parsed_metadata.csv")
 metadata_df <- read.csv(metadata_path) |>
   #filter(!str_detect(dataset_name, "sim")) %>%
   dplyr::rename(dataset = dataset_name) %>%
-  dplyr::filter(toupper(dataset) != "GSE47592") %>%
   mutate(dataset = str_remove(dataset, "_processed")) %>%
+  # These datasets should not stay
+  dplyr::filter(!toupper(dataset) %in% c("GSE47592", "TCGA-KIPAN")) %>%
   mutate(subject_dimensions_list = str_split(subject_dimensions, ",")) %>%
   mutate(
     sample_size = purrr::map_dbl(
@@ -114,20 +118,32 @@ metadata_df <- read.csv(metadata_path) |>
     var = feat_dimensions
          ) %>%
   # Remove extra string
-  mutate(omics_names = str_remove_all(omics_names, "_Gene_[lL]evel")) %>%
+  #mutate(omics_names = str_remove_all(omics_names, "_Gene_[lL]evel")) %>%
   # This is from kipan?
-  mutate(omics_names = str_remove_all(omics_names, "gene_level")) %>%
+  #mutate(omics_names = str_remove_all(omics_names, "gene_level")) %>%
   mutate(diseases = diseases,
          pos_col = pos_col,
          neg_col = neg_col) %>%
-  mutate(dataset = toupper(dataset)) %>%
+  mutate(dataset = toupper(dataset),
+         omics_names = tolower(omics_names)) %>%
   distinct() %>%                       # Remove duplicate rows
+  dplyr::select(c("dataset", "obs", "diseases",
+                  "positive_prop", "omics_names", "var", "pos_col", "neg_col")) %>%
   # Lastly expand omic names and number of predictors
   tidyr::separate_rows(omics_names, var, sep = ",") %>%  # Split into rows
+  # Standardize some col names
+  mutate(
+    omics_names = case_when(
+      str_detect(omics_names, "meth") ~ "cpg",
+      str_detect(omics_names, "rppa") ~ "rppa",
+      str_detect(omics_names, "rnaseq") ~ "mrna",
+      str_detect(omics_names, "mirna") ~ "mirna",
+      TRUE ~ omics_names
+    )
+  ) %>%
   #tidyr::separate_rows(neg_col, sep=",") %>%
   #tidyr::separate_rows(pos_col, sep=",") %>%
   mutate(across(c(omics_names, var), trimws)) %>%
-  dplyr::select(c("dataset", "obs", "diseases", "positive_prop", "omics_names", "var", "pos_col", "neg_col")) %>%
   as_tibble()
 
 
