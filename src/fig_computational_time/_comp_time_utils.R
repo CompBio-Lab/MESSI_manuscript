@@ -83,6 +83,9 @@ wrangle_trace <- function(
         str_detect(method, "diablo") & str_detect(tag, "-(null|full)") ~ paste0(
           method, str_extract(tag, "-(null|full)")
         ),
+        str_detect(method, "rgcca") & str_detect(tag, "-(null|full)") ~ paste0(
+          method, str_extract(tag, "-(null|full)")
+        ),
         str_detect(method, "mofa") ~ "mofa + glmnet",
         TRUE ~ method
       ),
@@ -102,9 +105,15 @@ wrangle_trace <- function(
 
   # TODO: this might not be too readable?
   sgcca_copy <- trace_df_pre %>%
-    filter(method == "rgcca",
+    filter(str_detect(method, "rgcca"),
            !str_detect(tag, "rgcca")) %>%
-    mutate(method = "sgcca + lda") %>%
+    mutate(method = paste0(method, " + lda")) %>%
+    distinct(tag, action, .keep_all=TRUE)
+
+  rgcca_copy <- trace_df_pre %>%
+    filter(str_detect(method, "sgcca"),
+           !str_detect(tag, "sgcca")) %>%
+    mutate(method = paste0(method, " + lda")) %>%
     distinct(tag, action, .keep_all=TRUE)
 
 

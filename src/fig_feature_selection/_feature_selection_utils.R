@@ -15,7 +15,7 @@ wrangle_feat_selection <- function(df) {
     ),
     # Rename rgcca to sgcca
     method = case_when(
-      str_detect(method, "rgcca") ~ "sgcca",
+      str_detect(method, "rgcca") ~ str_replace(method, "r", "s"),
       TRUE ~ method
     )
   ) %>%
@@ -29,7 +29,7 @@ wrangle_feat_selection <- function(df) {
     # Rename the method names
     mutate(
       method = case_when(
-        str_detect(method, "sgcca") ~ "sgcca + lda",
+        str_detect(method, "sgcca") ~ paste0(method,  " + lda"),
         str_detect(method, "mofa") ~ "mofa + glmnet",
         str_detect(method, "cooperative") ~ "multiview",
         TRUE ~ method

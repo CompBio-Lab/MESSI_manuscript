@@ -5,7 +5,8 @@ author:
   - "Tajveer Grewal"
   - "Asees Singh"
   - "Amrit Singh"
-csl: assets/nature.csl
+#csl: assets/nature.csl
+csl: assets/springer-vancouver-brackets.csl
 bibliography: assets/reference.bib
 linkcolor: blue
 link-citations: true

@@ -47,7 +47,6 @@ clean_real <- function(df, cor_method="spearman") {
 }
 
 
-
 main <- function(input_path, output_path) {
 
   # First load in data and wrangle it
