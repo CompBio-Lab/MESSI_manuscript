@@ -15,6 +15,7 @@ output:
     number_sections: false
     toc: false
     extra_dependencies: ["flafter"]
+    keep_md: true
     includes:
       in_header: common_header.tex
 header-includes:
