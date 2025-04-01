@@ -18,8 +18,9 @@ library(tidyr)
 source(here::here("src/common_helpers.R"))
 source(here::here("src/fig_feature_selection/_feature_selection_utils.R"))
 
+
 # Function to clean data for plotting real data
-clean_real <- function(df, cor_method="spearman") {
+clean_real <- function(df, cor_method="pearson") {
   # Some intermediate dataframes here for using later
   # Get rankings first
   ranking_df <- df %>%

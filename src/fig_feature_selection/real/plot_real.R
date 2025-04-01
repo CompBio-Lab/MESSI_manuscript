@@ -85,7 +85,8 @@ plot_real_heatmap <- function(
     cor_mat,
     col = col_fun,
     heatmap_legend_param = list(
-      title = "Spearman correlation",
+      #title = "Spearman correlation",
+      title = "Pearson correlation"
       title_gp = gpar(fontsize = text_size - 4, fontface = "bold"),
       #legend_direction = "horizontal",
       at = c(round(min(cor_mat), 1), round(median(cor_mat), 1), ceiling(max(cor_mat))),
