@@ -1,0 +1,56 @@
+# Methods
+
+### Metric
+
+First, defined the metrics used in benchmark analysis ...
+
+-   TP: true positive
+
+-   TN: true negative
+
+-   FP: false positive
+
+-   FN: false negative
+
+wheras, it could be constructed to the following:
+
+$$\text{accuracy} = \frac{TP + TN}{TP +TN + FP +FN}$$
+
+## Method Algorithms
+
+We present here the mathematical details of the integration methods benchmarked ...
+
+### DIABLO
+
+DIABLO is ...
+
+### Multiview
+
+Multiview is ...
+
+### MOFA
+
+MOFA is ...
+
+### MOGONET
+
+MOGONET is ...
+
+### RGCCA
+
+RGCCA is ...
+
+### TODO
+
+-   Explain what is the data input in mathematical form
+
+-   Then introduce the integration methods used here
+
+-   Each should have their unique characterisitic, and what problem it solves in math, with proper citation
+
+-   Then on how data was simulated, hopefully add math details
+
+-   Then explain what metrics to be used in both simulated data and real datasets
+
+    -   Define what is TP, FP, FN, TN
+    -   and the the actual formulas of the metrics
