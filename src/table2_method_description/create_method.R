@@ -18,15 +18,15 @@ LANGUAGES <- c(
   "R", "R/Python", "R", "Python",
   "R", "Python", "R", "Python",
   "Python", "Python", "R", "R",
-  "JointNMF", "Python", "Python"
+  "R", "Python", "Python"
   )
 
 # Type of method (mathematically)
 TYPES <- c(
-  "GCCA", "Factor analysis", "GCCA", "IntegrAo",
-  "IntegratedLearner", "Stabl", "Penalized regression", "GNN",
-  "GNN", "Matrix factorization, optimal transport", "BEAM", "SLIDE",
-  "JointNMF", "Ensemble", "Deep Learning"
+  "GCCA", "Factor analysis", "GCCA", "IntegrAo-fill-later",
+  "IntegratedLearner-fill-later", "Stabl-fill-later", "Penalized regression", "GNN",
+  "GNN", "Matrix factorization, optimal transport", "BEAM-fill-later", "SLIDE-fill-later",
+  "Matrix factorization", "Ensemble", "Deep Learning"
   )
 
 
@@ -35,7 +35,7 @@ PACKAGES <- c(
   "yes", "yes", "yes", "yes",
   "yes", "no", "yes", "no",
   "no", "yes", "yes", "yes",
-  "JointNMF", "yes", "yes"
+  "yes", "yes", "yes"
   )
 
 # Link to paper

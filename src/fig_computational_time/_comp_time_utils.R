@@ -44,6 +44,38 @@ wrangle_metadata <- function(metadata_df) {
            dataset_dim, is_simulated, positive_prop, feat_dimensions)
 }
 
+metadata_df <- read.csv("data/raw/real_data_results/parsed_metadata.csv")
+
+wr_meta_df <- wrangle_metadata(metadata_df) %>% as_tibble()
+
+trace_df <- readr::read_tsv("data/raw/real_data_results/execution_trace.txt", col_types = readr::cols())
+
+workflow_prefix="NFCORE_MESSI_BENCHMARK:MESSI_BENCHMARK:"
+time_col="duration"
+
+
+o2 <- trace_df %>%
+  select(process, tag, realtime, duration) %>%
+  mutate(
+    process = str_replace(process, workflow_prefix, "") |> tolower()
+  ) %>%
+  mutate(process = str_replace_all(process, "cooperative_learning", "multiview")) %>%
+  filter(
+    str_detect(process, "^feature_selection:[^_]+_select_feature") |
+      str_detect(process, "^cross_validation:")
+  ) %>%
+  filter(
+    !str_detect(process, "downstream|merge_result_table")
+  ) %>%
+  mutate(
+    process = str_replace(
+      process,
+      "^(feature_selection:|cross_validation:cv.*:)", "")
+  )
+
+o2 %>%
+  # Now split the <method>_<action> to more columns
+  separate(process, into = c("method", "action"), sep = "_", extra = "merge")
 
 
 # ================================
