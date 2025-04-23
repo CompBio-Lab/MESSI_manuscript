@@ -1,24 +1,49 @@
-# Methods
+<!-----
 
-### Metric
+Methods section, main level 1 header is in a parent file
 
-First, defined the metrics used in benchmark analysis ...
+----->
+## Dataset
 
--   TP: true positive
+We consider multiomics datasetes represented by $P$ omics matrices $X_i$ , where $X_i$ is of dimension $n \times p_i$ ($n$ samples and $p_i$ features) for $i = 1, \dots, P$. The real datasets are retrieved from public sources like TCGA and GEO...
 
--   TN: true negative
+The real datasets were filtered based on ...
 
--   FP: false positive
+### Simulation dataset
 
--   FN: false negative
+The process of simulation was based on the paper [@tenenhaus2014variable] and slightly modified, and the code to generate such data is contained in a R package accessed through GitHub.
 
-wheras, it could be constructed to the following:
+We followed similar approach in the paper mentioned with considering 3 blocks of omics, i.e. each $n \times p_j$ block $X_j$ for $j = 1, 2, 3$ and generated with the following model:
 
-$$\text{accuracy} = \frac{TP + TN}{TP +TN + FP +FN}$$
+$$X_j = u_j W^{t}_{j} + E_j \quad j = 1, 2, 3$$
 
-## Method Algorithms
+The vector $u$ represents principal components and drawn from multivariate normal distribution
 
-We present here the mathematical details of the integration methods benchmarked ...
+$$u \sim N(\mu, \Sigma)$$
+
+where $\mu$ is mean vector with fixed mean for all entries as:
+
+$$\mu = [ \mu_0, \mu_0, \mu_0]^T$$
+
+where $\mu_0$ is also controllable as parameter of the package, and default to $\mu_0 = 0$. This is a parameter to help distinguish group difference.
+
+$\Sigma$ covariance matrix is identity matrix by default representing no correlation across each block. 
+
+We have implemented this simulation in such way to control correlation of each block modifying $\Sigma$ like:
+
+$$\begin{bmatrix}1 & cor & cor \\cor & 1 & cor \\cor & cor & 1 \end{bmatrix}$$
+
+where $cor \in [0, 1]$, and default to $1$. 
+
+The weights are drawn from the following distribution:
+
+$$\text{Unif}(-0.3, -0.2) \cup \text{Unif}(0.2, 0.3)$$
+
+$E_j$ is a $n \times p_j$ residual matrix drawn from $N(0,1)$.
+
+We varied a number of samples, number of predictors, correlation between omics, pc mean to study a variety of simulation scenarios. Each scenario is replicated 3 times and evaluated for all the methods.
+
+The original technical details of evaluated integration methods can be found in publications [ @singh2019diablo, @ding2022cooperative, @wang2021mogonet, @girka2023multiblock,  @Argelaguet2018; @Argelaguet2020 ]. Here, we will quickly summarize key components of each method.
 
 ### DIABLO
 
@@ -54,3 +79,22 @@ RGCCA is ...
 
     -   Define what is TP, FP, FN, TN
     -   and the the actual formulas of the metrics
+
+
+### Metric
+
+First, defined the metrics used in benchmark analysis ...
+
+-   TP: true positive
+
+-   TN: true negative
+
+-   FP: false positive
+
+-   FN: false negative
+
+wheras, it could be constructed to the following:
+
+$$\text{accuracy} = \frac{TP + TN}{TP +TN + FP +FN}$$
+
+
