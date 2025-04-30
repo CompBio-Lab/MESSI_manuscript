@@ -5,8 +5,8 @@ author:
   - "Tajveer Grewal"
   - "Asees Singh"
   - "Amrit Singh"
-#csl: assets/nature.csl
-csl: assets/springer-vancouver-brackets.csl
+csl: assets/nature.csl
+#csl: assets/springer-vancouver-brackets.csl
 bibliography: assets/reference.bib
 linkcolor: blue
 link-citations: true
@@ -66,7 +66,7 @@ Technological advances enable multiomics profiling of molecular data (e.g., gene
 
 
 
-```{r results-child, child=c('sections/results.Rmd')}
+```{r results-child, child=c('sections/results.Rmd'), eval=TRUE}
 ```
 
 # Discussion
@@ -75,7 +75,18 @@ Technological advances enable multiomics profiling of molecular data (e.g., gene
 
 # Conclusion
 
-Overall, DIABLO emerged as the top performer in terms of classification performance, with relatively consistent computational time Conversely, MOGONET, leveraging deep neural networks, displayed the weakest performance. While acknowledging the potential for further enhancements through exploration of additional datasets and methodologies, we encountered a significant challenge of no publicly available repository/data portal with curated multiomics data. To address this gap, we have begun to curate multiomics studies for various omics data (e.g., transcriptomics, methylation, proteomics) and associated clinical metadata across a range of cancer and non-cancer diseases from various public sources to create the first data portal for multiomics data (\~ 100 studies) in both standard formats mentioned such that they can easily be used by other researchers. We anticipate this exercise to be highly relevant to the community utilizing multiomics data for their research, such will help inform the development of a new integrative method that is applicable to different types (bulk, single-cell, or spatial) of multiomics data with the extensibility of our proposed MESSI pipeline.
+Overall, DIABLO emerged as the top performer in terms of classification performance, with relatively consistent computational time Conversely, MOGONET, leveraging deep neural networks, displayed the weakest performance. While acknowledging the potential for further enhancements through exploration of additional datasets and methodologies, we encountered a significant challenge of no publicly available repository/data portal with curated multiomics data. 
+
+To address this gap, we have begun to curate multiomics studies for various omics data (e.g., transcriptomics, methylation, proteomics) and associated clinical metadata across a range of cancer and non-cancer diseases from various public sources to create the first data portal for multiomics data (\~ 100 studies) in both standard formats mentioned such that they can easily be used by other researchers. 
+
+
+
+We anticipate this exercise to be highly relevant to the community utilizing multiomics data for their research, such will help inform the development of a new integrative method that is applicable to different types (bulk, single-cell, or spatial) of multiomics data.
+
+Lastly, due to the modularity of our pipeline, any additional method or dataset could be easily added, and used to compare with existing methods implemented inside the pipeline
+
+
+
 
 \newpage
 
@@ -87,7 +98,7 @@ Here simply include child doc of method
 
 # Methods
 
-```{r method-child, child=c('sections/methods.Rmd')}
+```{r method-child, child=c('sections/methods.Rmd'), eval=TRUE}
 ```
 
 \newpage
