@@ -19,7 +19,8 @@ fig_fgsea_analysis_plot <- plot_grid(
     labs(title=NULL),
   panel_b_data,
   nrow = 2,
-  rel_heights = c(0.45, 1)
+  rel_heights = c(0.45, 1),
+  labels = c("A", "B")
 )
 
 width <- 12
