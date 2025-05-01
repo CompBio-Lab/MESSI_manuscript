@@ -1,0 +1,85 @@
+doc <- "
+
+This script is used to make plot data msigdbr fgsea
+
+Usage:
+  process_panglaodb_part2.R [options]
+
+Options:
+ --result_dir=DIR             Directory to read in fgsea top tables in rds
+ --pathway_path=PATH          Path to the pathway database with collection names
+ --output_path=OUTPUT_PATH    Path to write out output csv
+"
+
+opt <- docopt::docopt(doc)
+
+source(here::here("src/fig_fgsea_analysis/_utils.R"))
+# ===========================================
+# Use this script to process the result after running fgsea by looking
+# at panglaodb
+# ===========================================
+library(purrr)
+library(dplyr)
+library(stringr)
+# Important variables
+
+result_dir <- opt$result_dir
+panglao_pathways_path <- opt$pathway_path
+output_path <- opt$output_path
+
+
+# Main entrance of the script
+main <- function(result_dir, panglao_pathways_path,
+                 output_path="fgsea_results_part2_df.csv") {
+
+  if (is.null(result_dir)) {
+    result_dir <- "data/raw/fgsea_results/fgsea_part2/"
+
+  }
+
+  if (is.null(panglao_pathways_path)) {
+    panglao_pathways_path <- "data/processed/panglao_pathways_collection.rds"
+  }
+
+  if (is.null(output_path)) {
+    output_path <- "data/processed/fgsea_part2_df.csv"
+  }
+  dataset_prefixes <- c("tcga", "GSE", "rosmap")
+  # For all files here lets merge it
+  rds_files <- list.files(
+    here::here(result_dir),
+    full.names = TRUE
+  )
+
+  # Read and combine all results
+  all_results <- map_dfr(rds_files, read_and_annotate) %>%
+    wrangle_data() # This is from _utils.R
+
+
+  # Now also load the pathways and combine it together
+  panglaodb_pathways <- readRDS(panglao_pathways_path)
+
+  # ===================
+  # Now combine the pathways collection name into one df
+  fgsea_results_part2_df <- inner_join(
+    all_results, panglaodb_pathways,
+    by = c("pathway" = "gs_name")
+    ) %>%
+    # Then in this one, need to readjust the pval later, so
+    # rename its existing padj to another name
+    dplyr::rename(old_padj = padj)
+
+  # Lastly write it to file
+  data.table::fwrite(fgsea_results_part2_df, file=output_path)
+}
+
+# Execute it
+main(result_dir=result_dir,
+     panglao_pathways_path=panglao_pathways_path, output_path=output_path)
+
+
+
+
+
+
+
