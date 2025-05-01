@@ -15,7 +15,7 @@ nocite: '@*'
 output: 
   bookdown::pdf_document2:
     number_sections: false
-    toc: true
+    toc: false
     extra_dependencies: ["flafter"]
     keep_md: true
     includes:
@@ -52,7 +52,7 @@ fig_path <- here("results/figures")
 
 Technological advances enable multiomics profiling of molecular data (e.g., genes, proteins, metabolites) from biological samples at bulk, single-cell, spatial resolution. Integrative methods identify shared patterns and biomarkers, improving disease understanding and clinical strategies. However, method selection is challenging due to varying analytical tasks (e.g., clustering, prediction) and data types. Existing reviews are task-specific or non-reproducible. We propose an automated framework in Nextflow, *MESSI*, for systematic benchmarking of multiomics methods. It ensures reproducibility, standardizes inputs across tasks, and runs on any computing platform, enabling reliable method evaluation and selection.
 
-**Keywords**: bioinforma    tics pipeline, multiomics integration methods, machine learning, benchmark, multimodal learning
+**Keywords**: bioinformatics pipeline, multiomics integration methods, machine learning, benchmark, multimodal learning
 
 
 
@@ -98,7 +98,7 @@ Here simply include child doc of method
 
 # Methods
 
-```{r method-child, child=c('sections/methods.Rmd'), eval=TRUE}
+```{r method-child, child=c('sections/methods.Rmd'),}
 ```
 
 \newpage

@@ -3,7 +3,7 @@
 We introduce here the MESSI pipeline, *Multiple Experiments with SyStematic Interrogation* (Fig \@ref(fig:messi-workflow-plot), and additional supplementary), which comprises of 4 main steps: 1) [Prepare data], 2) [Data splitting], 3) [Cross validation], 4) [Feature selection].
 
 ```{r messi-workflow-plot,fig.cap="Workflow design of MESSI.",fig.align="center",echo=FALSE, out.width="60%"}
-include_graphics(here("docs/assets", "messi_workflow.png"))
+knitr::include_graphics(here::here("docs/assets", "messi_workflow.png"))
 ```
 
 
@@ -91,7 +91,6 @@ Things to say
 
 To perform different types of analysis, we make sure to split data into folds as in usual cross validation way [insert citation here?] using the mudata part. This is because python libraries often have good support in dealing with these operations specifically libraries like scikit-learn [@kramer2016scikit] that provides well-tested API like stratifiedKFold. With this support we create the folds under a 5-fold setting and record the index of testing sets in each fold in txts for downstream usage. The number of folds can also be controlled via nextflow config option of `params.k`. 
 
-THE FOLLOWING LINE DOESNT MAKE TOO MANY SENSE
 
 This module of splitting data ensures we could always cross validate the data even when an integration method do not have this built-in functionality. In addition, we create these common data splits for all methods making sure that they have same data setup, since the splits could be different in each method due to OS difference or random seed number generation problem. Moreover, this allows us to explore hyperparameters, where the pipeline itself constitutes of outer loop to assess performance, and within method could have inner loop cv for optimizing hyperparameters. Further details will be described under [Methods].
 
@@ -264,7 +263,7 @@ Therefore, we prove the pipeline provides an easy way to benchmark multiomics in
 
 
 ```{r real-perf-plot, fig.cap="Heatmap of mean AUC from 5 fold-cv", echo=FALSE, out.width="96%"}
-include_graphics(here(fig_path, "fig_performance_evaluation_real.png"))
+knitr::include_graphics(here(fig_path, "fig_performance_evaluation_real.png"))
 ```
 
 
@@ -285,7 +284,16 @@ Rest methods, Cooperative Learning relates with both DIABLO-null and MOGONET, wh
 ADD ON HERE?
 
 ```{r real-feat-sel-plot, fig.cap="Feature selection result", out.width="95%"}
-include_graphics(here(fig_path, "fig_feature_selection_real.png"))
+knitr::include_graphics(here(fig_path, "fig_feature_selection_real.png"))
+```
+
+## Biological Relevance Interpretation
+
+To enhance biological relevance of these datasets, we examined FGSEA [insert citation] on all the datasets + method combination separately after the pipeline at Fig
+\@ref(fig:fgsea-analysis-plot)
+
+```{r fgsea-analysis-plot, fig.cap="FGSEA Analysis", out.width="92%"}
+knitr::include_graphics(here(fig_path, "fig_fgsea_analysis_two_panels.png"))
 ```
 
 ## Computational time
