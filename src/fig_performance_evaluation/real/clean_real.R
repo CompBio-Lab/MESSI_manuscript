@@ -19,6 +19,7 @@ library(tibble)
 library(here)
 library(stringr)
 library(tidyr)
+library(data.table)
 
 source(here::here("src/common_helpers.R"))
 source(here::here("src/fig_performance_evaluation/_performance_evaluation_utils.R"))
@@ -54,10 +55,9 @@ clean_real <- function(wr_df) {
 
 main <- function(input_path, output_path) {
   # First do common wrangling on the input data
-  wrangle_df <- read.csv(input_path) %>%
-    as_tibble() %>%
-    wrangle_data()
-
+  wrangle_df <- fread(input_path) %>%
+    wrangle_data() %>%
+    as_tibble()
 
   # Handle data type-specific processing
   clean_rds <- clean_real(wrangle_df)
