@@ -46,7 +46,6 @@ main <- function(result_dir, msigdr_pathways_path,
     output_path <- "data/processed/fgsea_part1_df.csv"
   }
   dataset_prefixes <- c("tcga", "GSE", "rosmap")
-  result_dir <- "fgsea_part1/"
   # For all files here lets merge it
   rds_files <- list.files(
     here::here(result_dir),
@@ -63,7 +62,9 @@ main <- function(result_dir, msigdr_pathways_path,
     all_results, msigdbr_pathways,
     by = c("pathway" = "gs_name")
   ) %>%
-    # Now remove old padj and adjust later
+    # Then in this one, need to readjust the pval later, so
+    # rename its existing padj to another name
+    dplyr::rename(old_padj = padj) %>%
     dplyr::select(-c("gs_collection")) %>%
     tidyr::separate_wider_delim(
       comb_name, delim = " | ",

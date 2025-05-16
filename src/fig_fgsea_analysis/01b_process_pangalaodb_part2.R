@@ -52,9 +52,7 @@ main <- function(result_dir, panglao_pathways_path,
   )
 
   # Read and combine all results
-  all_results <- map_dfr(rds_files, read_and_annotate) %>%
-    wrangle_data() # This is from _utils.R
-
+  all_results <- map_dfr(rds_files, read_and_annotate)
 
   # Now also load the pathways and combine it together
   panglaodb_pathways <- readRDS(panglao_pathways_path)
@@ -67,7 +65,14 @@ main <- function(result_dir, panglao_pathways_path,
     ) %>%
     # Then in this one, need to readjust the pval later, so
     # rename its existing padj to another name
-    dplyr::rename(old_padj = padj)
+    dplyr::rename(old_padj = padj) %>%
+    tidyr::separate_wider_delim(
+      comb_name, delim = " | ",
+      names = c("method", "dataset", "view"),
+      too_many = "merge", too_few = "align_start"
+    ) %>%
+    group_by(method, dataset, view) %>%
+    mutate(padj = p.adjust(pval))
 
   # Lastly write it to file
   data.table::fwrite(fgsea_results_part2_df, file=output_path)

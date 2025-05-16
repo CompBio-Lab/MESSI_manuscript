@@ -21,8 +21,9 @@ wide_n_sig_mat <- wide_n_sig_tab %>%
   dplyr::select(-c("method", "dataset", "n", "group_num")) %>%
   as.matrix()
 # All methods labels
-methods <- c("diablo-full", "diablo-null", "mofa+glmnet", "mogonet",
-             "multiview", "rgcca-full+lda", "rgcca-null+lda")
+
+
+methods <- wide_n_sig_tab$method |> unique() |> sort()
 
 # Get a pastel color palette with the same number of colors as your methods
 n_methods <- length(methods)
