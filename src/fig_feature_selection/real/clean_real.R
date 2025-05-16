@@ -29,7 +29,7 @@ clean_real <- function(df, cor_method="pearson") {
     # ie. rank 1 (highest) > rank2 > ... rank 10 > ... rank n
     mutate(ranking = rank(desc(abs(coef)))) %>%
     ungroup() %>%
-    select(-coef)
+    ##select(-coef)
   # And pivot it to get correlation matri
   cor_mat <- ranking_df %>%
     pivot_wider(names_from = method, values_from=ranking) %>%
@@ -46,6 +46,7 @@ clean_real <- function(df, cor_method="pearson") {
   return(cor_mat)
 
 }
+
 
 
 main <- function(input_path, output_path) {

@@ -28,7 +28,7 @@ wrangle_metadata <- function(metadata_df) {
     )) %>%
     mutate(subject_dimensions_list = str_split(subject_dimensions, ",")) %>%
     mutate(
-      sample_size = map_dbl(
+      sample_size = purrr::map_dbl(
         subject_dimensions_list, ~ case_when(
           all(.x == .x[1]) ~ as.numeric(.x[1]),
           TRUE ~ NA
@@ -38,44 +38,44 @@ wrangle_metadata <- function(metadata_df) {
     # Then remove these old columns after getting sample size
     select(-subject_dimensions_list, -subject_dimensions) %>%
     mutate(total_number_feature = str_split(feat_dimensions, ",") %>%
-             map_dbl(~ sum(as.numeric(.x)))) %>%
+             purrr::map_dbl(~ sum(as.numeric(.x)))) %>%
     mutate(dataset_dim = sample_size * total_number_feature) %>%
     select(dataset, omics_names, sample_size,
            dataset_dim, is_simulated, positive_prop, feat_dimensions)
 }
 
-metadata_df <- read.csv("data/raw/real_data_results/parsed_metadata.csv")
+#metadata_df <- read.csv("data/raw/real_data_results/parsed_metadata.csv")
 
-wr_meta_df <- wrangle_metadata(metadata_df) %>% as_tibble()
+#wr_meta_df <- wrangle_metadata(metadata_df) %>% as_tibble()
 
-trace_df <- readr::read_tsv("data/raw/real_data_results/execution_trace.txt", col_types = readr::cols())
+#trace_df <- readr::read_tsv("data/raw/real_data_results/execution_trace.txt", col_types = readr::cols())
 
-workflow_prefix="NFCORE_MESSI_BENCHMARK:MESSI_BENCHMARK:"
-time_col="duration"
+#workflow_prefix="NFCORE_MESSI_BENCHMARK:MESSI_BENCHMARK:"
+#time_col="duration"
 
 
-o2 <- trace_df %>%
-  select(process, tag, realtime, duration) %>%
-  mutate(
-    process = str_replace(process, workflow_prefix, "") |> tolower()
-  ) %>%
-  mutate(process = str_replace_all(process, "cooperative_learning", "multiview")) %>%
-  filter(
-    str_detect(process, "^feature_selection:[^_]+_select_feature") |
-      str_detect(process, "^cross_validation:")
-  ) %>%
-  filter(
-    !str_detect(process, "downstream|merge_result_table")
-  ) %>%
-  mutate(
-    process = str_replace(
-      process,
-      "^(feature_selection:|cross_validation:cv.*:)", "")
-  )
-
-o2 %>%
-  # Now split the <method>_<action> to more columns
-  separate(process, into = c("method", "action"), sep = "_", extra = "merge")
+# o2 <- trace_df %>%
+#   select(process, tag, realtime, duration) %>%
+#   mutate(
+#     process = str_replace(process, workflow_prefix, "") |> tolower()
+#   ) %>%
+#   mutate(process = str_replace_all(process, "cooperative_learning", "multiview")) %>%
+#   filter(
+#     str_detect(process, "^feature_selection:[^_]+_select_feature") |
+#       str_detect(process, "^cross_validation:")
+#   ) %>%
+#   filter(
+#     !str_detect(process, "downstream|merge_result_table")
+#   ) %>%
+#   mutate(
+#     process = str_replace(
+#       process,
+#       "^(feature_selection:|cross_validation:cv.*:)", "")
+#   )
+#
+# o2 %>%
+#   # Now split the <method>_<action> to more columns
+#   separate(process, into = c("method", "action"), sep = "_", extra = "merge")
 
 
 # ================================

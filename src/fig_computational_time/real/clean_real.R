@@ -28,7 +28,6 @@ main <- function(metadata_path, trace_path, output_path, data_type) {
     as_tibble() %>%
     wrangle_metadata()
 
-
   # Then hanlde the execution trace
   # Then also want to wrangle the execution trace
   #trace_path <- "data/execution_trace.txt"

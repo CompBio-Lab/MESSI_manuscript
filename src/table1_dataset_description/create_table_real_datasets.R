@@ -134,9 +134,9 @@ metadata_df <- read.csv(metadata_path) |>
   # Standardize some col names
   mutate(
     omics_names = case_when(
-      str_detect(omics_names, "meth") ~ "cpg",
-      str_detect(omics_names, "rppa") ~ "rppa",
-      str_detect(omics_names, "rnaseq") ~ "mrna",
+      str_detect(omics_names, "meth") | omics_names == "epigenomics" ~ "cpg",
+      str_detect(omics_names, "rppa") | omics_names == "proteomics" ~ "rppa",
+      str_detect(omics_names, "rnaseq") | omics_names == "transcriptomics" ~ "mrna",
       str_detect(omics_names, "mirna") ~ "mirna",
       TRUE ~ omics_names
     )
@@ -147,6 +147,8 @@ metadata_df <- read.csv(metadata_path) |>
   as_tibble()
 
 
+
+metadata_df
   # mutate(
 
 

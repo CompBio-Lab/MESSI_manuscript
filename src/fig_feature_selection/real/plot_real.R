@@ -48,9 +48,9 @@ plot_real_heatmap <- function(
   names(method_colors) <- methods
   # For the dataset to use default Pastel 2
   #dataset_palette <- "Pastel1"
-  datasets <- colnames(cor_mat)
-  dataset_colors <- RColorBrewer::brewer.pal(n=256, dataset_palette) |> tail(length(datasets))
-  names(dataset_colors) <- datasets
+  #datasets <- colnames(cor_mat)
+  #dataset_colors <- RColorBrewer::brewer.pal(n=256, dataset_palette) |> tail(length(datasets))
+  #names(dataset_colors) <- datasets
   # Col wise
   col_ha <- columnAnnotation(
     Method = methods,
