@@ -29,6 +29,7 @@ significant_pathways_method_gs_plot_obj <- combined_summary %>%
     panel.grid.major.y = element_blank()
   )
 
+
 ggsave(
   filename = "results/figures/fig_fgsea_panel_a.png",
   plot = significant_pathways_method_gs_plot_obj,

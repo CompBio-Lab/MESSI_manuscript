@@ -46,6 +46,7 @@ main <- function(result_dir, msigdr_pathways_path,
     output_path <- "data/processed/fgsea_part1_df.csv"
   }
   dataset_prefixes <- c("tcga", "GSE", "rosmap")
+  result_dir <- "fgsea_part1/"
   # For all files here lets merge it
   rds_files <- list.files(
     here::here(result_dir),
@@ -53,10 +54,7 @@ main <- function(result_dir, msigdr_pathways_path,
   )
 
   # Read and combine all results
-  all_results <- map_dfr(rds_files, read_and_annotate) %>%
-    wrangle_data() # This is from _utils.R
-
-
+  all_results <- map_dfr(rds_files, read_and_annotate)
   # Now also load the pathways and combine it together
   msigdbr_pathways <- readRDS(msigdbr_pathways_path)
   # ===================
@@ -66,8 +64,14 @@ main <- function(result_dir, msigdr_pathways_path,
     by = c("pathway" = "gs_name")
   ) %>%
     # Now remove old padj and adjust later
-    dplyr::select(-c("gs_collection"))
-
+    dplyr::select(-c("gs_collection")) %>%
+    tidyr::separate_wider_delim(
+      comb_name, delim = " | ",
+      names = c("method", "dataset", "view"),
+      too_many = "merge", too_few = "align_start"
+    ) %>%
+    group_by(method, dataset, view) %>%
+    mutate(padj = p.adjust(pval))
   # Lastly write it to file
   data.table::fwrite(fgsea_results_part1_df, file=output_path)
 }

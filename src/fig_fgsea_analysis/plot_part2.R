@@ -72,6 +72,7 @@ htmp <- Heatmap(
   col = col_fun,
   right_annotation = row_ha,
   row_split = wide_n_sig_tab$dataset %>% map_name(),
+  cluster_rows = TRUE,
   #column_split = wide_n_sig_tab$method,
   border = TRUE,
   row_title_rot = 0,
@@ -81,7 +82,7 @@ htmp <- Heatmap(
   row_title_gp = gpar(fontsize = 10),
   show_row_names = FALSE,
   cluster_columns = TRUE,
-  cluster_rows = FALSE,
+  #cluster_rows = FALSE,
   row_dend_width = unit(1.5, "cm"),
   cell_fun = function(j, i, x, y, width, height, fill) {
     text_color <- get_text_color(fill)
@@ -101,7 +102,6 @@ htmp <- Heatmap(
 
 )
 
-
 # And its frequency plot
 annot_bar_plot <- wide_n_sig_tab$method %>%
   table() %>%
@@ -109,7 +109,7 @@ annot_bar_plot <- wide_n_sig_tab$method %>%
   mutate(n = as.integer(n)) %>%
   ggplot(aes(x=reorder(method, n), y=n, fill=method)) +
   geom_bar(stat="identity", width=0.7) +
-  labs(x="Method", y="Number of occurence", fill="Method")+
+  labs(x="Method", y="Frequency", fill="Method")+
   scale_fill_manual(values = method_colors) +
   theme_bw() +
   # And remove horizontal lines
@@ -128,6 +128,8 @@ ht_grob <- grid.grabExpr(
        annotation_legend_side = "bottom")
   )
 
+
+htmp
 
 # And combine them together
 output_plot <- plot_grid(

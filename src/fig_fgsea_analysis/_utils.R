@@ -3,14 +3,14 @@ read_and_annotate <- function(file) {
   result <- readRDS(file)
 
   # Extract file name
-  file_name <- basename(file)
+  #file_name <- basename(file)
   # Remove the _fgsea.rds suffix
-  core_name <- str_remove(file_name, "_fgsea\\.rds$")
+  #core_name <- str_remove(file_name, "_fgsea\\.rds$")
 
 
   # Add columns for method and dataset
-  result <- as_tibble(result) %>%
-    mutate(comb_name = core_name)
+  result <- as_tibble(result)
+  #  mutate(comb_name = core_name)
 
   return(result)
 }
@@ -40,7 +40,7 @@ wrangle_data <- function(df) {
     tidyr::separate_wider_delim(
       comb_name,
       names = c("method", "dataset"), delim="_",
-      too_many = "merge"
+      too_many = "merge", too_few = "align_start"
     ) %>%
     dplyr::select(-c("ES", "NES"))
 }
@@ -117,13 +117,13 @@ add_manual_label <- function(df) {
 
 map_name <- function(dataset) {
   dataset_mapping <- c(
-    "gse38609"  = "Autism Brain",
+    "gse38609"  = "Autism",
     "gse71669"  = "Bladder Cancer",
     "rosmap"    = "Alzheimer's Disease",
-    "tcga_acc"  = "Adrenocortical Carcinoma",
+    "tcga_acc"  = "Adrenocortical Cancer",
     "tcga_blca" = "Bladder Cancer",
     "tcga_brca" = "Breast Cancer",
-    "tcga_chol" = "Cholangiocarcinoma",
+    "tcga_chol" = "Bile Duct Cancer",
     "tcga_esca" = "Esophageal Cancer",
     "tcga_kich" = "Kidney Chromophobe",
     "tcga_kirc" = "Kidney Renal Clear Cell Carcinoma",
