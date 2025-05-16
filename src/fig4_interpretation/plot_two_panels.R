@@ -8,8 +8,19 @@ panel_a_data <- readRDS("data/processed/fig_fgsea_panel_a_plot_data.rds")
 panel_b_data <- readRDS("data/processed/fig_fgsea_panel_b_plot_data.rds")
 
 
-panel_a_data +
-  labs(title=NULL)
+
+
+#panel_a_data +
+#  labs(title=NULL)
+# Number of significant pathways (Mean +- SD)
+# Evaluate the +- as latex symbol
+# TRY fixing the lower bound of the ymin
+
+# Add caption explain what oncogenic , reactome c2 and c6
+# explain it further
+
+fig_fgsea_analysis_plot
+
 
 # Then put them two together
 fig_fgsea_analysis_plot <- plot_grid(

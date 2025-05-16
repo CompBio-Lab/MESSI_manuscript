@@ -134,7 +134,10 @@ htmp
 
 # And combine them together
 output_plot <- plot_grid(
-  ggdraw(ht_grob),
+  ggdraw() +
+    ggdraw() +
+    draw_grob(ht_grob, x = 0.5, y = 0.5, width = 1, height = 1,
+              hjust = 0.5, vjust = 0.5),
   annot_bar_plot +
     xlab(NULL) +
     guides(fill="none"),
