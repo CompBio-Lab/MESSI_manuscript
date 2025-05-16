@@ -10,6 +10,8 @@ wrangle_data <- function(df) {
     # Given there's same result for rgcca and sgcca
     # going to drop those of rgcca and retain sgcca only.
     filter(!str_detect(method, "rgcca")) %>%
+    # Remove the first component results from diablo
+    filter(!str_detect(method, "diablo.*ncomp-1")) %>%
     group_by(method, dataset) %>%
     summarise(
       across(
