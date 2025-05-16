@@ -1,8 +1,13 @@
 ## MESSI pipeline
 
+```{r another-setup}
+# DELETE LATER
+knitr::opts_chunk$set(eval=T)
+```
+
 We introduce here the MESSI pipeline, *Multiple Experiments with SyStematic Interrogation* (Fig \@ref(fig:messi-workflow-plot), and additional supplementary), which comprises of 4 main steps: 1) [Prepare data], 2) [Data splitting], 3) [Cross validation], 4) [Feature selection].
 
-```{r messi-workflow-plot,fig.cap="Workflow design of MESSI.",fig.align="center",echo=FALSE, out.width="60%"}
+```{r messi-workflow-plot,fig.cap="Workflow design of MESSI for benchmarking integration methods with supervised setting. MESSI has a modular design between stages of preparing data, splitting data, cross validation (CV), and feature selection. The CV stage enables parallel computing of many methods implemented in different languages like R and Python seamleslly and reproducibly through independent containers.", fig.align="center",echo=FALSE, out.width="60%", eval=F}
 knitr::include_graphics(here::here("docs/assets", "messi_workflow.png"))
 ```
 
@@ -159,8 +164,8 @@ The output of each method is a table of selected features along with the coeffic
 
 To showcase the usage of the pipeline and comprehensively assess the performances of these integration methods, simulated data were evaluated to test robustness of methods in different parameter settings Full mathematical details of the process of simulating data are provided under [Methods]. Furthermore, we then evaluated the methods on real world datasets retrieved from public source like GEO [cite here], and TCGA[ cite] at total of $14$ datasets as described in table \@ref(tab:benchmark-data-table).
 
-```{r benchmark-data-table, eval=T}
-real_data_tbl <- read.csv(here("data/processed/real_dataset_metadata.csv")) %>%
+```{r benchmark-data-table}
+real_data_tbl <- data.table::fread(here("data/processed/real_dataset_metadata.csv")) %>%
   as_tibble()
 
 
@@ -231,7 +236,7 @@ We also tested against varying correlation in the omics within each dataset. But
 From this simulation for classification performance, DIABLO with different design matrices showed relatively good performance ranking at top. Cooperative Learning follows next with consistent distribution of AUC scores, and less variable compared to other methods. MOFA + glmnet and RGCCA + LDA are in the middle, with high variability. Lastly, MOGONET showed consistenly low performance compared to others and only performing well at no signal and full correlation between omics. 
 
 
-```{r sim-perf-plot, fig.cap="Simulation studies performance", echo=FALSE, out.width="70%", out.height="80%"}
+```{r sim-perf-plot, echo=FALSE, out.width="70%", out.height="80%", eval=T, fig.cap="Classification performance of all simulated datasets. T"}
 knitr::include_graphics(here(fig_path, "fig_performance_evaluation_sim.png"))
 ```
 
@@ -250,7 +255,6 @@ We believe these sets of simulation studies could be used for future method deve
 
 After evaluating the pipeline with simulation studies, we then proceed to execute it with real world datasets as describe in table \@ref(tab:benchmark-data-table). The scripts to clean these data could be found under [insert link here...]. 
 
-NEED TO ADD MORE DESCRIPTION OF DATA?
 
 We noticed the AUC scores follows a similar pattern from the simulations, where most of the AUC fall around $0.7$ as per Fig \@ref(fig:real-perf-plot), this is exactly the case when we have little signal in the data. 
 These real datasets that we evaluated are mostly carnicoma cohorts from TCGA, where usually we have fewer observations in later stage carnicoma, and its molecular measurement are not much different with those early stage, i.e. stageii vs stageiii. Furthermore, we have datasets that have near $0.5$, this could indicate low signal present in those datasets. 

@@ -21,11 +21,14 @@ output:
     includes:
       in_header: common_header.tex
 header-includes:
-  \usepackage{lscape}
-  \usepackage{pdfpages}
-  \usepackage{graphicx}
-  \usepackage[figuresright]{rotating}
-  
+  - \usepackage{lscape}
+  - \usepackage{pdfpages}
+  - \usepackage{graphicx}
+  - \usepackage[figuresright]{rotating}
+  - \usepackage{caption}
+  # Use smaller font size and sans serif for figure captions
+  - \captionsetup[figure]{font={small,sf,it}}
+
 ---
 
 ```{r setup, echo=FALSE, include=FALSE}
@@ -47,6 +50,12 @@ knitr::opts_chunk$set(echo=FALSE, fig.align = "center", results="asis", eval=F)
 fig_path <- here("results/figures")
 ```
 
+<!--- Add custom styling for figure captions  -->
+<style>
+p.caption {
+  font-size: 0.1em;
+}
+</style>
 
 # Abstract
 
@@ -98,7 +107,7 @@ Here simply include child doc of method
 
 # Methods
 
-```{r method-child, child=c('sections/methods.Rmd'),}
+```{r method-child, child=c('sections/methods.Rmd'), eval=TRUE}
 ```
 
 \newpage
