@@ -1,0 +1,116 @@
+<!-------------
+
+First section
+
+Set the stage and show the reader why multi-omics is important in modern biology and medicine.
+
+- Briefly introduce what multi-omics is (genomics, transcriptomics, etc.)
+
+- Mention the explosion of available multi-omics data
+
+- Emphasize the need to integrate different omics layers for better biological insight and clinical prediction
+
+- Mention popular applications (e.g., cancer subtyping, drug response, survival analysis)
+
+--------------->
+
+Technological advances have allowed for the profiling of different molecular measurements (e.g., genes, proteins, metabolites) from the same biological samples; termed multiomics [ @subramanian2020multi]. Each omics constitute one single layer of information, and this integrative approach of multiomics data may strengthen the understanding of the molecular dynamics underlying the biological processes of diseases and may lead to novel strategies for early detection, prevention, and treatment of human diseases [@sun2016integrative].
+
+However, there exist various ways of how "integrating" the existing source of omics data, where if the integration is done incorrectly, then we might not yield to better performance but just increases the complexity of the problem further [@picard2021integration]. The way of integrating data depends on the task or intended analysis done. The typical tasks conducted via multiomics integration are cancer subtyping, drug response, survival analysis and other. Therefore, many integration methods have been developed to jointly analyze multiomics data to identify common patterns between datasets, and to identify biomarkers of disease [@vandereyken2023methods] solving different tasks that helps discovering the human biological system. Due to the large options of diverse method and its abstract and subtle nature, researchers face difficulties in choosing the right method to answer their own biological question.
+
+
+Hence, numerous reviews have benchmarked various integrative methods [@bersanelli2016methods; @cantini2021benchmarking; @hasin2017multi; @huang2017more; @li2018review; @li2022benchmark; @luecken2022benchmarking; @pucher2019comparison; @richardson2016statistical; @yu2018integrative; @zeng2018review]. These reviews looked into various tasks like classification, clustering analysis, survival prediction on chosen sets of integration methods and mostly dataset from public databases like TCGA, GEO. However, these studies are not all encompassing in many aspects like reproducibility, limited depth of comparison, limited methods / dataset combination, not designed for continous updates, and other aspects. Most of them are provided in custom scripts and lack effort of continuing benchmark or compare different integration methods. This made others extremely hard to reproduce works and trust on the methods, specifically when some benchmarks do not have its implementation publicly available.
+
+<!--------
+Dummy way but have to self define the reference in markdown first
+https://github.com/haozhu233/kableExtra/issues/214#issuecomment-421706528
+---------->
+
+(ref:singh2019diablo) @singh2019diablo
+(ref:Argelaguet2020) @Argelaguet2020
+(ref:girka2023multiblock) @girka2023multiblock
+(ref:ma2025moving) @ma2025moving
+(ref:mallick2024integrated) @mallick2024integrated
+(ref:hedou2024discovery) @hedou2024discovery
+(ref:ding2022cooperative) @ding2022cooperative
+(ref:wang2021mogonet) @wang2021mogonet
+(ref:jeong2023goat) @jeong2023goat
+(ref:huizing2023paired) @huizing2023paired
+(ref:seffernick2024bootstrap) @seffernick2024bootstrap
+(ref:rahimikollu2024slide) @rahimikollu2024slide
+(ref:yang2016non) @yang2016non
+(ref:bennett2024eipy) @bennett2024eipy
+(ref:ashuach2023multivi) @ashuach2023multivi
+
+```{r method-meta-table, results="asis", eval=TRUE, fig.pos="H"}
+method_table <- read.csv(here::here("data/processed/method_metadata.csv"))
+# This is the citation table
+paper_link_citation <- c(
+  "singh2019diablo", # DIABLO
+  "Argelaguet2020", # MOFA+
+  "girka2023multiblock", # RGCCA
+  "ma2025moving", # IntegrAO
+  "mallick2024integrated", # IntegratedLearner
+  "hedou2024discovery", # STABL 
+  "ding2022cooperative", # Cooperative Learning 
+  "wang2021mogonet", # MOGONET 
+  "jeong2023goat", # GOAT 
+  "huizing2023paired", # Mowgli 
+  "seffernick2024bootstrap", # BEAMR 
+  "rahimikollu2024slide", # SLIDE 
+  "yang2016non", # JointNMF 
+  "bennett2024eipy", # EIPY 
+  "ashuach2023multivi" # MultiVI
+  )
+# Escape problematic LaTeX characters manually (e.g., _ or % in package names)
+escape_latex <- function(x) {
+  x |>
+    stringr::str_replace_all("_", "\\\\_") |>
+    stringr::str_replace_all("%", "\\\\%") |>
+    stringr::str_replace_all("&", "\\\\&") |>
+    stringr::str_replace_all("#", "\\\\#") |>
+    stringr::str_replace_all("\\$", "\\\\$")
+}
+# And output the table
+method_table |>
+  dplyr::mutate(across(.cols = -c("paper_link"), .fns = escape_latex)) |>
+  # Replace the original paper link to citation
+  dplyr::mutate(
+    paper_link = paste0("(ref:", paper_link_citation, ")")
+    ) |>
+  # Ignore code link
+  dplyr::select(-c("code_link")) |>
+   # Change names of column
+  kableExtra::kbl(
+    caption = "List of available multiomics integration methods", booktab=T,
+      col.names = c(
+        "Method", 
+        "Type",
+        "Language",
+        "Package available",
+        "Paper"
+        #"Code link"
+      ),
+      escape = FALSE,
+      format = "latex") |>
+  kableExtra::kable_styling(
+    latex_options = c("scale_down", "striped", "HOLD_position"), 
+    full_width = F)
+  # Change column width of method
+  #column_spec(1, width="100pt") |>
+  # Change column width of type of method
+  #column_spec(2, width="80pt")
+
+  #kableExtra::landscape()
+  #collapse_rows(valign = "middle") %>%
+  #column_spec(5, width="10px") %>%
+```
+
+
+
+To address this, we propose a new automated framework to systematically benchmark and analyze multiomics methods (table \@ref(tab:method-meta-table)) with varying data types.
+This framework ensures full reproducibility and provides standardized input for any analytical task, with the capability to run on any computing platform. This feature would allow easy extension of more integration methods or datasets, and would be important such researchers could continuously assess current and in-development methods, and track changes without the need to reinventing the wheels in many sense.
+
+<!-- Considering omics data in multiple matrices of N x P , where N is samples, P is variables, current integration could be done via N-integration (same samples) or P-integration (same variables) or mix of both [@shannon2024commentary]. We will focus on the N-integration methods for now, and later extend it to P-integration. -->
+
+
