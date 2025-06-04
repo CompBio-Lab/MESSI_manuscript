@@ -23,6 +23,7 @@ wide_n_sig_mat <- wide_n_sig_tab %>%
 # All methods labels
 
 
+
 methods <- wide_n_sig_tab$method |> unique() |> sort()
 
 # Get a pastel color palette with the same number of colors as your methods
@@ -106,7 +107,7 @@ htmp <- Heatmap(
 # And its frequency plot
 annot_bar_plot <- wide_n_sig_tab$method %>%
   table() %>%
-  enframe(name="method", value="n") %>%
+  tibble::enframe(name="method", value="n") %>%
   mutate(n = as.integer(n)) %>%
   ggplot(aes(x=reorder(method, n), y=n, fill=method)) +
   geom_bar(stat="identity", width=0.7) +
@@ -134,10 +135,7 @@ htmp
 
 # And combine them together
 output_plot <- plot_grid(
-  ggdraw() +
-    ggdraw() +
-    draw_grob(ht_grob, x = 0.5, y = 0.5, width = 1, height = 1,
-              hjust = 0.5, vjust = 0.5),
+  ggdraw(ht_grob),
   annot_bar_plot +
     xlab(NULL) +
     guides(fill="none"),

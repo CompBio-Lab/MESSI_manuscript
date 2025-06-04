@@ -1,5 +1,6 @@
 library(dplyr)
 library(tidyr)
+library(stringr)
 
 source(here::here("src/fig_fgsea_analysis/_utils.R"))
 
@@ -14,6 +15,11 @@ filtered_results <- all_results %>%
   # Drop the kipan study
   filter(!str_detect(dataset, "kipan")) %>%
   add_manual_label() %>%
+  # Change the - to _ for tcga
+  mutate(dataset = case_when(
+    str_detect(dataset, "tcga") ~ str_replace(dataset, "-", "_"),
+    TRUE ~ dataset
+  )) %>%
   # Now for each dataset only keep those where its organ is contained
   # in the annotated organ label
   filter(str_detect(organ_label, organ)) %>%

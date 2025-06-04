@@ -1,5 +1,6 @@
 library(ggplot2)
 library(tidytext)
+library(data.table)
 
 width <- 10
 height <- 8
@@ -36,6 +37,8 @@ ggsave(
   width = width,
   height = height
   )
+
+significant_pathways_method_gs_plot_obj
 
 saveRDS(significant_pathways_method_gs_plot_obj,
         file = "data/processed/fig_fgsea_panel_a_plot_data.rds")

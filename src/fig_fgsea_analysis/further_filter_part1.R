@@ -6,7 +6,8 @@ all_results
 
 combined_summary <- all_results %>%
   filter(padj < cutoff) %>%
-  group_by(method, dataset, view, gs_collection_name) %>%
+  #group_by(method, dataset, view, gs_collection_name) %>%
+  group_by(method, dataset, gs_collection_name) %>%
   summarize(n_sig = n(), .groups = "drop") %>%
   group_by(method, gs_collection_name) %>%
   summarize(mean_n_sig = mean(n_sig),
