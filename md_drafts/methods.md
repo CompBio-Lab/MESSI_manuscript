@@ -8,9 +8,12 @@ Methods section, main level 1 header is in a parent file
 We consider multiomics datasetes represented by $P$ omics matrices $X_i$ , where $X_i$ is of dimension $n \times p_i$ ($n$ samples and $p_i$ features) for $i = 1, \dots, P$. 
 
 
-The real datasets were retrieved from public sources like TCGA and GEO...
+The real datasets were retrieved from public sources like TCGA [ [citation here] ](citation)  [ [citaiton here] ](citation) with R 4.3.3 and libraries TCGAbiolinks 2.30.4 and GEOquery 2.70.0.
+These datasets were furthered processed to keep matched samples data only (same subjects measured in different omics modalities)
 
-The real datasets were filtered based on criterias like matched samples (same subjects measured in different omics modalities), not near zero variance with omic measurement. These filtering steps were carried in custom R scripts before and within the pipeline execution.
+Furthermore, they are filtered for omics with non zero variance during the pipeline execution, as certain methods would not work if zero variance data was present.
+
+For a summarized list of real datasets, please refer to table [ [cite the dataset table]](cite). Below we present higher level information of datasets studied in this paper.
 
 ### GSE38609
 
@@ -77,7 +80,7 @@ This data is obtained from AMP-AD Knowledge Portal, and this stands for *The Rel
 
 ## Simulated dataset
 
-The process of simulation was based on the paper [@tenenhaus2014variable] and slightly modified, and the code to generate such data is contained in a R package accessed through GitHub.
+In order to benchmark methods under full control and knowledge of the data generating process, we simulated a sets of multiomics data based on the paper [@tenenhaus2014variable] with slight modification. The code to generate such data is contained in a R package [SimBulkMultiomics](cite), taht could be accessed through GitHub.
 
 We followed similar approach in the paper mentioned with considering 3 blocks of omics, i.e. each $n \times p_j$ block $X_j$ for $j = 1, 2, 3$ and generated with the following model:
 
@@ -107,7 +110,9 @@ $$\text{Unif}(-0.3, -0.2) \cup \text{Unif}(0.2, 0.3)$$
 
 $E_j$ is a $n \times p_j$ residual matrix drawn from $N(0,1)$.
 
-We varied a number of samples, number of predictors, correlation between omics, pc mean to study a variety of simulation scenarios. Each scenario is replicated 3 times and evaluated for all the methods.
+The core function that generates such data from the mentioned R package is `simBulkMultiomics::sim_data()` that takes in parameters of `n` for number of subjects/samples , `p` for number of predictors in each omics individually, `j` for number of omics (default to 3), `dt` for strength of distinction between response classes, `rho` for correlation between omics, `pc_mu` for group means. 
+
+We varied a number of samples, number of predictors, correlation between omics, pc mean, and fixed number of omics to study a variety of simulation scenarios. Each scenario is replicated 3 times and evaluated for all the methods.
 
 The original technical details of evaluated integration methods can be found in publications [ @singh2019diablo, @ding2022cooperative, @wang2021mogonet, @girka2023multiblock,  @Argelaguet2018; @Argelaguet2020 ]. Here, we will quickly summarize key components of each method.
 
