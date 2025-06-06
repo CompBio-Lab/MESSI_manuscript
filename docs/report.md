@@ -67,12 +67,14 @@ Set the stage and show the reader why multi-omics is important in modern biology
 
 --------------->
 
-Technological advances have allowed for the profiling of different molecular measurements (e.g., genes, proteins, metabolites) from the same biological samples; termed multiomics [ @subramanian2020multi]. Each omics constitute one single layer of information, and this integrative approach of multiomics data may strengthen the understanding of the molecular dynamics underlying the biological processes of diseases and may lead to novel strategies for early detection, prevention, and treatment of human diseases [@sun2016integrative].
-
-However, there exist various ways of how "integrating" the existing source of omics data, where if the integration is done incorrectly, then we might not yield to better performance but just increases the complexity of the problem further [@picard2021integration]. The way of integrating data depends on the task or intended analysis done. The typical tasks conducted via multiomics integration are cancer subtyping, drug response, survival analysis and other. Therefore, many integration methods have been developed to jointly analyze multiomics data to identify common patterns between datasets, and to identify biomarkers of disease [@vandereyken2023methods] solving different tasks that helps discovering the human biological system. Due to the large options of diverse method and its abstract and subtle nature, researchers face difficulties in choosing the right method to answer their own biological question.
+Technological advances now enable profiling of diverse molecular measurements (e.g., genes, proteins, metabolites) from the same biological samples. This approach, termed multiomics [@subramanian2020multi], treats each omics layer as a distinct source of information. Integrating these layers can improve our understanding of the molecular mechanisms underlying disease and lead to novel strategies for early detection, prevention, and treatment [@sun2016integrative].
 
 
-Hence, numerous reviews have benchmarked various integrative methods [@bersanelli2016methods; @cantini2021benchmarking; @hasin2017multi; @huang2017more; @li2018review; @li2022benchmark; @luecken2022benchmarking; @pucher2019comparison; @richardson2016statistical; @yu2018integrative; @zeng2018review]. These reviews looked into various tasks like classification, clustering analysis, survival prediction on chosen sets of integration methods and mostly dataset from public databases like TCGA, GEO. However, these studies are not all encompassing in many aspects like reproducibility, limited depth of comparison, limited methods / dataset combination, not designed for continous updates, and other aspects. Most of them are provided in custom scripts and lack effort of continuing benchmark or compare different integration methods. This made others extremely hard to reproduce works and trust on the methods, specifically when some benchmarks do not have its implementation publicly available.
+However, integrating multiomics data is not straightforward. There are various ways to combine data sources, and improper integration can increase model complexity without improving performance [@picard2021integration]. The integration strategy should depend on the intended task—such as cancer subtyping, drug response prediction, or survival analysis. Accordingly, numerous methods have been developed to jointly analyze multiomics data, aiming to identify cross-omics patterns and disease-related biomarkers [@vandereyken2023methods]. Yet, due to the wide variety of methods and their abstract nature, researchers often struggle to select appropriate tools for their specific biological questions.
+
+
+
+Several reviews have compared multiomics integration methods across tasks such as classification, clustering, and survival prediction [@bersanelli2016methods; @cantini2021benchmarking; @hasin2017multi; @huang2017more; @li2018review; @li2022benchmark; @luecken2022benchmarking; @pucher2019comparison; @richardson2016statistical; @yu2018integrative; @zeng2018review] with public dataset sources like TCGA [cite] and GEO [cite]. However, many of these studies suffer from limitations, including lack of reproducibility, shallow comparisons, limited combinations of methods and datasets, and lack of continuous updates. In particular, most reviews rely on custom scripts, with little effort toward standardized, reusable frameworks. This made others extremely hard to reproduce works and trust on the methods, specifically when some benchmarks do not have its implementation publicly available.
 
 <!--------
 Dummy way but have to self define the reference in markdown first
@@ -125,10 +127,13 @@ eipy & Ensemble & Python & yes & (ref:bennett2024eipy)\\
 \end{tabular}}
 \end{table}
 
+Despite the growing number of multiomics integration methods, systematic benchmarking remains a challenge. Methods vary widely in input requirements (e.g., omics formats, labels), implementation languages (R, Python), and evaluation protocols (e.g., internal cross-validation vs. fixed splits). These inconsistencies hinder fair comparison and reproducibility.
 
+To address these limitations, we propose MESSI, a modular nad automated framework for systematically benchmarking and analyzing multiomics integration methods (see Table \@ref(tab:method-meta-table)). 
+Its generic and extensible design allows easy incorporation of new state-of-art (SOTA) methods, ensures full reproducibility, and standardizes inputs across analytical tasks. By treating each method as a self-contained module and managing execution via Nextflow and containers, MESSI ensures reproducibility and enables seamless extension to new tools and datasets. 
+It can be deployed on any computing platform, enabling continuous evaluation of existing and emerging methods without duplicating effort.  
 
-To address this, we propose a new automated framework to systematically benchmark and analyze multiomics methods (table \@ref(tab:method-meta-table)) with varying data types.
-This framework ensures full reproducibility and provides standardized input for any analytical task, with the capability to run on any computing platform. This feature would allow easy extension of more integration methods or datasets, and would be important such researchers could continuously assess current and in-development methods, and track changes without the need to reinventing the wheels in many sense.
+Overall, MESSI serves not only as a benchmarking framework, but also as a prototype for a unified and reproducible approach to multiomics analysis such researchers could continuously assess current and in-development methods, and track changes without the need to reinventing the wheels in many sense.
 
 <!-- Considering omics data in multiple matrices of N x P , where N is samples, P is variables, current integration could be done via N-integration (same samples) or P-integration (same variables) or mix of both [@shannon2024commentary]. We will focus on the N-integration methods for now, and later extend it to P-integration. -->
 
@@ -600,12 +605,12 @@ Methods section, main level 1 header is in a parent file
 ----->
 ## Dataset
 
-We consider multiomics datasetes represented by $P$ omics matrices $X_i$ , where $X_i$ is of dimension $n \times p_i$ ($n$ samples and $p_i$ features) for $i = 1, \dots, P$. 
+We consider multiomics dataset represented by $P$ omics matrices $X_i$ , where $X_i$ is of dimension $n \times p_i$ ($n$ samples and $p_i$ features) for $i = 1, \dots, P$. 
 
-
-The real datasets were retrieved from public sources like TCGA and GEO...
-
-The real datasets were filtered based on criterias like matched samples (same subjects measured in different omics modalities), not near zero variance with omic measurement. These filtering steps were carried in custom R scripts before and within the pipeline execution.
+The real dataset were retrieved from public sources like TCGA [ [citation here] ](citation)  [ [citaiton here] ](citation) with R 4.3.3 and libraries TCGAbiolinks 2.30.4 and GEOquery 2.70.0.
+These dataset were furthered processed to keep matched samples data only (same subjects measured in different omics modalities)
+Furthermore, they are filtered for omics with non zero variance during the pipeline execution, as certain methods would not work if zero variance data was present.
+For a summarized list of real dataset, please refer to table [ [cite the dataset table]](cite). Below we present higher level information of dataset studied in this paper.
 
 ### GSE38609
 
@@ -672,7 +677,7 @@ This data is obtained from AMP-AD Knowledge Portal, and this stands for *The Rel
 
 ## Simulated dataset
 
-The process of simulation was based on the paper [@tenenhaus2014variable] and slightly modified, and the code to generate such data is contained in a R package accessed through GitHub.
+In order to benchmark methods under full control and knowledge of the data generating process, we simulated a sets of multiomics data based on the paper [@tenenhaus2014variable] with slight modification. The code to generate such data is contained in a R package [SimBulkMultiomics](cite), taht could be accessed through GitHub.
 
 We followed similar approach in the paper mentioned with considering 3 blocks of omics, i.e. each $n \times p_j$ block $X_j$ for $j = 1, 2, 3$ and generated with the following model:
 
@@ -702,64 +707,182 @@ $$\text{Unif}(-0.3, -0.2) \cup \text{Unif}(0.2, 0.3)$$
 
 $E_j$ is a $n \times p_j$ residual matrix drawn from $N(0,1)$.
 
-We varied a number of samples, number of predictors, correlation between omics, pc mean to study a variety of simulation scenarios. Each scenario is replicated 3 times and evaluated for all the methods.
+The core function that generates such data from the mentioned R package is `simBulkMultiomics::sim_data()` that takes in parameters of `n` for number of subjects/samples , `p` for number of predictors in each omics individually, `j` for number of omics (default to 3), `dt` for strength of distinction between response classes, `rho` for correlation between omics, `pc_mu` for group means. 
 
-The original technical details of evaluated integration methods can be found in publications [ @singh2019diablo, @ding2022cooperative, @wang2021mogonet, @girka2023multiblock,  @Argelaguet2018; @Argelaguet2020 ]. Here, we will quickly summarize key components of each method.
+## Integration methods algorithms
+
+The original technical details of evaluated integration methods can be found in publications [ @singh2019diablo, @ding2022cooperative, @wang2021mogonet, @girka2023multiblock,  @Argelaguet2018; @Argelaguet2020 ]. Here, we will quickly summarize key components of each method in alphabetical order.
+
+### Cooperative Learning
+
+Cooperative Learning is implemeneted in R with package name `multiview`. It is a supervised learning framework that integrates multiple data modalities (views) by joinly minizing prediction error while encouraging agreement across $M$ views with the following optimization problem:
+
+$$
+\text{min} E[\frac{1}{2}(y - \sum_{m=1}^M f_{X_m} (X_m))^2 + \frac{\rho}{2} \sum_{m < m^{\prime}} ( f_{X_m}(X_m) - f_{x_{m^{\prime}}} (X_{m^{\prime}})  )^2]
+$$
+
+For a hyperparameter $\rho \geq 0$. The first term of the minimization is the usual prediction error (or could used other loss function), and the second being an agreement penalty term.
 
 ### DIABLO
 
-DIABLO is ...
+DIABLO stands for Data Integration Analysis for Biomarker discovery using Latent cOmponents. It extends sGCCA [cite] to a supervised setting. 
 
-### Multiview
+Denote $Q$ normalized, centered and scaled datasets $X^{(1)}, X^{(2)}, \dots, X^{(Q)}$ such each dataset measures expression levels of $P_1, \dots, P_Q$ omics variables on same $N$ samples, then sGCCA solves the optimization function for each dimension $h = 1, \ldots, H$:
 
-Multiview is ...
+$$
+\begin{aligned}
+\underset{\mathbf{a}_h^{(1)}, \ldots, \mathbf{a}_h^{(Q)}}{\text{maximize}} & \quad \sum_{i,j=1, i \neq j}^{Q} c_{i,j}   \text{cov}(\mathbf{X}_h^{(i)} \mathbf{a}_h^{(i)}, \mathbf{X}_h^{(j)} \mathbf{a}_h^{(j)})  \\
+\text{subject to} & \quad  \|\mathbf{a}_h^{(q)}\|_2 = 1, \text{and} \|\mathbf{a}_h^{(q)}\|_1 \leq \lambda^{(q)} \quad \text{for all} \quad 1 \leq q \leq Q
+\end{aligned}
+$$
+
+Where:
+
+- $a_h^{(q)}$ is loading vector on dimension $h$ associated to residual matrix $X_h^{(q)}$ of dataset $X^{q}$
+
+- $C = \{c_{i,j}\}_{i,j}$ is a $Q \times Q$ design matrix of connection between datasets
+
+- $\lambda^{(q)}$ is a non-negative parameter that controls amount of shrinkage, ultimately number of non-zero coefficients in $a_h^{(q)}$.
+
+
+Then DIABLO extends the above optimization further by substituting one omics dataset $X^{(q)}$ in above problem with a dummy indicator matrix $Y$ of $N \times G$ dimension to indicate class membership of each sample, and $G$ is number of phenotype or class groups.
+
 
 ### MOFA
 
-MOFA is ...
+MOFA is Multi-Omics Factor Analysis. It can viewed as a generalization of principal component analysis to multi-omics data. Starting from $M$ data matrices $Y^1, Y^M$ of dimensions $N \times D_m$, where $N$ is number of samples and $D_m$ the number of features in data matrix $m$, MOFA decomposes these matrices as:
+
+$$
+\begin{aligned}
+Y^M = ZW^{mT} + \epsilon^m \quad m = 1, \dots, M
+\end{aligned}
+$$
+
+Here, $Z$ denotes a common factor matrix for all data matrices representing low-dimensional latent variables and $W^m$ as the weight matrices for each data matrix $m$. And, $\epsilon^m$ being the omic-specific residual noise term, and has different choices of noise model with most frequently used Gaussian noise.
+
+MOFA uses variational inference for model fitting and includes automatic relevance determination to promote sparsity in $W^m$. It supports missing values, making it robust for real-world multi-omics datasets with incomplete measurements.
+
+Due to the fact that MOFA is unsupervised, hence we fit an additional glmnet [cite] model on the $Z$ factor matrix from MOFA and predict the classes. 
 
 ### MOGONET
 
-MOGONET is ...
+MOGONET is named as Multi-Omics Graph cOnvolutional NETworks. It combines graph convolutional network (GCN) for omics specific learning and passed through a view Correlation Discovery Network(VCDN) for multi-omics integration.
+
+A different GCN is trained for each omics data type.  The loss function for $i$ th omics data type $\text{GCN}_i$ is the following:
+
+$$
+L^{i}_{\text{GCN}} = \sum_{j=1}^{n_{tr}} L_{CE} (\hat{y}^{(i)}, y_j) = \sum_{j=1}^{n_{tr}} -log(\frac{e^{\hat{y}^{(i)}y_j}}{\sum_k e^{\hat{y_{j,k}}^{(i)}}} )
+$$
+
+where $L_{CE}(.)$ represents the cross entropy loss function, $y_j$ is one-hot encoded label of jth training sample, and $\hat{y}^{i}_{j,k}$ is kth element in vector $\hat{y}_j^{(i)}$
+
+Furthermore, a VCDN is trained to integrate different omics type by constructing a cross-omics discovery tensor $C_j$. For data with $m$ omics data types, each element in $C_j$ can be calculated as:
+
+$$
+C_{j,a_1, a_2, \dots, a_m} = \prod_{i=1}^m \hat{y}^{(i)}_{j, a_i} , \quad a_i = 1,2,\dots,m
+$$
+
+where its loss function is:
+
+$$
+L_{VCDN} = \sum_{j=1}^{n_{tr}} L_{CE} (VCDN (c_j), y_j)
+$$
+
+In summary the total loss function of MOGONET could then be summarized as:
+
+$$
+L = \sum_{i=1}^{m=} L_{GCN}^{i} + \gamma L_{VCDN}
+$$
+
+where $m$ is number of omics, and $\gamma$ is a trade-off parameter between omics-specific classification loss and final classification loss from VCDN. 
+
 
 ### RGCCA
 
-RGCCA is ...
+RGCCA is Regularized Generalized Canonical Correlation Analysis. Considering $J$ data matrices $X_1, \dots, X_J$, each $n \times p_j$ data matrix $X_j=[X_{j1}, \dots, X_{j_{p_j}}]$ is treated as block. Each block represents set of $p_j$ variables observed on $n$ individuals. A core criteria is that individuals has to match across blocks, where number of variables could differ from one to another.  Furthermore, all variables are assumed to be centered.
 
 
+RGCCA aims to solve the following optimization problem:
 
-### TODO
+$$
+\begin{aligned}
+\underset{\mathbf{a}_1, \ldots, \mathbf{a}_J}{\text{maximize}} & \quad \sum_{j=1}^{J} \sum_{k=1}^{J} c_{jk} \cdot g\left( \text{cov}(\mathbf{X}_j \mathbf{a}_j, \mathbf{X}_k \mathbf{a}_k) \right) \\
+\text{subject to} & \quad (1 - \tau_j) \cdot \text{var}(\mathbf{X}_j \mathbf{a}_j) + \tau_j \cdot \|\mathbf{a}_j\|_2^2 = 1, \quad \text{for } j = 1, \ldots, J
+\end{aligned}
+$$
 
--   Explain what is the data input in mathematical form
+where
 
--   Then introduce the integration methods used here
+- $C_{jk}$ are elements of the design matrix , indicating the connections between blocks
+- $g$ is a continuous convex scheme function applied to the covariance between block components, allowing different optimization criteria like max of sum of covariances or max of sum of absolute values covariances, etc.
+- $\tau_j$ are shrinkage or regularization parameters ranging from 0 to 1. 
+  - $\tau_j = 1$ yields maximization of covariance-based criterion, where variance of blocks dominates over correlation
+  - $\tau_j = 0$ yields maximization of correlation-based criterion, where correlation of connected components is maximized
+  - $0 < \tau_j  < 1$ is a compromise between variance and correlation of the block components
 
--   Each should have their unique characterisitic, and what problem it solves in math, with proper citation
-
--   Then on how data was simulated, hopefully add math details
-
--   Then explain what metrics to be used in both simulated data and real datasets
-
-    -   Define what is TP, FP, FN, TN
-    -   and the the actual formulas of the metrics
+This formulation aims to find weight vectors $a_j$ that maximize the sum of pairwise covariances (or other measures, depending on the choice of $g$) between the projected block components $X_ja_j$
 
 
-### Metric
+## Evaluation
 
-First, defined the metrics used in benchmark analysis ...
+To evaluate the classification tasks, we used standard metrics as described in [cite]. All dataset in this study involve binary classification problems, where the response variable represents categories such as *late-stage vs early-stage* cancer (e.g., in the TCGA setting) or *Alzheimer’s disease positive vs negative*. In each case, we let the minority class as the positive class. All methods are evaluated based on their ability to correctly predict the probability $P(\hat{Y} = 1)$ and to classify instances accordingly.
 
--   TP: true positive
+We report performance using the area under the receiver operating characteristic curve (AUC), accuracy, sensitivity, and specificity. AUC is particularly emphasized because it is threshold-independent and more appropriate for imbalanced dataset [cite], which are common in biological data. In addition, accuracy, sensitivity, and specificity are reported to assess how well methods identify true signal variables in simulated dataset where the ground truth is known.
 
--   TN: true negative
+\begin{table}
+\centering
+\begin{tabular}{lll}
+\toprule
+  & Actual Positive & Actual Negative\\
+\midrule
+Predicted Positive & True Positive (TP) & False Negative (FN)\\
+Predicted Negative & False Positive (FP) & True Negative (TN)\\
+\bottomrule
+\end{tabular}
+\end{table}
+From these values, various performance metrics can then be calculated. All metrics except AUC requires a threshold, where we have set it invariant as usual $0.5$, i.e. if $P (\hat{Y}=1) \geq 0.5$, then $\hat{Y} = 1$, otherwise $\hat{Y} = 0$.
 
--   FP: false positive
+### Accuracy
 
--   FN: false negative
+Accuracy represents ratio between correctly predicted samples and total samples:
 
-wheras, it could be constructed to the following:
+$$\text{Accuracy} = \frac{TP + TN}{TP+FP+TN+FN}$$
 
-$$\text{accuracy} = \frac{TP + TN}{TP +TN + FP +FN}$$
+### Sensitivity (Recall / True Positive Rate)
 
+Sensitivity quantifies proportion of actual positives correctly identified:
+
+$$\text{Sensitivity} = \frac{TP}{TP + FN}$$
+
+### Specificity (True Negative Rate)
+
+Specificity measures the proportion of actual negatives correctly identified:
+
+$\text{Specificity} = \frac{TN}{TN + FP}$
+
+Furthermore, we could derive False Positive Rate as both are calculated based on negative classes, where $FPR + TNR = 1$:
+
+$$FPR + TNR  = 1$$
+
+$$FPR = 1 - TNR = \frac{FP}{FP + TN}$$
+
+### Reiceiver Operating Characteristic (ROC) Curve
+
+The ROC curve is plot of TPR on the y-axis against FPR x-axis at various classification thresholds.
+
+The x-axis:
+
+$$FPR(t) = \frac{FP(t)}{FP(t) + TN(t)} = 1 - \text{Specificity}(t)$$
+
+The y-axis:
+
+$$TPR(t) = \frac{TP(t)}{TP(t) + FN(t)} = \text{Sensitivity}(t)$$
+
+These quantities are calculated at varying thresholds of $t \in [0, 1]$, where we classify $\hat{P}(Y=1) \geq t$ as positive.
+
+### Area Under the ROC Curve (AUC)
+
+AUC tells you how well a classifier separates the positive class from the negative class across all possible thresholds.
 
 
 \newpage
@@ -769,11 +892,11 @@ $$\text{accuracy} = \frac{TP + TN}{TP +TN + FP +FN}$$
 ::: {#refs}
 :::
 
-# (APPENDIX) Appendix {.unnumbered}
+<!-- # (APPENDIX) Appendix {.unnumbered} -->
 
-# More information
+<!-- # More information -->
 
-This will be Appendix A.
+<!-- This will be Appendix A. -->
 
 <!-- This proposed pipeline ensures full reproducibility of any method by using an independent container environment with Singularity [@kurtzer2017singularity]. We propose to publish this pipeline on the nf-core [@ewels2020nf] platform, a community of Nextflow users, to ensure easy access and usability for researchers worldwide. 
 
@@ -792,6 +915,6 @@ Through MESSI, we could systematically identify the top-performing methods with 
 -->
 
 
-# One more thing
+<!-- # One more thing -->
 
-This will be Appendix B.
+<!-- This will be Appendix B. -->

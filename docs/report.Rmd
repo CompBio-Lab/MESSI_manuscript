@@ -117,11 +117,11 @@ Here simply include child doc of method
 ::: {#refs}
 :::
 
-# (APPENDIX) Appendix {.unnumbered}
+<!-- # (APPENDIX) Appendix {.unnumbered} -->
 
-# More information
+<!-- # More information -->
 
-This will be Appendix A.
+<!-- This will be Appendix A. -->
 
 <!-- This proposed pipeline ensures full reproducibility of any method by using an independent container environment with Singularity [@kurtzer2017singularity]. We propose to publish this pipeline on the nf-core [@ewels2020nf] platform, a community of Nextflow users, to ensure easy access and usability for researchers worldwide. 
 
@@ -140,6 +140,6 @@ Through MESSI, we could systematically identify the top-performing methods with 
 -->
 
 
-# One more thing
+<!-- # One more thing -->
 
-This will be Appendix B.
+<!-- This will be Appendix B. -->
