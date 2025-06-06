@@ -7,7 +7,6 @@ Methods section, main level 1 header is in a parent file
 
 We consider multiomics datasetes represented by $P$ omics matrices $X_i$ , where $X_i$ is of dimension $n \times p_i$ ($n$ samples and $p_i$ features) for $i = 1, \dots, P$. 
 
-
 The real datasets were retrieved from public sources like TCGA [ [citation here] ](citation)  [ [citaiton here] ](citation) with R 4.3.3 and libraries TCGAbiolinks 2.30.4 and GEOquery 2.70.0.
 These datasets were furthered processed to keep matched samples data only (same subjects measured in different omics modalities)
 

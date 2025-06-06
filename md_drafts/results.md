@@ -5,7 +5,7 @@
 knitr::opts_chunk$set(eval=T)
 ```
 
-We introduce here the MESSI pipeline, *Multiple Experiments with SyStematic Interrogation* (Fig \@ref(fig:messi-workflow-plot), and additional supplementary), which comprises of 4 main steps: 1) [Prepare data], 2) [Data splitting], 3) [Cross validation], 4) [Feature selection].
+We introduce here the MESSI pipeline, *Multiple Experiments with SyStematic Interrogation* (Fig \@ref(fig:messi-workflow-plot), and additional supplementary), comprising 4 main steps: 1) [Prepare data], 2) [Data splitting], 3) [Cross validation], 4) [Feature selection].
 
 ```{r messi-workflow-plot,fig.cap="Workflow design of MESSI for benchmarking integration methods with supervised setting. MESSI has a modular design between stages of preparing data, splitting data, cross validation (CV), and feature selection. The CV stage enables parallel computing of many methods implemented in different languages like R and Python seamleslly and reproducibly through independent containers.", fig.align="center",echo=FALSE, out.width="60%", eval=F}
 knitr::include_graphics(here::here("docs/assets", "messi_workflow.png"))
@@ -153,6 +153,15 @@ This takes in input directly after the common processing in [Prepare data] as it
 
 The output of each method is a table of selected features along with the coefficient associated with it. And, these are collected for all method evaluated on each datasets full portion. Lastly, once collected these results, it is return to user for downstream analysis.
 
+
+### Pipeline output
+
+The output directory of the pipeline includes numerous files and folders:
+
+- `merge_selected_features`: folder for a combined result of feature selection for all methods and datasets csv and its log
+- `nfcore_messi_benchmark`: folder of core contents depending on parameter `publish_relevant`, if true only final results like metrics and the final predicted results are kept. Otherwise, all intermediate results from methods are present here. 
+- `parse_metadata`: folder containing high level metadata of datasets including its omic names, dataset dimensions.
+- `pipeline_info`: folder containing workflow metatada like execution report, trace of resource usages, timeline, and a dag of connection of processes and workflows.
 
 
 
