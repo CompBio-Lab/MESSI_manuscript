@@ -230,21 +230,57 @@ This formulation aims to find weight vectors $a_j$ that maximize the sum of pair
 
 ## Evaluation
 
-To evaluate the tasks
+To evaluate the classification tasks, we used standard metrics as described in [cite]. All datasets in this study involve binary classification problems, where the response variable represents categories such as *late-stage vs early-stage* cancer (e.g., in the TCGA setting) or *Alzheimer’s disease positive vs negative*. In each case, we let the minority class as the positive class. All methods are evaluated based on their ability to correctly predict the probability $P(\hat{Y} = 1)$ and to classify instances accordingly.
+
+We report performance using the area under the receiver operating characteristic curve (AUC), accuracy, sensitivity, and specificity. AUC is particularly emphasized because it is threshold-independent and more appropriate for imbalanced datasets [cite], which are common in biological data. In addition, accuracy, sensitivity, and specificity are reported to assess how well methods identify true signal variables in simulated datasets where the ground truth is known.
+
+|     | **Actual Positive** | **Actual Negative** |
+| :-: |:-:|:-:|
+| **Predicted Positive**    | True Positive (TP)     | False Negative (FN)    |
+| **Predicted Negative**    | False Positive (FP)    | True Negative (TN)     |
 
 
-First, defined the metrics used in benchmark analysis ...
+From these values, various performance metrics can then be calculated. All metrics except AUC requires a threshold, where we have set it invariant as usual $0.5$, i.e. if $P (\hat{Y}=1) \geq 0.5$, then $\hat{Y} = 1$, otherwise $\hat{Y} = 0$.
 
--   TP: true positive
+#### Accuracy
 
--   TN: true negative
+Accuracy represents ratio between correctly predicted samples and total samples:
 
--   FP: false positive
+$$\text{Accuracy} = \frac{TP + TN}{TP+FP+TN+FN}$$
 
--   FN: false negative
+#### Sensitivity (Recall / True Positive Rate)
 
-wheras, it could be constructed to the following:
+Sensitivity quantifies proportion of actual positives correctly identified:
 
-$$\text{accuracy} = \frac{TP + TN}{TP +TN + FP +FN}$$
+$$\text{Sensitivity} = \frac{TP}{TP + FN}$$
 
+#### Specificity (True Negative Rate)
+
+Specificity measures the proportion of actual negatives correctly identified:
+
+$\text{Specificity} = \frac{TN}{TN + FP}$
+
+Furthermore, we could derive False Positive Rate as both are calculated based on negative classes, where $FPR + TNR = 1$:
+
+$$FPR + TNR  = 1$$
+
+$$FPR = 1 - TNR = \frac{FP}{FP + TN}$$
+
+#### Reiceiver Operating Characteristic (ROC) Curve
+
+The ROC curve is plot of TPR on the y-axis against FPR x-axis at various classification thresholds.
+
+The x-axis:
+
+$$FPR(t) = \frac{(FP(t))}{FP(t) + TN(t)} = 1 - \text{Specificity}(t)$$
+
+The y-axis:
+
+$$TPR(t) = \frac{TP(t)}{TP(t) + FN(t)} = \text{Sensitivity}(t)$$
+
+These quantities are calculated at varying thresholds of $t \in [0, 1]$, where we classify $\hat{P}(Y=1) \geq t$ as positive.
+
+#### Area Under the ROC Curve (AUC)
+
+AUC tells you how well a classifier separates the positive class from the negative class across all possible thresholds.
 
