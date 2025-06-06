@@ -114,47 +114,124 @@ The core function that generates such data from the mentioned R package is `simB
 
 We varied a number of samples, number of predictors, correlation between omics, pc mean, and fixed number of omics to study a variety of simulation scenarios. Each scenario is replicated 3 times and evaluated for all the methods.
 
+## Integration methods algorithms
+
 The original technical details of evaluated integration methods can be found in publications [ @singh2019diablo, @ding2022cooperative, @wang2021mogonet, @girka2023multiblock,  @Argelaguet2018; @Argelaguet2020 ]. Here, we will quickly summarize key components of each method.
 
 ### DIABLO
 
-DIABLO is ...
+DIABLO stands for Data Integration Analysis for Biomarker discovery using Latent cOmponents. It extends sGCCA [cite] to a supervised setting. 
 
-### Multiview
+Denote $Q$ normalized, centered and scaled datasets $X^{(1)}, X^{(2)}, \dots, X^{(Q)}$ such each dataset measures expression levels of $P_1, \dots, P_Q$ omics variables on same $N$ samples, then sGCCA solves the optimization function for each dimension $h = 1, \ldots, H$:
 
-Multiview is ...
+```math
+\begin{aligned}
+\underset{\mathbf{a}_h^{(1)}, \ldots, \mathbf{a}_h^{(Q)}}{\text{maximize}} & \quad \sum_{i,j=1, i \neq j}^{Q} c_{i,j}   \text{cov}(\mathbf{X}_h^{(i)} \mathbf{a}_h^{(i)}, \mathbf{X}_h^{(j)} \mathbf{a}_h^{(j)})  \\
+\text{subject to} & \quad  \|\mathbf{a}_h^{(q)}\|_2 = 1, \text{and} \|\mathbf{a}_h^{(q)}\|_1 \leq \lambda^{(q)} \quad \text{for all} \quad 1 \leq q \leq Q
+\end{aligned}
+```
+Where:
+
+- $a_h^{(q)}$ is loading vector on dimension $h$ associated to residual matrix $X_h^{(q)}$ of dataset $X^{q}$
+
+- $C = \{c_{i,j}\}_{i,j}$ is a $Q \times Q$ design matrix of connection between datasets
+
+- $\lambda^{(q)}$ is a non-negative parameter that controls amount of shrinkage, ultimately number of non-zero coefficients in $a_h^{(q)}$.
+
+
+Then DIABLO extends the above optimization further by substituting one omics dataset $X^{(q)}$ in above problem with a dummy indicator matrix $Y$ of $N \times G$ dimension to indicate class membership of each sample, and $G$ is number of phenotype or class groups.
+
+
+### Cooperative Learning
+
+Cooperative Learning is implemeneted in R with package name `multiview`. It is a supervised learning framework that integrates multiple data modalities (views) by joinly minizing prediction error while encouraging agreement across $M$ views with the following optimization problem:
+
+```math
+\text{min} E[\frac{1}{2}(y - \sum_{m=1}^M f_{X_m} (X_m))^2 + \frac{\rho}{2} \sum_{m < m^{\prime}} ( f_{X_m}(X_m) - f_{x_{m^{\prime}}} (X_{m^{\prime}})  )^2]
+
+``` 
+
+For a hyperparameter $\rho \geq 0$. The first term of the minimization is the usual prediction error (or could used other loss function), and the second being an agreement penalty term.
+
 
 ### MOFA
 
-MOFA is ...
+MOFA is Multi-Omics Factor Analysis. It can viewed as a generalization of principal component analysis to multi-omics data. Starting from $M$ data matrices $Y^1, Y^M$ of dimensions $N \times D_m$, where $N$ is number of samples and $D_m$ the number of features in data matrix $m$, MOFA decomposes these matrices as:
+
+```math
+\begin{aligned}
+Y^M = ZW^{mT} + \epsilon^m \quad m = 1, \dots, M
+\end{aligned}
+```
+
+Here, $Z$ denotes a common factor matrix for all data matrices representing low-dimensional latent variables and $W^m$ as the weight matrices for each data matrix $m$. And, $\epsilon^m$ being the omic-specific residual noise term, and has different choices of noise model with most frequently used Gaussian noise.
+
+MOFA uses variational inference for model fitting and includes automatic relevance determination to promote sparsity in $W^m$. It supports missing values, making it robust for real-world multi-omics datasets with incomplete measurements.
+
+Due to the fact that MOFA is unsupervised, hence we fit an additional glmnet [cite] model on the $Z$ factor matrix from MOFA and predict the classes. 
 
 ### MOGONET
 
-MOGONET is ...
+MOGONET is named as Multi-Omics Graph cOnvolutional NETworks. It combines graph convolutional network (GCN) for omics specific learning and passed through a view Correlation Discovery Network(VCDN) for multi-omics integration.
+
+A different GCN is trained for each omics data type.  The loss function for $i$ th omics data type $\text{GCN}_i$ is the following:
+
+```math
+L^{i}_{\text{GCN}} = \sum_{j=1}^{n_{tr}} L_{CE} (\hat{y}^{(i)}, y_j) = \sum_{j=1}^{n_{tr}} -log(\frac{e^{\hat{y}^{(i)}y_j}}{\sum_k e^{\hat{y_{j,k}}^{(i)}}} )
+```
+
+where $L_{CE}(.)$ represents the cross entropy loss function, $y_j$ is one-hot encoded label of jth training sample, and $\hat{y}^{i}_{j,k}$ is kth element in vector $\hat{y}_j^{(i)}$
+
+Furthermore, a VCDN is trained to integrate different omics type by constructing a cross-omics discovery tensor $C_j$. For data with $m$ omics data types, each element in $C_j$ can be calculated as:
+
+```math
+C_{j,a_1, a_2, \dots, a_m} = \prod_{i=1}^m \hat{y}^{(i)}_{j, a_i} , \quad a_i = 1,2,\dots,m
+```
+
+where its loss function is:
+
+```math
+L_{VCDN} = \sum_{j=1}^{n_{tr}} L_{CE} (VCDN (c_j), y_j)
+```
+
+In summary the total loss function of MOGONET could then be summarized as:
+
+```math
+L = \sum_{i=1}^{m=} L_{GCN}^{i} + \gamma L_{VCDN}
+```
+
+where $m$ is number of omics, and $\gamma$ is a trade-off parameter between omics-specific classification loss and final classification loss from VCDN. 
+
 
 ### RGCCA
 
-RGCCA is ...
+RGCCA is Regularized Generalized Canonical Correlation Analysis. Considering $J$ data matrices $X_1, \dots, X_J$, each $n \times p_j$ data matrix $X_j=[X_{j1}, \dots, X_{j_{p_j}}]$ is treated as block. Each block represents set of $p_j$ variables observed on $n$ individuals. A core criteria is that individuals has to match across blocks, where number of variables could differ from one to another.  Furthermore, all variables are assumed to be centered.
 
 
+RGCCA aims to solve the following optimization problem:
 
-### TODO
+```math
+\begin{aligned}
+\underset{\mathbf{a}_1, \ldots, \mathbf{a}_J}{\text{maximize}} & \quad \sum_{j=1}^{J} \sum_{k=1}^{J} c_{jk} \cdot g\left( \text{cov}(\mathbf{X}_j \mathbf{a}_j, \mathbf{X}_k \mathbf{a}_k) \right) \\
+\text{subject to} & \quad (1 - \tau_j) \cdot \text{var}(\mathbf{X}_j \mathbf{a}_j) + \tau_j \cdot \|\mathbf{a}_j\|_2^2 = 1, \quad \text{for } j = 1, \ldots, J
+\end{aligned}
+```
 
--   Explain what is the data input in mathematical form
+where
 
--   Then introduce the integration methods used here
+- $C_{jk}$ are elements of the design matrix , indicating the connections between blocks
+- $g$ is a continous convex scheme function applied to the covariance between block components, allowing different optimization criteria like max of sum of covariances or max of sum of absolute values covariances, etc.
+- $\tau_j$ are shrinkage or regularization parameters ranging from 0 to 1. 
+  - $\tau_j = 1$ yields maximization of covariance-based criterion, where variance of blocks dominates over correlation
+  - $\tau_j = 0$ yields maximization of correlation-based criterion, where correlation of connected components is maximized
+  - $0 < \tau_j  < 1$ is a compromise between variance and correlation of the block components
 
--   Each should have their unique characterisitic, and what problem it solves in math, with proper citation
+This formulation aims to find weight vectors $a_j$ that maximize the sum of pairwise covariances (or other measures, depending on the choice of $g$) between the projected block components $X_ja_j$
 
--   Then on how data was simulated, hopefully add math details
+## Evaluation
 
--   Then explain what metrics to be used in both simulated data and real datasets
+To evaluate the tasks
 
-    -   Define what is TP, FP, FN, TN
-    -   and the the actual formulas of the metrics
-
-
-### Metric
 
 First, defined the metrics used in benchmark analysis ...
 
