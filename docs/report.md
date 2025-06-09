@@ -326,7 +326,7 @@ params {
 profiles {
   // Platforms
   sockeye_hpc { include_config 'conf/sockeye_hpc.config' }
-  aws         { include_config 'conf/aws.config          }
+  aws         { include_config 'conf/aws.config'         }
   // Container / Env
   docker      { include_config 'conf/docker.config'      }
   apptainer   { include_config 'conf/apptainer.config'   }
@@ -527,11 +527,11 @@ From this simulation for classification performance, DIABLO with different desig
 
 \begin{figure}
 
-{\centering \includegraphics[width=0.7\linewidth,height=0.8\textheight]{../results/figures/fig_performance_evaluation_sim} 
+{\centering \includegraphics[width=0.85\linewidth,height=0.8\textheight]{../results/figures/fig_performance_evaluation_sim} 
 
 }
 
-\caption{Classification performance of all simulated datasets. T}(\#fig:sim-perf-plot)
+\caption{Classification performance of all simulated datasets via varied signal and correlation in the data. Each grid is a specific combination of signal and correlation of datasets. Each box inside grids represents auc mean score from a 5 fold cross validation of method evaluated data at one combination of parameters. The bold line on each box indicates the median of auc mean. Grey points are considered outliers.}(\#fig:sim-perf-plot)
 \end{figure}
 
 In terms of ability and quality of feature selection (Fig \@ref(fig:sim-feat-sel-plot)), only Cooperative Learning showed consistent behavior and choosing those meaningful biomarkers out compared to other methods. DIABLO is slightly behind it, and with higher variability at the sensitivity distribution. All other methods performed poorly, since they're quite unstable and could have any performance. 
@@ -543,7 +543,7 @@ In terms of ability and quality of feature selection (Fig \@ref(fig:sim-feat-sel
 
 }
 
-\caption{Simulation studies feature selection sensitivity performance}(\#fig:sim-feat-sel-plot)
+\caption{Simulation studies feature selection sensitivity performance with varied signal and correlation in the data. Each grid is combination of amount of signal to differentiate response variable classes, and correlation of omics within one complete set of multiomics simulated data. Boxplots shows overall sensitivity score distribution on each method for specific combinations of simulation parameters. The sensititivity here is to measure how good methods are identifying the actual signal variables given noise in other variables. A score of 0.75 is considered good.}(\#fig:sim-feat-sel-plot)
 \end{figure}
 
 
@@ -571,7 +571,7 @@ Therefore, we prove the pipeline provides an easy way to benchmark multiomics in
 
 }
 
-\caption{Heatmap of mean AUC from 5 fold-cv}(\#fig:real-perf-plot)
+\caption{Heatmap of mean AUC from 5 fold-CV. This heatmap represents the mean area under the curve score taken from a 5 fold cross validation evaluated for each method + dataset combination. Lighter color indicates better score or performance of the method. A mean AUC score > 0.7 is considered good. Dendograms indicates possibble relationship between two columns/rows.}(\#fig:real-perf-plot)
 \end{figure}
 
 
@@ -583,11 +583,15 @@ Therefore, we prove the pipeline provides an easy way to benchmark multiomics in
 
 ## Feature selection performance
 
-We further investigated each method's ability to identify significant biomarkers and examined the overlap between them, calculating the ranking similarity of in their feature sets at Fig \@ref(fig:real-feat-sel-plot). DIABLO-null and RGCCA have high spearson rank correlation of $0.76$, which indicates that their rankings on the important predictors are very similar to each other. 
-This could be due the fact that they're both using canonical correlation analysis, which aims to solve a maximization problem of covariance between omics, for more details see [Methods]. In addition, DIABLO-full showed high correlation with MOFA + glmnet of $0.73$, despite being the same DIABLO method but a different design could mean a very distinct model. This time, they are similar because of ....
-Rest methods, Cooperative Learning relates with both DIABLO-null and MOGONET, where the first showed near $0.5$ correlation, but the latter of $0.24$ only.
+[1] 0.5213847
+ [1] "diablo-full-ncomp-1"      "diablo-full-ncomp-2"     
+ [3] "diablo-null-ncomp-1"      "diablo-null-ncomp-2"     
+ [5] "mofa-Factor1 + glmnet"    "mofa-Factor2 + glmnet"   
+ [7] "mogonet"                  "multiview"               
+ [9] "sgcca-full-ncomp-2 + lda" "sgcca-null-ncomp-2 + lda"
 
-ADD ON HERE?
+We further investigated each method's ability to identify significant biomarkers and examined the overlap between them, calculating the ranking similarity of in their feature sets at Fig \@ref(fig:real-feat-sel-plot). 
+
 
 \begin{figure}
 
@@ -595,8 +599,17 @@ ADD ON HERE?
 
 }
 
-\caption{Feature selection result}(\#fig:real-feat-sel-plot)
+\caption{Pairwise Spearman rank correlations of multiomics integration methods based on real datasets. The heatmap depicts Spearman correlations between method rankings across real datasets. A higher correlation (darker red) indicates greater agreement in performance between two methods. Methods are hierarchically clustered to highlight similarity in performance patterns. Colors on the top and side bars indicate method identity.}(\#fig:real-feat-sel-plot)
 \end{figure}
+
+This heatmap illustrates the similarity in performance profiles of different multiomics integration methods across real datasets, as measured by Spearman rank correlation.
+
+Several clear clusters emerge. For example, the mofa-Factor1 + glmnet, and diablo-full-ncomp-2 methods show high mutual correlations of 0.731, suggesting they tend to rank datasets similarly and may be interchangeable in some contexts. In contrast, methods such as mognonet and sgcca-null-ncomp-2 + lda exhibit low correlations with most others (as low as $0.010$), indicating divergent behavior and possibly unique selection or ranking criteria.
+
+Interestingly, diablo-null-ncomp-1 and diablo-null-ncomp-2 form a tight subcluster, implying internal consistency between parameter settings of the same method family. Meanwhile, multiview and sgcca-full-ncomp-2 + lda show only moderate to weak correlation with other methods, suggesting less alignment with the dominant trends.
+
+These findings highlight methodological distinctions even within the same family (e.g., different components or priors in DIABLO) and reinforce the importance of method choice depending on downstream goals—whether to maximize consensus with other tools or to uncover novel patterns
+
 
 ## Biological Relevance Interpretation
 
@@ -609,8 +622,14 @@ To enhance biological relevance of these datasets, we examined FGSEA [insert cit
 
 }
 
-\caption{FGSEA Analysis}(\#fig:fgsea-analysis-plot)
+\caption{Comparative evaluation of multiomics integration methods for identifying significant pathways through gene set enrichment analysis. (A) Mean number of significant pathways detected across methods for two pathway databases: Oncogenic Signature (left) and Reactome (right), with error bars indicating variability. (B) Heatmap showing the proportion of significant pathway–tissue–disease associations (cells) for each method across multiple disease types and tissues. Blue intensity reflects a higher proportion of significant results. The side barplot on the right summarizes the frequency each method appears among the top performers for each tissue–disease pair.}(\#fig:fgsea-analysis-plot)
 \end{figure}
+
+This analysis demonstrates the relative effectiveness of different multiomics methods in identifying known pathway associations across diseases. In panel A, MOGONET achieved the highest mean number of significant pathways in the Oncogenic Signature database, while diablo-full-ncomp-1 and mofa-factor2 + glmnet consistently identified more significant Reactome pathways.
+
+Panel B highlights disease and tissue specific strengths of each method. For example, mofa-factor1 + glmnet and diablo-full-ncomp-1 are particularly effective for Thyroid Cancer and Melanoma. The horizontal barplot shows that mofa-factor1 + glment and diablo-full-ncomp-1 are most frequently top performers across diseases and tissues.
+
+Overall, these results suggest that while some methods are more generalizable across datasets (e.g., diablo-full-ncomp-1), others may perform better in specific biological contexts. This has implications for selecting appropriate methods based on the disease or tissue of interest.
 
 ## Computational time
 

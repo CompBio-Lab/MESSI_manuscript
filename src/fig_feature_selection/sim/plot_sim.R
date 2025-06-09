@@ -114,6 +114,7 @@ plot_sim <- function(input_data, method_palette, text_size) {
       #scales = "free",
       labeller = labeller(signal = signal_labels, corr = corr_labels)
     ) +
+    #scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
     theme(
       plot.title = element_text(hjust = 0.5),
       #plot.margin = margin(6, 0, 6, 0),
@@ -123,9 +124,14 @@ plot_sim <- function(input_data, method_palette, text_size) {
       legend.title = element_text(size = text_size + 2),
       legend.text = element_text(size = text_size),
       legend.position = "bottom",
-      legend.justification = "center"
+      legend.justification = "center",
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.background = element_rect(fill = "white", color = NA),
+      strip.text = element_text(color = "black", face = "bold", size = text_size - 2),
     ) +
-    guides(fill = guide_legend(nrow = 1))
+    guides(fill = guide_legend(nrow = 4))
 
 
   # # KINDA useless here since I knew only 3 corr
@@ -202,9 +208,17 @@ opt <- docopt::docopt(doc)
 
 # Convenient vars
 input_path <- opt$input_path
+if (is.null(input_path)) {
+  input_path <- "data/processed/fig_feature_selection_sim_plot_data.rds" |>
+    here::here()
+}
 output_path <- opt$output_path
+if (is.null(output_path)) {
+  output_path <- "results/figures/fig_feature_selection_sim.png" |>
+    here::here()
+}
 # Plot params
-text_size <- 12
+text_size <- 8
 width <- as.numeric(opt$width)
 height <- as.numeric(opt$height)
 device <- opt$device
