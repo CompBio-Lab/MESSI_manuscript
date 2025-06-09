@@ -209,8 +209,8 @@ output_path <- here::here(opt$output_path)
 method_palette <- "Paired"
 dataset_palette <- "Pastel1"
 # Use new text size
-text_size <- 16 # For slides
-# text_size <- 12 # For pdf
+# text_size <- 16 # For slides
+text_size <- 10 # For pdf
 width <- as.numeric(opt$width)
 height <- as.numeric(opt$height)
 device <- opt$device
