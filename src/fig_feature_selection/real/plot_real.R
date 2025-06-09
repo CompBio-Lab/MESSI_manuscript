@@ -145,8 +145,7 @@ opt <- docopt::docopt(doc)
 input_path <- opt$input_path
 output_path <- opt$output_path
 # Plot params
-text_size <- 12 # For doc knitting
-#text_size <- 14 # For slide
+text_size <- 14 # For doc knitting
 width <- as.numeric(opt$width)
 height <- as.numeric(opt$height)
 device <- opt$device

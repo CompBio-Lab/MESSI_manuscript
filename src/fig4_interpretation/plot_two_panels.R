@@ -19,7 +19,7 @@ panel_b_data <- readRDS("data/processed/fig_fgsea_panel_b_plot_data.rds")
 # Add caption explain what oncogenic , reactome c2 and c6
 # explain it further
 
-fig_fgsea_analysis_plot
+#fig_fgsea_analysis_plot
 
 
 # Then put them two together

@@ -44,7 +44,7 @@ clean_sim <- function(wr_df) {
 
 main <- function(input_path, output_path) {
   # First do common wrangling on the input data
-  wrangle_df <- read.csv(input_path) %>%
+  wrangle_df <- data.table::fread(input_path) %>%
     as_tibble() %>%
     wrangle_data()
 

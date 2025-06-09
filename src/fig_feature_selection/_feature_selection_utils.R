@@ -106,11 +106,21 @@ wrangle_feat_selection <- function(df) {
         (feature == "RNAseq_HiSeq_Gene_level_C8orf71" & dataset == "tcga-kipan")
     )
     ) %>%
-    # Rename the method names
+    # The view contains additional info for specific options used in methods
+    # For example mofa's factor, rgcca and diablo's ncomp
     mutate(
       method = case_when(
-        str_detect(method, "sgcca") ~ paste0(method,  " + lda"),
-        str_detect(method, "mofa") ~ "mofa + glmnet",
+        str_detect(view, "Factor") ~ paste0(method, "-", str_extract(view, "Factor.*")),
+        str_detect(view, "ncomp") ~ paste0(method, "-", str_extract(view, "ncomp.*")),
+        TRUE ~ method
+      )
+    ) %>%
+    # Rename the method names by adding additional layers
+    mutate(
+      method = case_when(
+        # TODO: this is a manual fix here, rgcca's ncomp should be recorded
+        str_detect(method, "sgcca") ~ paste0(method, "-ncomp-2", " + lda"),
+        str_detect(method, "mofa") ~ paste0(method, " + glmnet"),
         str_detect(method, "cooperative") ~ "multiview",
         TRUE ~ method
       )
