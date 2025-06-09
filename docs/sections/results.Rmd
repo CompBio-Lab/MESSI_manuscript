@@ -330,12 +330,8 @@ knitr::include_graphics(here(fig_path, "fig_performance_evaluation_real.png"))
 
 ## Feature selection performance
 
-```{r fs-selection-real-tbl}
+```{r fs-selection-real-tbl, echo=FALSE}
 fs_selection_real_tbl <- readRDS(here::here("data/processed/fig_feature_selection_real_plot_data.rds"))
-
-fs_selection_real_tbl["sgcca-full-ncomp-2 + lda", "diablo-full-ncomp-1"]
-
-fs_selection_real_tbl |> colnames()
 ```
 
 We further investigated each method's ability to identify significant biomarkers and examined the overlap between them, calculating the ranking similarity of in their feature sets at Fig \@ref(fig:real-feat-sel-plot). 

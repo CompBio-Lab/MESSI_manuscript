@@ -583,12 +583,7 @@ Therefore, we prove the pipeline provides an easy way to benchmark multiomics in
 
 ## Feature selection performance
 
-[1] 0.5213847
- [1] "diablo-full-ncomp-1"      "diablo-full-ncomp-2"     
- [3] "diablo-null-ncomp-1"      "diablo-null-ncomp-2"     
- [5] "mofa-Factor1 + glmnet"    "mofa-Factor2 + glmnet"   
- [7] "mogonet"                  "multiview"               
- [9] "sgcca-full-ncomp-2 + lda" "sgcca-null-ncomp-2 + lda"
+
 
 We further investigated each method's ability to identify significant biomarkers and examined the overlap between them, calculating the ranking similarity of in their feature sets at Fig \@ref(fig:real-feat-sel-plot). 
 
