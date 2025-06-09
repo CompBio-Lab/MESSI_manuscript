@@ -117,7 +117,7 @@ Here simply include child doc of method
 ::: {#refs}
 :::
 
-<!-- # (APPENDIX) Appendix {.unnumbered} -->
+# (APPENDIX) Appendix {.unnumbered}
 
 <!-- # More information -->
 

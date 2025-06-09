@@ -229,7 +229,7 @@ To evaluate the classification tasks, we used standard metrics as described in [
 
 We report performance using the area under the receiver operating characteristic curve (AUC), accuracy, sensitivity, and specificity. AUC is particularly emphasized because it is threshold-independent and more appropriate for imbalanced dataset [cite], which are common in biological data. In addition, accuracy, sensitivity, and specificity are reported to assess how well methods identify true signal variables in simulated dataset where the ground truth is known.
 
-```{r tab-confusion-mat, }
+```{r confusion-mat-tab, results="asis"}
 conf_matrix <- data.frame(
   positive = c("True Positive (TP)", "False Positive (FP)"),
   negative = c("False Negative (FN)", "True Negative (TN)")
@@ -239,10 +239,12 @@ rownames(conf_matrix) <- c("Predicted Positive", "Predicted Negative")
 
 # Display using kable
 knitr::kable(conf_matrix, format = "latex", booktabs = T, 
+             caption = "Confusion matrix of binary classification", 
              col.names = c("Actual Positive", "Actual Negative")) %>%
-  kable_styling(position = "center")
+  kableExtra::kable_styling(latex_options = c("hold_position"))
 ```
-From these values, various performance metrics can then be calculated. All metrics except AUC requires a threshold, where we have set it invariant as usual $0.5$, i.e. if $P (\hat{Y}=1) \geq 0.5$, then $\hat{Y} = 1$, otherwise $\hat{Y} = 0$.
+
+From these values of table \@ref(tab:confusion-mat-tab), various performance metrics can then be calculated. All metrics except AUC requires a threshold, where we have set it invariant as usual $0.5$, i.e. if $P (\hat{Y}=1) \geq 0.5$, then $\hat{Y} = 1$, otherwise $\hat{Y} = 0$.
 
 ### Accuracy
 
@@ -260,9 +262,9 @@ $$\text{Sensitivity} = \frac{TP}{TP + FN}$$
 
 Specificity measures the proportion of actual negatives correctly identified:
 
-$\text{Specificity} = \frac{TN}{TN + FP}$
+$$\text{Specificity} = \frac{TN}{TN + FP}$$
 
-Furthermore, we could derive False Positive Rate as both are calculated based on negative classes, where $FPR + TNR = 1$:
+Furthermore, we could derive the False Positive Rate from specificity (TNR) as both are calculated based on negative classes, where $FPR + TNR = 1$:
 
 $$FPR + TNR  = 1$$
 
