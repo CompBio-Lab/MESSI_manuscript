@@ -35,6 +35,22 @@ plot_fig1_sim <- function(
   if (!is.data.frame(input_data)) stop("Plot data for simulated data should be dataframe")
   sim_df <- input_data
 
+  # Use a custom method palette for now thats based on Paired
+  custom_method_palette <-  RColorBrewer::brewer.pal(n = 10, name = "Paired")
+  method_order_names <- c(
+    "diablo-full_ncomp-1",
+    "diablo-full_ncomp-2",
+    "diablo-null_ncomp-1",
+    "diablo-null_ncomp-2",
+    "mofa-Factor1 + glmnet",
+    "mofa-Factor2 + glmnet",
+    "mogonet",
+    "multiview",
+    "sgcca-full_ncomp-2 + lda",
+    "sgcca-null_ncomp-2 + lda"
+  )
+  names(custom_method_palette) <- method_order_names
+
   # Labeller for facetting
   signal_labels <- paste0("Signal = ", sim_df$signal |> unique())
   names(signal_labels) <- sim_df$signal |> unique()
@@ -45,7 +61,9 @@ plot_fig1_sim <- function(
     ggplot(aes(x=method, y=auc_mean, fill=method)) +
     stat_boxplot(geom ='errorbar', width=0.25) +
     geom_boxplot()+
-    scale_fill_brewer(palette = method_palette) +
+    #scale_fill_brewer(palette = method_palette) +
+    # TODO: use manual colors now to match everywhere
+    scale_fill_manual(values = custom_method_palette) +
     facet_grid(
       corr ~ signal,
       #scales = "free",
@@ -77,7 +95,7 @@ plot_fig1_sim <- function(
       legend.text = element_text(size = text_size),
       legend.position = "bottom"
     ) +
-    guides(fill = guide_legend(nrow = 2)) +
+    guides(fill = guide_legend(nrow = 3)) +
     # Lastly the labels
     labs(x=x_lab, fill=x_lab, y = y_lab)
   return(p)
@@ -87,12 +105,21 @@ plot_fig1_sim <- function(
 # ==============================================================================
 # Plot here
 # Load the variables from cli
-input_path <- here::here(opt$input_path)
-output_path <- here::here(opt$output_path)
+input_path <- opt$input_path
+if (is.null(input_path)) {
+  input_path <- "data/processed/fig_performance_evaluation_sim_plot_data.rds" |>
+    here::here()
+}
+output_path <- opt$output_path
+if (is.null(output_path)) {
+  output_path <- "results/figures/fig_performance_evaluation_sim.png" |>
+    here::here()
+}
+
 # Plot params
 method_palette <- "Paired"
 dataset_palette <- "Pastel1"
-text_size <- 12
+text_size <- 7
 width <- as.numeric(opt$width)
 height <- as.numeric(opt$height)
 device <- opt$device
@@ -114,7 +141,6 @@ out_plot <- plot_fig1_sim(
   text_size = text_size,
   method_palette = method_palette
 )
-
 
 
 if (!show_title) {

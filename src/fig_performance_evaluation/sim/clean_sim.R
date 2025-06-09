@@ -20,7 +20,6 @@ library(here)
 library(stringr)
 library(tidyr)
 
-
 source(here::here("src/common_helpers.R"))
 source(here::here("src/fig_performance_evaluation/_performance_evaluation_utils.R"))
 # Function to clean sim data for plot
@@ -43,10 +42,21 @@ clean_sim <- function(wr_df) {
 
 
 main <- function(input_path, output_path) {
+  if (length(input_path) == 0) {
+    input_path <- "data/raw/simulated_data_results/metrics.csv" |>
+      here::here()
+  }
   # First do common wrangling on the input data
   wrangle_df <- data.table::fread(input_path) %>%
     as_tibble() %>%
-    wrangle_data()
+    wrangle_data() %>%
+    # TODO: Uggly fix here
+    mutate(
+      method = case_when(
+        str_detect(method, "mofa") ~ "mofa-Factor2 + glmnet",
+        TRUE ~ method
+        )
+    )
 
 
   # Handle data type-specific processing
