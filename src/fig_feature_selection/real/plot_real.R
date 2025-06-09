@@ -87,7 +87,7 @@ plot_real_heatmap <- function(
     heatmap_legend_param = list(
       #title = "Spearman correlation",
       title = "Pearson correlation",
-      title_gp = gpar(fontsize = text_size - 4, fontface = "bold"),
+      title_gp = gpar(fontsize = text_size + 2, fontface = "bold"),
       #legend_direction = "horizontal",
       at = c(round(min(cor_mat), 1), round(median(cor_mat), 1), ceiling(max(cor_mat))),
       labels = c("Low", "", "High"),
@@ -114,7 +114,7 @@ plot_real_heatmap <- function(
       grid.text(
         sprintf("%.3f", cor_mat[i, j]),
         x, y,
-        gp = gpar(col = text_color, fontsize = 12)
+        gp = gpar(col = text_color, fontsize = text_size)
       )
     },
     column_dend_reorder = T,
@@ -143,15 +143,23 @@ opt <- docopt::docopt(doc)
 
 # Convenient vars
 input_path <- opt$input_path
+if (is.null(input_path)) {
+  input_path <- "data/processed/fig_feature_selection_real_plot_data.rds" |>
+    here()
+}
+
 output_path <- opt$output_path
+if (is.null(output_path)) {
+  output_path <- "results/figures/fig_feature_selection_real.png" |> here()
+}
 # Plot params
-text_size <- 14 # For doc knitting
 width <- as.numeric(opt$width)
 height <- as.numeric(opt$height)
 device <- opt$device
 dpi <- as.numeric(opt$dpi)
 method_palette <- "Paired"
 show_title <- opt$show_title |> as.integer() |> as.logical()
+text_size <- 8 # For doc knitting
 # ==============================================================================
 input_data <- readRDS(input_path)
 # Plot it
