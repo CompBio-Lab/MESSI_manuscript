@@ -24,16 +24,22 @@ clean_real <- function(df, cor_method="pearson") {
   # Some intermediate dataframes here for using later
   # Get rankings first
   ranking_df <- df %>%
+    # Need additional standardizing of views
+    mutate(view = case_when(
+      str_detect(view, "-Factor") ~ str_remove(view, "-Factor.*"),
+      str_detect(view, "-ncomp") ~ str_remove(view, "-ncomp.*"),
+      TRUE ~ view
+    )) %>%
     group_by(method, dataset, view) %>%
     # So the coef with rank number smaller means better
     # ie. rank 1 (highest) > rank2 > ... rank 10 > ... rank n
     mutate(ranking = rank(desc(abs(coef)))) %>%
     ungroup() %>%
-    ##select(-coef)
-  # And pivot it to get correlation matri
+    select(-coef)
+  # And pivot it to get correlation matrix
   cor_mat <- ranking_df %>%
     pivot_wider(names_from = method, values_from=ranking) %>%
-    filter(dataset_type == "real") %>%
+    #filter(dataset_type == "real") %>%
     select_if(is.numeric) %>%
     select(order(colnames(.))) %>%
     as.matrix() %>%
@@ -44,7 +50,6 @@ clean_real <- function(df, cor_method="pearson") {
   #colnames(cor_mat) <- ranking_df$dataset |> unique() |> sort()
 
   return(cor_mat)
-
 }
 
 
@@ -53,8 +58,10 @@ main <- function(input_path, output_path) {
 
   # First load in data and wrangle it
   feat_result_df <- data.table::fread(input_path) %>%
+    dplyr::select(-c(feature_type, dataset_type)) %>%
     as_tibble() %>%
     wrangle_feat_selection()
+
 
 
   # # Handle data type-specific processing
