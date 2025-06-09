@@ -57,6 +57,8 @@ main <- function(input_path, output_path) {
   # First do common wrangling on the input data
   wrangle_df <- fread(input_path) %>%
     wrangle_data() %>%
+    # Filter the unwanted data
+    filter(!str_detect(tolower(dataset), "tcga-chol")) %>%
     as_tibble()
 
   # Handle data type-specific processing
