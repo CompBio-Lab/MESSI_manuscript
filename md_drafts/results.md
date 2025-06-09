@@ -5,7 +5,7 @@
 knitr::opts_chunk$set(eval=T)
 ```
 
-We introduce here the MESSI pipeline, *Multiple Experiments with SyStematic Interrogation* (Fig \@ref(fig:messi-workflow-plot), and additional supplementary), comprising 4 main steps: 1) [Prepare data], 2) [Data splitting], 3) [Cross validation], 4) [Feature selection].
+We introduce here the MESSI pipeline, *Multiple Experiments with SyStematic Interrogation* (Fig \@ref(fig:messi-workflow-plot), and additional supplementary), which comprises of 4 main steps: 1) [Prepare data], 2) [Data splitting], 3) [Cross validation], 4) [Feature selection].
 
 ```{r messi-workflow-plot,fig.cap="Workflow design of MESSI for benchmarking integration methods with supervised setting. MESSI has a modular design between stages of preparing data, splitting data, cross validation (CV), and feature selection. The CV stage enables parallel computing of many methods implemented in different languages like R and Python seamleslly and reproducibly through independent containers.", fig.align="center",echo=FALSE, out.width="60%", eval=F}
 knitr::include_graphics(here::here("docs/assets", "messi_workflow.png"))
@@ -18,11 +18,10 @@ MESSI is implemented with Nextflow [@di2017nextflow], a domain specific language
 Moreover, the core feature of Nextflow of using containerization for modules like Docker [@docker2020docker] and Singularity [@kurtzer2017singularity] solves the reproducibility issue in replicating papers. 
 Each time the pipeline is executed, containers are created for each process defined in the workflows that constitute the pipeline. These containers follow same sets of operating system configurations, software versions of the desired computation performed. Hence, it fulfills reproducibility and portability of our results as each time we run these independently on its own encapsulated environment. 
 In addition, Nextflow creates unique working directory for each process spawned via these containers, and having all writing I/O operations in this specified directory without modifying the original input files. This way, we dont accidentally overwrite the raw data or any important input file without knowing in the first place.
-Furthermore, the independence between each process leads nature of parallelizable computations. This characteristic of the pipeline along with the resumability of re-executing interrupted or failed processes make debugging or changing computational settings for certain methods only atomic and simple. 
-Ultimately, it reduces time complexity of dealing with large datasets or long runtime computations, compared to standard way of sequentially executing complex scripts.
-In terms of interoperability, Nextflow is capable to run the pipeline on various computing platforms including and not limited to our own personal computer, mainstream high-performance computing clusters (HPC) like SLURM, PBS or popular cloud platforms like AWS and Google cloud without modifying code logics. 
-This is enabled from resource and parameters configurations, making user to only worry about configurations to carry out and not the code logic itself. 
 
+Furthermore, the independence between each process leads nature of parallelizable computations. This characteristic of the pipeline along with the resumability of re-executing interrupted or failed processes make debugging or changing computational settings for certain methods only atomic and simple.  Ultimately, it reduces time complexity of dealing with large datasets or long runtime computations, compared to standard way of sequentially executing complex script yet failing at a random timepoint with hardness to recover from error.
+
+In terms of interoperability, Nextflow is capable to run the pipeline on various computing platforms including and not limited to our own personal computer, mainstream high-performance computing clusters (HPC) like SLURM, PBS or popular cloud platforms like AWS and Google cloud without modifying code logics.  This is enabled through resource and parameters configurations, making user to only worry about configurations to carry out and not the code logic itself. In particular, this is yet another important feature, the usage of flexible configuration, where user could run full methods collection or of their interest to benchmark. 
 
 With all these characteristics, benchmarking integration methods become trivial, as the data flow through different subworkflows and modules as if in factory, user should only be concerned on providing the right format of data and let MESSI handle the rest. Next, we will describe the main components of the pipeline as in and how each part is implemented as in Fig \@ref(fig:messi-workflow-plot).
 
@@ -154,15 +153,56 @@ This takes in input directly after the common processing in [Prepare data] as it
 The output of each method is a table of selected features along with the coefficient associated with it. And, these are collected for all method evaluated on each datasets full portion. Lastly, once collected these results, it is return to user for downstream analysis.
 
 
-### Pipeline output
+### Configuration of parameters
 
-The output directory of the pipeline includes numerous files and folders:
+Configuration of Parameters
+To support flexible, reproducible, and modular execution, the pipeline is implemented using Nextflow, which allows multiple configuration profiles to be defined and composed dynamically. Each profile may inherit from others and override parameter values, supporting a hierarchical and modular approach to configuration. Further details on profile usage and inheritance can be found in the Nextflow official documentation [cite here].
 
-- `merge_selected_features`: folder for a combined result of feature selection for all methods and datasets csv and its log
-- `nfcore_messi_benchmark`: folder of core contents depending on parameter `publish_relevant`, if true only final results like metrics and the final predicted results are kept. Otherwise, all intermediate results from methods are present here. 
-- `parse_metadata`: folder containing high level metadata of datasets including its omic names, dataset dimensions.
-- `pipeline_info`: folder containing workflow metatada like execution report, trace of resource usages, timeline, and a dag of connection of processes and workflows.
+In our implementation, important options such as skipping specific methods, adjusting the number of cross-validation folds, modifying method-specific hyperparameters, or adapting to site/platform-specific computing environments are all controlled through Nextflow profiles.
 
+Each profile is defined in a .config file using a Groovy-based syntax similar to YAML, but with the additional ability to evaluate Nextflow expressions dynamically. For example:
+
+```groovy
+// This is a top level profile that allows to contain multiple other profiles
+params {
+  skip_mogonet  = false
+  skip_diablo   = false
+  fold_k        = 5
+  // Method specific
+  diablo_design = ["null", "full"]
+  mogonet_hdim  = [1, 3, 5]
+  // Resource specific
+  cpus          = 2
+  time_hr       = 3
+  mem_gb        = 3 
+}
+
+// Then inclusion of other profiles of platform-wise, container-wise, data-wise
+profiles {
+  // Platforms
+  sockeye_hpc { include_config 'conf/sockeye_hpc.config' }
+  aws         { include_config 'conf/aws.config          }
+  // Container / Env
+  docker      { include_config 'conf/docker.config'      }
+  apptainer   { include_config 'conf/apptainer.config'   }
+  // Data
+  real_data   { include_config 'conf/real_data.config'   }
+  sim_data    { include_config 'conf/sim_data.config'    }
+
+}
+```
+
+Execution can then be customized by chaining multiple profiles to create tailored configurations. For instance:
+
+```bash
+# Run on our university hpc with apptainer of settings for real data 
+# where real data could have very specific settings like resource constraints
+nextflow run messi-benchmark -profile sockeye_hpc,apptainer,real_data
+# Run on aws on simulated data
+nextlfow run messi-benchmark -profile aws,sim_data
+```
+
+This modular and declarative approach enables extensive flexibility for users, allowing parameter tuning, environment adaptation, and reproducible configuration from a single control script. Changing a single parameter in a profile automatically propagates to all pipeline components where that parameter is used. Furthermore, this structure facilitates systematic exploration of hyperparameters and preserves a complete record of configurations used in each run—critical for reproducibility, benchmarking, and downstream analysis.
 
 
 ### Model Assessment
@@ -171,7 +211,12 @@ The output directory of the pipeline includes numerous files and folders:
 - Describe how to evaluate the methods, but full technical details refer to methods instead
 --->
 
-To showcase the usage of the pipeline and comprehensively assess the performances of these integration methods, simulated data were evaluated to test robustness of methods in different parameter settings Full mathematical details of the process of simulating data are provided under [Methods]. Furthermore, we then evaluated the methods on real world datasets retrieved from public source like GEO [cite here], and TCGA[ cite] at total of $14$ datasets as described in table \@ref(tab:benchmark-data-table).
+To demonstrate the utility of our pipeline and to comprehensively assess the performance of integration methods, we evaluated both simulated and real-world datasets under a range of experimental conditions.
+
+Simulated datasets were generated with controlled parameters to test method robustness across varying signal strengths, feature correlations, and noise structures. The full details of the simulation framework are described in the [Methods] section.
+
+In addition, we benchmarked methods on $14$ real-world datasets collected from publicly available sources such as the Gene Expression Omnibus (GEO) [cite here] and The Cancer Genome Atlas (TCGA) [cite here], as summarized in Table \@ref(tab:benchmark-data-table).
+
 
 ```{r benchmark-data-table}
 real_data_tbl <- data.table::fread(here("data/processed/real_dataset_metadata.csv")) %>%
@@ -219,15 +264,19 @@ real_data_tbl %>%
 ```
 
 
-In the meantime, we have benchmarked $5$ methods: DIABLO [@singh2019diablo], Cooperative Learning [@ding2022cooperative], MOGONET [@wang2021mogonet], RGCCA [@girka2023multiblock], MOFA [@Argelaguet2018; @Argelaguet2020]. We proposed to evaluate more, with the available options described in table \@ref(tab:method-meta-table). 
+In the meantime, we have benchmarked $5$ methods: DIABLO [@singh2019diablo], Cooperative Learning [@ding2022cooperative], MOGONET [@wang2021mogonet], RGCCA [@girka2023multiblock], MOFA [@Argelaguet2018; @Argelaguet2020]. Additional candidate methods and implementation options available through the pipeline are listed in Table \@ref(tab:method-meta-table).
 
 <!--- add more here? -->
 
-We haved used metrics like area under the curve (AUC), balanced accuracy, F1 score for classification performance with a 5-fold CV from the pipeline. This way, we could measure each method's performance in each dataset using these binary classification scores.
+We evaluated classification performance using standard binary classification metrics: area under the receiver operating characteristic curve (AUC), balanced accuracy, and F1 score, computed using 5-fold cross-validation. The full cross-validation procedure and metric definitions are detailed in the [Methods] section. This allowed us to compare each method’s predictive performance across all datasets in a consistent manner.
 
-In terms of quality of feature selection, we applied different metrics to simulated and real datasets. For the simulated ones, we utilized sensitivity and specificity of predictors identified, as we have full control and knowledge on which predictors were noise , and those that are actual useful ones. For the real ones, we measure ranking of predictors in each data for every method, and then compute the spearman rank correlation of these methods to see which method tend to have similar ranking in terms of arranging important predictors.
+To assess the quality of feature selection, we employed different evaluation strategies for simulated and real datasets.
 
-In addition, we measured the computational time requirement of each method all the way from preprocessing its input data, training model, making prediction, and feature selection. Also, the memory usage of each of these processes were recorded. This way, we could compare methods not only through performance but also its costs to achieve good work via more computational time and more intensive memory usage.
+For simulated data, where the ground truth is known, we measured the sensitivity and specificity of the selected features to evaluate each method’s ability to distinguish informative variables from noise (see Methods).
+
+For real datasets, where ground truth is not available, we ranked features by importance for each method and computed pairwise Spearman rank correlations to quantify the similarity in feature prioritization between methods.
+
+In addition to predictive performance, we measured the computational cost of each method. This included the total runtime and memory usage across key stages of the pipeline: input preprocessing, model training, prediction, and feature selection. These resource metrics allow for a holistic comparison of methods in terms of both performance and computational efficiency.
 
 
 ## Simulation studies
