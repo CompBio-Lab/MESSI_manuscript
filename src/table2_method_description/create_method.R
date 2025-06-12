@@ -11,14 +11,14 @@ METHOD_NAMES <- c(
   "DIABLO", "MOFA+", "RGCCA", "IntegrAO",
   "IntegratedLearner", "Stabl", "Cooperative Learning (multiview)", "MOGONET",
   "GOAT", "mowgli", "BEAM", "SLIDE",
-  "JointNMF", "eipy", "multiVI"
+  "JointNMF", "eipy", "multiVI", "UnitedNet"
   )
 # Language of method
 LANGUAGES <- c(
   "R", "R/Python", "R", "Python",
   "R", "Python", "R", "Python",
   "Python", "Python", "R", "R",
-  "R", "Python", "Python"
+  "R", "Python", "Python", "Python"
   )
 
 # Type of method (mathematically)
@@ -26,7 +26,7 @@ TYPES <- c(
   "GCCA", "Factor analysis", "GCCA", "IntegrAo-fill-later",
   "IntegratedLearner-fill-later", "Stabl-fill-later", "Penalized regression", "GNN",
   "GNN", "Matrix factorization, optimal transport", "BEAM-fill-later", "SLIDE-fill-later",
-  "Matrix factorization", "Ensemble", "Deep Learning"
+  "Matrix factorization", "Ensemble", "Deep Learning", "Encoder-Decoder"
   )
 
 
@@ -35,7 +35,7 @@ PACKAGES <- c(
   "yes", "yes", "yes", "yes",
   "yes", "no", "yes", "no",
   "no", "yes", "yes", "yes",
-  "yes", "yes", "yes"
+  "yes", "yes", "yes", "no"
   )
 
 # Link to paper
@@ -54,7 +54,8 @@ PAPER_LINKS <- c(
   "https://www.nature.com/articles/s41592-024-02175-z", # SLIDE
   "JointNMF", # JointNMF
   "https://arxiv.org/abs/2401.09582", # EIPY
-  "https://www.nature.com/articles/s41592-023-01909-9" # multiVI
+  "https://www.nature.com/articles/s41592-023-01909-9", # multiVI,
+  "https://www.nature.com/articles/s41467-023-37477-x" # UnitedNet Explainable multi-task learning
 
 
   )
@@ -75,7 +76,8 @@ CODE_LINKS <- c(
   "https://github.com/jishnu-lab/SLIDE/blob/main/vignettes/SLIDE.pdf", # SLIDE,
   "https://cran.r-project.org/web/packages/nnTensor/vignettes/nnTensor-2.html", # JointNMF
   "https://github.com/GauravPandeyLab/eipy", # EIPY
-  "https://docs.scvi-tools.org/en/stable/tutorials/notebooks/multimodal/MultiVI_tutorial.html" # multiVI
+  "https://docs.scvi-tools.org/en/stable/tutorials/notebooks/multimodal/MultiVI_tutorial.html", # multiVI
+  "https://github.com/LiuLab-Bioelectronics-Harvard/UnitedNet"
   )
 
 

@@ -43,6 +43,7 @@ https://github.com/haozhu233/kableExtra/issues/214#issuecomment-421706528
 (ref:yang2016non) @yang2016non
 (ref:bennett2024eipy) @bennett2024eipy
 (ref:ashuach2023multivi) @ashuach2023multivi
+(ref:tang2023explainable) @tang2023explainable
 
 ```{r method-meta-table, results="asis", eval=TRUE, fig.pos="H"}
 method_table <- read.csv(here::here("data/processed/method_metadata.csv"))
@@ -62,7 +63,8 @@ paper_link_citation <- c(
   "rahimikollu2024slide", # SLIDE 
   "yang2016non", # JointNMF 
   "bennett2024eipy", # EIPY 
-  "ashuach2023multivi" # MultiVI
+  "ashuach2023multivi", # MultiVI
+  "tang2023explainable" # UnitedNet
   )
 # Escape problematic LaTeX characters manually (e.g., _ or % in package names)
 escape_latex <- function(x) {

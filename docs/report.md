@@ -96,6 +96,7 @@ https://github.com/haozhu233/kableExtra/issues/214#issuecomment-421706528
 (ref:yang2016non) @yang2016non
 (ref:bennett2024eipy) @bennett2024eipy
 (ref:ashuach2023multivi) @ashuach2023multivi
+(ref:tang2023explainable) @tang2023explainable
 
 \begin{table}[H]
 \centering
@@ -123,6 +124,8 @@ SLIDE & SLIDE-fill-later & R & yes & (ref:rahimikollu2024slide)\\
 \cellcolor{gray!10}{JointNMF} & \cellcolor{gray!10}{Matrix factorization} & \cellcolor{gray!10}{R} & \cellcolor{gray!10}{yes} & \cellcolor{gray!10}{(ref:yang2016non)}\\
 eipy & Ensemble & Python & yes & (ref:bennett2024eipy)\\
 \cellcolor{gray!10}{multiVI} & \cellcolor{gray!10}{Deep Learning} & \cellcolor{gray!10}{Python} & \cellcolor{gray!10}{yes} & \cellcolor{gray!10}{(ref:ashuach2023multivi)}\\
+\addlinespace
+UnitedNet & Encoder-Decoder & Python & no & (ref:tang2023explainable)\\
 \bottomrule
 \end{tabular}}
 \end{table}
