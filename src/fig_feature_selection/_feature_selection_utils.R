@@ -119,7 +119,7 @@ wrangle_feat_selection <- function(df) {
     mutate(
       method = case_when(
         # TODO: this is a manual fix here, rgcca's ncomp should be recorded
-        str_detect(method, "sgcca") ~ paste0(method, "-ncomp-2", " + lda"),
+        str_detect(method, "sgcca") ~ paste0(method, " + lda"),
         str_detect(method, "mofa") ~ paste0(method, " + glmnet"),
         str_detect(method, "cooperative") ~ "multiview",
         TRUE ~ method

@@ -17,6 +17,7 @@ Options:
 
 # Load libraries
 suppressPackageStartupMessages(library(dplyr))
+library(here)
 library(ggplot2)
 library(grid)
 suppressPackageStartupMessages(library(ComplexHeatmap))

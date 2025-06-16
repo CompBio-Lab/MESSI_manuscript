@@ -62,8 +62,6 @@ main <- function(input_path, output_path) {
     as_tibble() %>%
     wrangle_feat_selection()
 
-
-
   # # Handle data type-specific processing
   clean_rds <- clean_real(feat_result_df)
 
