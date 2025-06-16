@@ -59,7 +59,7 @@ main <- function(input_path, output_path) {
     wrangle_data() %>%
     # Filter the unwanted data
     filter(!str_detect(tolower(dataset), "tcga-chol")) %>%
-    filter(!str_detect(tolower(dataset), "ncomp-1")) %>%
+    filter(!str_detect(tolower(method), "ncomp-1")) %>%
     as_tibble()
 
   # Handle data type-specific processing
