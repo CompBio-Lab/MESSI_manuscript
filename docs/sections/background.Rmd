@@ -91,7 +91,7 @@ method_table |>
         "Method", 
         "Type",
         "Language",
-        "Package available",
+        "Package",
         "Paper"
         #"Code link"
       ),

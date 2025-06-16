@@ -105,7 +105,7 @@ https://github.com/haozhu233/kableExtra/issues/214#issuecomment-421706528
 \resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{
 \begin{tabular}[t]{lllll}
 \toprule
-Method & Type & Language & Package available & Paper\\
+Method & Type & Language & Package & Paper\\
 \midrule
 \cellcolor{gray!10}{DIABLO} & \cellcolor{gray!10}{GCCA} & \cellcolor{gray!10}{R} & \cellcolor{gray!10}{yes} & \cellcolor{gray!10}{(ref:singh2019diablo)}\\
 MOFA+ & Factor analysis & R/Python & yes & (ref:Argelaguet2020)\\
