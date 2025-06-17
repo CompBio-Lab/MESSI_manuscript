@@ -54,11 +54,18 @@ clean_real <- function(wr_df) {
 
 
 main <- function(input_path, output_path) {
+  if (is.null(input_path)) {
+    input_path <- "data/raw/real_data_results/metrics.csv"
+  }
   # Datasets to exclude
   exclude_data <- c("tcga-chol", "tcga-kipan")
   # First do common wrangling on the input data
+
+
   wrangle_df <- fread(input_path) %>%
     wrangle_data() %>%
+    # TODO: this a fix for real data only
+    mutate(method = str_remove(method, "_ncomp-2")) %>%
     # Filter the unwanted data
     filter(!(tolower(dataset) %in% exclude_data)) %>%
     # For performance eval, ncomp could use the latest ncomp as it includes
