@@ -54,11 +54,15 @@ clean_real <- function(wr_df) {
 
 
 main <- function(input_path, output_path) {
+  # Datasets to exclude
+  exclude_data <- c("tcga-chol", "tcga-kipan")
   # First do common wrangling on the input data
   wrangle_df <- fread(input_path) %>%
     wrangle_data() %>%
     # Filter the unwanted data
-    filter(!str_detect(tolower(dataset), "tcga-chol")) %>%
+    filter(!(tolower(dataset) %in% exclude_data)) %>%
+    # For performance eval, ncomp could use the latest ncomp as it includes
+    # previous ncomp
     filter(!str_detect(tolower(method), "ncomp-1")) %>%
     as_tibble()
 
