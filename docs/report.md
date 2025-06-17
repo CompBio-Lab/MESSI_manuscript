@@ -319,7 +319,10 @@ params {
   skip_diablo   = false
   skip_rgcca    = false
   skip_mofa     = true
-  // Splitting
+  // Also could have many more methods
+  skip_method_i = false
+  skip_method_j = true
+  // Splitting related params
   fold_k        = 5
   // Resource specific
   cpus          = 2
@@ -585,6 +588,7 @@ Therefore, we prove the pipeline provides an easy way to benchmark multiomics in
 
 --->
 
+<!---
 
 ## Feature selection performance
 
@@ -610,6 +614,7 @@ Interestingly, diablo-null-ncomp-1 and diablo-null-ncomp-2 form a tight subclust
 
 These findings highlight methodological distinctions even within the same family (e.g., different components or priors in DIABLO) and reinforce the importance of method choice depending on downstream goals—whether to maximize consensus with other tools or to uncover novel patterns
 
+--->
 
 ## Biological Relevance Interpretation
 

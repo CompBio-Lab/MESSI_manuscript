@@ -320,7 +320,7 @@ Therefore, we prove the pipeline provides an easy way to benchmark multiomics in
 
 
 
-```{r real-perf-plot,echo=FALSE, out.width="96%", fig.cap="Heatmap of mean AUC from 5 fold-CV. This heatmap represents the mean area under the curve score taken from a 5 fold cross validation evaluated for each method + dataset combination. Lighter color indicates better score or performance of the method. A mean AUC score > 0.7 is considered good. Dendograms indicates possibble relationship between two columns/rows."}
+```{r real-perf-plot,echo=FALSE, out.width="96%", fig.cap="Heatmap of mean AUC from 5 fold-CV. This heatmap represents the mean area under the curve score taken from a 5 fold cross validation evaluated for each method + dataset combination. Lighter color indicates better score or performance of the method. A mean AUC score > 0.7 is considered good. Dendograms indicates possibble relationship between two columns/rows. DIABLO, SGCCA and MOFA are fitting 2 components."}
 knitr::include_graphics(here(fig_path, "fig_performance_evaluation_real.png"))
 ```
 
