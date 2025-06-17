@@ -313,12 +313,14 @@ Each profile is defined in a .config file using a Groovy-based syntax similar to
 ```groovy
 // This is a top level profile that allows to contain multiple other profiles
 params {
+  // Skip certain methods or not
+  skip_cplr     = true
   skip_mogonet  = false
   skip_diablo   = false
+  skip_rgcca    = false
+  skip_mofa     = true
+  // Splitting
   fold_k        = 5
-  // Method specific
-  diablo_design = ["null", "full"]
-  mogonet_hdim  = [1, 3, 5]
   // Resource specific
   cpus          = 2
   time_hr       = 3

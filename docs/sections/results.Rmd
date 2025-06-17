@@ -160,12 +160,17 @@ Each profile is defined in a .config file using a Groovy-based syntax similar to
 ```groovy
 // This is a top level profile that allows to contain multiple other profiles
 params {
+  // Skip certain methods or not
+  skip_cplr     = true
   skip_mogonet  = false
   skip_diablo   = false
+  skip_rgcca    = false
+  skip_mofa     = true
+  // Also could have many more methods
+  skip_method_i = false
+  skip_method_j = true
+  // Splitting related params
   fold_k        = 5
-  // Method specific
-  diablo_design = ["null", "full"]
-  mogonet_hdim  = [1, 3, 5]
   // Resource specific
   cpus          = 2
   time_hr       = 3
@@ -327,6 +332,7 @@ knitr::include_graphics(here(fig_path, "fig_performance_evaluation_real.png"))
 ```
 --->
 
+<!---
 
 ## Feature selection performance
 
@@ -349,6 +355,7 @@ Interestingly, diablo-null-ncomp-1 and diablo-null-ncomp-2 form a tight subclust
 
 These findings highlight methodological distinctions even within the same family (e.g., different components or priors in DIABLO) and reinforce the importance of method choice depending on downstream goals—whether to maximize consensus with other tools or to uncover novel patterns
 
+--->
 
 ## Biological Relevance Interpretation
 
