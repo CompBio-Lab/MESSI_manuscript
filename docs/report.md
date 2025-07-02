@@ -10,7 +10,7 @@ csl: assets/nature.csl
 bibliography: assets/reference.bib
 linkcolor: blue
 link-citations: true
-geometry: margin=2cm
+geometry: margin=2cm # Margin should be at least 2cm
 nocite: '@*'
 output: 
   bookdown::pdf_document2:
@@ -154,13 +154,24 @@ We introduce here the MESSI pipeline, *Multiple Experiments with SyStematic Inte
 
 \begin{figure}
 
-{\centering \includegraphics[width=0.6\linewidth]{assets/messi_workflow} 
+{\centering \includegraphics[width=0.96\linewidth]{../results/figures/messi_workflow_overview} 
 
 }
 
 \caption{Workflow design of MESSI for benchmarking integration methods with supervised setting. MESSI has a modular design between stages of preparing data, splitting data, cross validation (CV), and feature selection. The CV stage enables parallel computing of many methods implemented in different languages like R and Python seamleslly and reproducibly through independent containers.}(\#fig:messi-workflow-plot)
 \end{figure}
 
+
+<!---
+\begin{figure}
+
+{\centering \includegraphics[width=0.6\linewidth]{assets/messi_workflow} 
+
+}
+
+\caption{Workflow design of MESSI for benchmarking integration methods with supervised setting. MESSI has a modular design between stages of preparing data, splitting data, cross validation (CV), and feature selection. The CV stage enables parallel computing of many methods implemented in different languages like R and Python seamleslly and reproducibly through independent containers.}(\#fig:messi-overflow-plot)
+\end{figure}
+--->
 
 
 MESSI is implemented with Nextflow [@di2017nextflow], a domain specific language (DSL) primarily used by bioinformaticians. Compared to traditional workflow management systems like Snakemake [@koster2012snakemake] or GNU make [@stallman1988gnu], Nextflow breaks down complex workflows into modular components, and connect them with channels which determines the flow of pipeline. This feature allows us to customize each module, extending the pipeline to not only benchmark purposes but also multi-purpose usage. Additionally, This modular design enables rapid, efficient and reproducible way to test and maintain codebases.
@@ -579,7 +590,7 @@ Therefore, we prove the pipeline provides an easy way to benchmark multiomics in
 
 }
 
-\caption{Heatmap of mean AUC from 5 fold-CV. This heatmap represents the mean area under the curve score taken from a 5 fold cross validation evaluated for each method + dataset combination. Lighter color indicates better score or performance of the method. A mean AUC score > 0.7 is considered good. Dendograms indicates possibble relationship between two columns/rows.}(\#fig:real-perf-plot)
+\caption{Heatmap of mean AUC from 5 fold-CV. This heatmap represents the mean area under the curve score taken from a 5 fold cross validation evaluated for each method + dataset combination. Lighter color indicates better score or performance of the method. A mean AUC score > 0.7 is considered good. Dendograms indicates possibble relationship between two columns/rows. DIABLO, SGCCA and MOFA are fitting 2 components.}(\#fig:real-perf-plot)
 \end{figure}
 
 
@@ -642,14 +653,15 @@ We observed notable variations in the computation time of most methods with chan
 
 
 
-
+<!----
 ```{=html}
 <!---
 Fig1. Benchmark results of multiomics data and integration methods. (A) Computation time for each multiomics method of varying data size. (B) Classification performances by area under the curve of method and dataset combination. (C) Similarity in feature selection between methods and datasets.
----->
+
 ```
 
 
+--->
 
 # Discussion
 

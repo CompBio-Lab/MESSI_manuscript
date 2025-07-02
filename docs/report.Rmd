@@ -10,7 +10,7 @@ csl: assets/nature.csl
 bibliography: assets/reference.bib
 linkcolor: blue
 link-citations: true
-geometry: margin=2cm
+geometry: margin=2cm # Margin should be at least 2cm
 nocite: '@*'
 output: 
   bookdown::pdf_document2:
