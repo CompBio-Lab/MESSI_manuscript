@@ -9,7 +9,7 @@ wrangle_data <- function(df) {
     rename(method = method_name) %>%
     # Given there's same result for rgcca and sgcca
     # going to drop those of rgcca and retain sgcca only.
-    filter(!str_detect(method, "rgcca")) %>%
+    filter(!str_detect(method, "sgcca")) %>%
     # Remove the first component results from diablo
     #filter(!str_detect(method, "diablo.*ncomp-1")) %>%
     group_by(method, dataset) %>%
@@ -31,7 +31,7 @@ wrangle_data <- function(df) {
     mutate(
       method = case_when(
         str_detect(method, "mofa") ~ "mofa + glmnet",
-        str_detect(method, "sgcca") ~ paste0(method, " + lda"),
+        str_detect(method, "rgcca") ~ paste0(method, " + lda"),
         str_detect(method, "cooperative") ~ "multiview",
         TRUE ~ method
         )

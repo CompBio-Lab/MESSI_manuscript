@@ -46,8 +46,8 @@ plot_fig1_sim <- function(
     "mofa-Factor2 + glmnet",
     "mogonet",
     "multiview",
-    "sgcca-full_ncomp-2 + lda",
-    "sgcca-null_ncomp-2 + lda"
+    "rgcca-full_ncomp-2 + lda",
+    "rgcca-null_ncomp-2 + lda"
   )
   names(custom_method_palette) <- method_order_names
 

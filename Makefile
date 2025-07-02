@@ -163,8 +163,11 @@ feature_selection_with_symbol.csv: ${COMMON_R} ${REAL_FS_RESULTS_CSV}
 	@echo ${BANNER}
 	@echo hello
 
+# Common util for Performance evaluation util
+PERF_UTIL=${FIG1_SRC_DIR}/_performance_evaluation_utils.R
+
 # Figure 1: Performance evaluation (Real Data)
-${FIG1_REAL_PROCESSED}: ${FIG1_WRANGLE_REAL_SRC} ${COMMON_R} ${REAL_METRICS_CSV}
+${FIG1_REAL_PROCESSED}: ${FIG1_WRANGLE_REAL_SRC} ${COMMON_R} ${REAL_METRICS_CSV} ${PERF_UTIL}
 	@echo ${BANNER}
 	@echo "Processing real data for performance evaluation"
 	Rscript ${FIG1_WRANGLE_REAL_SRC} \
@@ -172,7 +175,7 @@ ${FIG1_REAL_PROCESSED}: ${FIG1_WRANGLE_REAL_SRC} ${COMMON_R} ${REAL_METRICS_CSV}
 		--output_path ${FIG1_REAL_PROCESSED}
 
 # Figure 1: Performance evaluation (Simulated Data)
-${FIG1_SIM_PROCESSED}: ${FIG1_WRANGLE_SIM_SRC} ${COMMON_R} ${SIM_METRICS_CSV}
+${FIG1_SIM_PROCESSED}: ${FIG1_WRANGLE_SIM_SRC} ${COMMON_R} ${SIM_METRICS_CSV} ${PERF_UTIL}
 	@echo ${BANNER}
 	@echo "Processing simulated data for performance evaluation"
 	Rscript ${FIG1_WRANGLE_SIM_SRC} \
