@@ -2,36 +2,36 @@ suppressPackageStartupMessages(library(dplyr))
 library(stringr)
 library(tidyr)
 
-common_preprocessing <- function(df) {
-  workflow_prefix <- "NFCORE_MESSI_BENCHMARK:MESSI_BENCHMARK:"
-  df  %>%
-    # First remove workflow prefixes
-    mutate(
-      process = str_replace(process, workflow_prefix, "") |> tolower()
-    ) %>%
-    # Need to fix the cooperative learning name for regex matching later
-    mutate(process = str_replace_all(process, "cooperative_learning", "multiview")) %>%
-    # Second keep the cross validation workflows and select feature only
-    keep_relevant_process() %>%
-    {.}
-    # Third expand process into workflow/subworkflow/process action
-    # expand_process_col() %>%
-    # mutate(
-    #   method = case_when(
-    #     str_detect(tag, "sgcca") ~ "sgcca",
-    #     str_detect(tag, "rgcca") ~ "rgcca",
-    #     TRUE ~ method
-    #   )
-    # ) %>%
-    # # For the tcga ones use _ to replace it
-    # mutate(
-    #   tag = case_when(
-    #     # Only replace the first - to _ for tcga
-    #     str_detect(tag, "tcga") ~ str_replace(tag, "-", "_"),
-    #     TRUE ~ tag
-    #   )
-    # )
-}
+# common_preprocessing <- function(df) {
+#   workflow_prefix <- "NFCORE_MESSI_BENCHMARK:MESSI_BENCHMARK:"
+#   df  %>%
+#     # First remove workflow prefixes
+#     mutate(
+#       process = str_replace(process, workflow_prefix, "") |> tolower()
+#     ) %>%
+#     # Need to fix the cooperative learning name for regex matching later
+#     mutate(process = str_replace_all(process, "cooperative_learning", "multiview")) %>%
+#     # Second keep the cross validation workflows and select feature only
+#     keep_relevant_process() %>%
+#     {.}
+#     # Third expand process into workflow/subworkflow/process action
+#     # expand_process_col() %>%
+#     # mutate(
+#     #   method = case_when(
+#     #     str_detect(tag, "sgcca") ~ "sgcca",
+#     #     str_detect(tag, "rgcca") ~ "rgcca",
+#     #     TRUE ~ method
+#     #   )
+#     # ) %>%
+#     # # For the tcga ones use _ to replace it
+#     # mutate(
+#     #   tag = case_when(
+#     #     # Only replace the first - to _ for tcga
+#     #     str_detect(tag, "tcga") ~ str_replace(tag, "-", "_"),
+#     #     TRUE ~ tag
+#     #   )
+#     # )
+# }
 
 # trace_df <- readr::read_tsv("data/raw/real_data_results/execution_trace.txt",
 #                             col_types = readr::cols()) |>
@@ -67,21 +67,6 @@ common_preprocessing <- function(df) {
 #   select(method, dataset)
 
 
-# feat_result_df <- data.table::fread(input_path) %>%
-#   as_tibble()
-#
-#
-# feat_result_df <- data.table::fread(input_path)
-#
-# ggg <- feat_result_df |>
-#   select(-c(dataset_type, feature_type)) %>%
-#   wrangle_feat_selection()
-
-# ggg$method |> unique()
-#
-# # need to read the trace to assist this
-#
-# ggg$method|> unique()
 
 # Custom function
 wrangle_feat_selection <- function(df) {
@@ -92,12 +77,12 @@ wrangle_feat_selection <- function(df) {
     feature = case_when(
       str_detect(method, "mogonet") ~ paste(view, feature, sep="_"),
       TRUE ~ feature
-    ),
-    # Rename rgcca to sgcca
-    method = case_when(
-      str_detect(method, "rgcca") ~ str_replace(method, "r", "s"),
-      TRUE ~ method
     )
+    # ~~Rename rgcca to sgcca~~
+    #method = case_when(
+    #  str_detect(method, "rgcca") ~ str_replace(method, "r", "s"),
+    #  TRUE ~ method
+    #)
   ) %>%
     # SGCCA has slight problem in missing a feature in tcga-brca and tcga-kipan???
     # So need to drop this
@@ -119,7 +104,7 @@ wrangle_feat_selection <- function(df) {
     mutate(
       method = case_when(
         # TODO: this is a manual fix here, rgcca's ncomp should be recorded
-        str_detect(method, "sgcca") ~ paste0(method, " + lda"),
+        str_detect(method, "gcca") ~ paste0(method, " + lda"),
         str_detect(method, "mofa") ~ paste0(method, " + glmnet"),
         str_detect(method, "cooperative") ~ "multiview",
         TRUE ~ method

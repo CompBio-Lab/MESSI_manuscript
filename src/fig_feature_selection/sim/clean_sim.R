@@ -15,7 +15,8 @@ suppressPackageStartupMessages(library(dplyr))
 library(stringr)
 library(tidyr)
 
-source(here::here("src/common_helpers.R"))
+#source(here::here("src/common_helpers.R"))
+source(here::here("src/common_helpers/retrieve_sim_params.R"))
 source(here::here("src/fig_feature_selection/sim_fs_helpers.R"))
 source(here::here("src/fig_feature_selection/_feature_selection_utils.R"))
 
@@ -140,6 +141,11 @@ main <- function(input_path, output_path) {
   feat_result_df <- data.table::fread(input_path) %>%
     as_tibble() %>%
     wrangle_feat_selection() %>%
+    # Retain ncomp / factor 1 only
+    filter(
+     !str_detect(view, "-Factor|ncomp") |                  # keep views that don't use Factor/ncomp at all
+       str_detect(view, "Factor1") | str_detect(view, "ncomp.*1")  # OR only keep -Factor1 / -ncomp1
+    ) %>%
     # And additionally remove those extra info in view
     # Need additional standardizing of views
     mutate(view = case_when(
