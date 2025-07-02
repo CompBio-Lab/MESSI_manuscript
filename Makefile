@@ -57,7 +57,7 @@ FIG3_REAL_PROCESSED=${DATA_PROCESSED_DIR}/fig_feature_selection_real_plot_data.r
 FIG3_SIM_PROCESSED=${DATA_PROCESSED_DIR}/fig_feature_selection_sim_plot_data.rds
 
 # Common R utilities
-COMMON_R=${SRC_DIR}/common_helpers.R
+COMMON_R=${SRC_DIR}/_utils.R
 
 # Figure source directories (contain scripts for generating figures)
 # Scripts for performance evaluation figure
@@ -127,9 +127,9 @@ endif
 #ifneq ($(wildcard ${SIM_METADATA_CSV}),)
 #OUTPUTS+= ${FIG_SIM_TIME_OUT}
 #endif
-ifneq ($(wildcard ${SIM_FS_RESULTS_CSV}),)
-OUTPUTS+= ${FIG_SIM_FS_OUT}
-endif
+#ifneq ($(wildcard ${SIM_FS_RESULTS_CSV}),)
+#OUTPUTS+= ${FIG_SIM_FS_OUT}
+#endif
 
 # The report file containing the figures
 REPORT_SRC=docs/report.Rmd
