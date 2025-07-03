@@ -127,9 +127,9 @@ endif
 #ifneq ($(wildcard ${SIM_METADATA_CSV}),)
 #OUTPUTS+= ${FIG_SIM_TIME_OUT}
 #endif
-#ifneq ($(wildcard ${SIM_FS_RESULTS_CSV}),)
-#OUTPUTS+= ${FIG_SIM_FS_OUT}
-#endif
+ifneq ($(wildcard ${SIM_FS_RESULTS_CSV}),)
+OUTPUTS+= ${FIG_SIM_FS_OUT}
+endif
 
 # The report file containing the figures
 REPORT_SRC=docs/report.Rmd
