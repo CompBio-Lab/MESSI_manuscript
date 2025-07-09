@@ -95,8 +95,8 @@ wrangle_feat_selection <- function(df) {
     # For example mofa's factor, rgcca and diablo's ncomp
     mutate(
       method = case_when(
-        str_detect(view, "Factor") ~ paste0(method, "-", str_extract(view, "Factor.*")),
-        str_detect(view, "ncomp") ~ paste0(method, "-", str_extract(view, "ncomp.*")),
+        str_detect(view, "Factor") ~ paste0(method, "_", str_extract(view, "Factor.*")),
+        str_detect(view, "ncomp") ~ paste0(method, "_", str_extract(view, "ncomp.*")),
         TRUE ~ method
       )
     ) %>%

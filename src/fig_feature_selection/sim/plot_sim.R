@@ -37,7 +37,7 @@ get_legend_35 <- function(plot) {
 }
 
 # Base grid plot for simulated dataset filter by cor
-plot_corr_grid <- function(plot_data, cor, method_palette, text_size) {
+plot_corr_grid <- function(plot_data, cor, method_palette="Paired", text_size=12) {
   #title <- paste0("Feature Selection Sensitivity for simulated data with correlation = ", cor)
   title <- paste0("Correlation = ", cor)
   plot_data %>%
@@ -76,6 +76,13 @@ plot_sim <- function(input_data, method_palette, text_size) {
   corr_order <- input_data$corr %>% unique() %>% sort()
   # Then transform it here
   plot_data <- input_data %>%
+    # Fix: mofa factor uses - and not _ to delim
+    mutate(
+      method = case_when(
+        stringr::str_detect(method, "Factor") ~ stringr::str_replace(method, "_", "-") ,
+        TRUE ~ method
+      )
+    ) %>%
     mutate(
       #n = factor(n, levels = n_order),
       #p = factor(p, levels = p_order),
@@ -89,7 +96,20 @@ plot_sim <- function(input_data, method_palette, text_size) {
   corr_labels <- paste0("Cor = ", plot_data$corr |> unique())
   names(corr_labels) <- plot_data$corr |> unique()
 
-
+  custom_method_palette <-  RColorBrewer::brewer.pal(n = 10, name = method_palette)
+  method_order_names <- c(
+    "diablo-full_ncomp-1",
+    "diablo-full_ncomp-2",
+    "diablo-null_ncomp-1",
+    "diablo-null_ncomp-2",
+    "mofa-Factor1 + glmnet",
+    "mofa-Factor2 + glmnet",
+    "mogonet",
+    "multiview",
+    "rgcca-full_ncomp-1 + lda",
+    "rgcca-null_ncomp-1 + lda"
+  )
+  names(custom_method_palette) <- method_order_names
 
   sim_plot <- plot_data %>%
     ggplot(aes(x = method, y = sensitivity, fill = method)) +
@@ -108,7 +128,7 @@ plot_sim <- function(input_data, method_palette, text_size) {
     # unnecessary spacing in the final plot arrangement.
     # remove extra space between panel and axis
     #scale_y_continuous(expand = c(1, 1)) +
-    scale_fill_brewer(palette = method_palette) +
+    scale_fill_manual(values = custom_method_palette) +
     facet_grid(
       corr ~ signal,
       #scales = "free",
@@ -131,7 +151,7 @@ plot_sim <- function(input_data, method_palette, text_size) {
       strip.background = element_rect(fill = "white", color = NA),
       strip.text = element_text(color = "black", face = "bold", size = text_size - 2),
     ) +
-    guides(fill = guide_legend(nrow = 4))
+    guides(fill = guide_legend(nrow = 3))
 
 
   # # KINDA useless here since I knew only 3 corr

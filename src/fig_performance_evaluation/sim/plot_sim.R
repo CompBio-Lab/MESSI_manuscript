@@ -21,8 +21,6 @@ opt <- docopt::docopt(doc)
 # Load libraries
 suppressPackageStartupMessages(library(dplyr))
 library(ggplot2)
-#library(tibble)
-
 # ==============================================================================
 # For sim data, boxplot stratify by params
 # This function has details of showing boxplot facet by correlation and
@@ -46,8 +44,8 @@ plot_fig1_sim <- function(
     "mofa-Factor2 + glmnet",
     "mogonet",
     "multiview",
-    "rgcca-full_ncomp-2 + lda",
-    "rgcca-null_ncomp-2 + lda"
+    "rgcca-full_ncomp-1 + lda",
+    "rgcca-null_ncomp-1 + lda"
   )
   names(custom_method_palette) <- method_order_names
 
@@ -141,6 +139,9 @@ out_plot <- plot_fig1_sim(
   text_size = text_size,
   method_palette = method_palette
 )
+
+
+
 
 
 if (!show_title) {
