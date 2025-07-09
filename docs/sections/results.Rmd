@@ -1,9 +1,10 @@
 ## MESSI pipeline
 
+
 We introduce here the MESSI pipeline, *Multiple Experiments with SyStematic Interrogation* (Fig \@ref(fig:messi-workflow-plot), and additional supplementary), which comprises of 4 main steps: 1) [Prepare data], 2) [Data splitting], 3) [Cross validation], 4) [Feature selection].
 
 ```{r messi-workflow-plot, eval=TRUE, out.width="96%", fig.cap="Workflow design of MESSI for benchmarking integration methods with supervised setting. MESSI has a modular design between stages of preparing data, splitting data, cross validation (CV), and feature selection. The CV stage enables parallel computing of many methods implemented in different languages like R and Python seamleslly and reproducibly through independent containers.", fig.align="center"}
-knitr::include_graphics(here(fig_path, "messi_workflow_overview.png"))
+knitr::include_graphics(here::here(fig_path, "messi_workflow_overview.png"))
 ```
 
 
@@ -225,7 +226,7 @@ In addition, we benchmarked methods on $14$ real-world datasets collected from p
 
 
 ```{r benchmark-data-table}
-real_data_tbl <- data.table::fread(here("data/processed/real_dataset_metadata.csv")) %>%
+real_data_tbl <- data.table::fread(here::here("data/processed/real_dataset_metadata.csv")) %>%
   as_tibble()
 
 
@@ -297,14 +298,14 @@ From this simulation for classification performance, DIABLO with different desig
 
 
 ```{r sim-perf-plot, echo=FALSE, out.width="85%", out.height="80%", eval=T, fig.cap="Classification performance of all simulated datasets via varied signal and correlation in the data. Each grid is a specific combination of signal and correlation of datasets. Each box inside grids represents auc mean score from a 5 fold cross validation of method evaluated data at one combination of parameters. The bold line on each box indicates the median of auc mean. Grey points are considered outliers."}
-knitr::include_graphics(here(fig_path, "fig_performance_evaluation_sim.png"))
+knitr::include_graphics(here::here(fig_path, "fig_performance_evaluation_sim.png"))
 ```
 
 In terms of ability and quality of feature selection (Fig \@ref(fig:sim-feat-sel-plot)), only Cooperative Learning showed consistent behavior and choosing those meaningful biomarkers out compared to other methods. DIABLO is slightly behind it, and with higher variability at the sensitivity distribution. All other methods performed poorly, since they're quite unstable and could have any performance. 
 
 
 ```{r sim-feat-sel-plot, echo=FALSE, out.width="96%", fig.cap="Simulation studies feature selection sensitivity performance with varied signal and correlation in the data. Each grid is combination of amount of signal to differentiate response variable classes, and correlation of omics within one complete set of multiomics simulated data. Boxplots shows overall sensitivity score distribution on each method for specific combinations of simulation parameters. The sensititivity here is to measure how good methods are identifying the actual signal variables given noise in other variables. A score of 0.75 is considered good."}
-knitr::include_graphics(here(fig_path, "fig_feature_selection_sim.png"))
+knitr::include_graphics(here::here(fig_path, "fig_feature_selection_sim.png"))
 ```
 
 
@@ -327,41 +328,41 @@ Therefore, we prove the pipeline provides an easy way to benchmark multiomics in
 
 
 ```{r real-perf-plot,echo=FALSE, out.width="96%", fig.cap="Heatmap of mean AUC from 5 fold-CV. This heatmap represents the mean area under the curve score taken from a 5 fold cross validation evaluated for each method + dataset combination. Lighter color indicates better score or performance of the method. A mean AUC score > 0.7 is considered good. Dendograms indicates possibble relationship between two columns/rows. DIABLO, SGCCA and MOFA are fitting 2 components."}
-knitr::include_graphics(here(fig_path, "fig_performance_evaluation_real.png"))
+knitr::include_graphics(here::here(fig_path, "fig_performance_evaluation_real.png"))
 ```
 
 
-
-<!--
-```{r sim-grid-plot, fig.cap="Simulation studies on signal, correlation, number of samples and number of predictors", echo=FALSE, out.width="96%"}
-#include_graphics(here(fig_path, "fig_sim_grid.png"))
-```
---->
 
 <!---
 
-## Feature selection performance
-
-```{r fs-selection-real-tbl, echo=FALSE}
-fs_selection_real_tbl <- readRDS(here::here("data/processed/fig_feature_selection_real_plot_data.rds"))
+```{r sim-grid-plot, fig.cap="Simulation studies on signal, correlation, number of samples and number of predictors", echo=FALSE, out.width="96%"}
+#include_graphics(here(fig_path, "fig_sim_grid.png"))
 ```
 
-We further investigated each method's ability to identify significant biomarkers and examined the overlap between them, calculating the ranking similarity of in their feature sets at Fig \@ref(fig:real-feat-sel-plot). 
 
 
-```{r real-feat-sel-plot, out.width="95%", fig.cap="Pairwise Spearman rank correlations of multiomics integration methods based on real datasets. The heatmap depicts Spearman correlations between method rankings across real datasets. A higher correlation (darker red) indicates greater agreement in performance between two methods. Methods are hierarchically clustered to highlight similarity in performance patterns. Colors on the top and side bars indicate method identity."}
-knitr::include_graphics(here(fig_path, "fig_feature_selection_real.png"))
-```
+<!-- ## Feature selection performance -->
 
-This heatmap illustrates the similarity in performance profiles of different multiomics integration methods across real datasets, as measured by Spearman rank correlation.
+<!-- ```{r fs-selection-real-tbl, echo=FALSE} -->
+<!-- fs_selection_real_tbl <- readRDS(here::here("data/processed/fig_feature_selection_real_plot_data.rds")) -->
+<!-- ``` -->
 
-Several clear clusters emerge. For example, the mofa-Factor1 + glmnet, and diablo-full-ncomp-2 methods show high mutual correlations of `r round(fs_selection_real_tbl["mofa-Factor1 + glmnet", "diablo-full-ncomp-1"], 3)`, suggesting they tend to rank datasets similarly and may be interchangeable in some contexts. In contrast, methods such as mognonet and sgcca-null-ncomp-2 + lda exhibit low correlations with most others (as low as $0.010$), indicating divergent behavior and possibly unique selection or ranking criteria.
+<!-- We further investigated each method's ability to identify significant biomarkers and examined the overlap between them, calculating the ranking similarity of in their feature sets at Fig \@ref(fig:real-feat-sel-plot). -->
 
-Interestingly, diablo-null-ncomp-1 and diablo-null-ncomp-2 form a tight subcluster, implying internal consistency between parameter settings of the same method family. Meanwhile, multiview and sgcca-full-ncomp-2 + lda show only moderate to weak correlation with other methods, suggesting less alignment with the dominant trends.
 
-These findings highlight methodological distinctions even within the same family (e.g., different components or priors in DIABLO) and reinforce the importance of method choice depending on downstream goals—whether to maximize consensus with other tools or to uncover novel patterns
+<!-- ```{r real-feat-sel-plot, out.width="95%", fig.cap="Pairwise Spearman rank correlations of multiomics integration methods based on real datasets. The heatmap depicts Spearman correlations between method rankings across real datasets. A higher correlation (darker red) indicates greater agreement in performance between two methods. Methods are hierarchically clustered to highlight similarity in performance patterns. Colors on the top and side bars indicate method identity."} -->
+<!-- knitr::include_graphics(here(fig_path, "fig_feature_selection_real.png")) -->
+<!-- ``` -->
 
---->
+<!-- This heatmap illustrates the similarity in performance profiles of different multiomics integration methods across real datasets, as measured by Spearman rank correlation. -->
+
+<!-- Several clear clusters emerge. For example, the mofa-Factor1 + glmnet, and diablo-full-ncomp-2 methods show high mutual correlations of ..., suggesting they tend to rank datasets similarly and may be interchangeable in some contexts. In contrast, methods such as mognonet and sgcca-null-ncomp-2 + lda exhibit low correlations with most others (as low as $0.010$), indicating divergent behavior and possibly unique selection or ranking criteria. -->
+
+<!-- Interestingly, diablo-null-ncomp-1 and diablo-null-ncomp-2 form a tight subcluster, implying internal consistency between parameter settings of the same method family. Meanwhile, multiview and sgcca-full-ncomp-2 + lda show only moderate to weak correlation with other methods, suggesting less alignment with the dominant trends. -->
+
+<!-- These findings highlight methodological distinctions even within the same family (e.g., different components or priors in DIABLO) and reinforce the importance of method choice depending on downstream goals—whether to maximize consensus with other tools or to uncover novel patterns -->
+
+<!-- ---> -->
 
 ## Biological Relevance Interpretation
 
@@ -369,7 +370,7 @@ To enhance biological relevance of these datasets, we examined FGSEA [insert cit
 \@ref(fig:fgsea-analysis-plot)
 
 ```{r fgsea-analysis-plot, out.width="92%", fig.cap="Comparative evaluation of multiomics integration methods for identifying significant pathways through gene set enrichment analysis. (A) Mean number of significant pathways detected across methods for two pathway databases: Oncogenic Signature (left) and Reactome (right), with error bars indicating variability. (B) Heatmap showing the proportion of significant pathway–tissue–disease associations (cells) for each method across multiple disease types and tissues. Blue intensity reflects a higher proportion of significant results. The side barplot on the right summarizes the frequency each method appears among the top performers for each tissue–disease pair."}
-knitr::include_graphics(here(fig_path, "fig_fgsea_analysis_two_panels.png"))
+knitr::include_graphics(here::here(fig_path, "fig_fgsea_analysis_two_panels.png"))
 ```
 
 This analysis demonstrates the relative effectiveness of different multiomics methods in identifying known pathway associations across diseases. In panel A, MOGONET achieved the highest mean number of significant pathways in the Oncogenic Signature database, while diablo-full-ncomp-1 and mofa-factor2 + glmnet consistently identified more significant Reactome pathways.
