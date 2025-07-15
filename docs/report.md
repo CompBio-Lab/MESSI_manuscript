@@ -150,11 +150,12 @@ Overall, MESSI serves not only as a benchmarking framework, but also as a protot
 
 ## MESSI pipeline
 
+
 We introduce here the MESSI pipeline, *Multiple Experiments with SyStematic Interrogation* (Fig \@ref(fig:messi-workflow-plot), and additional supplementary), which comprises of 4 main steps: 1) [Prepare data], 2) [Data splitting], 3) [Cross validation], 4) [Feature selection].
 
 \begin{figure}
 
-{\centering \includegraphics[width=0.96\linewidth]{../results/figures/messi_workflow_overview} 
+{\centering \includegraphics[width=0.96\linewidth]{assets/messi_workflow_overview} 
 
 }
 
@@ -595,37 +596,34 @@ Therefore, we prove the pipeline provides an easy way to benchmark multiomics in
 
 
 
-<!--
-
---->
-
 <!---
 
-## Feature selection performance
 
 
 
-We further investigated each method's ability to identify significant biomarkers and examined the overlap between them, calculating the ranking similarity of in their feature sets at Fig \@ref(fig:real-feat-sel-plot). 
+
+<!-- ## Feature selection performance -->
+
+<!-- ```{r fs-selection-real-tbl, echo=FALSE} -->
+<!-- fs_selection_real_tbl <- readRDS(here::here("data/processed/fig_feature_selection_real_plot_data.rds")) -->
+<!-- ``` -->
+
+<!-- We further investigated each method's ability to identify significant biomarkers and examined the overlap between them, calculating the ranking similarity of in their feature sets at Fig \@ref(fig:real-feat-sel-plot). -->
 
 
-\begin{figure}
+<!-- ```{r real-feat-sel-plot, out.width="95%", fig.cap="Pairwise Spearman rank correlations of multiomics integration methods based on real datasets. The heatmap depicts Spearman correlations between method rankings across real datasets. A higher correlation (darker red) indicates greater agreement in performance between two methods. Methods are hierarchically clustered to highlight similarity in performance patterns. Colors on the top and side bars indicate method identity."} -->
+<!-- knitr::include_graphics(here(fig_path, "fig_feature_selection_real.png")) -->
+<!-- ``` -->
 
-{\centering \includegraphics[width=0.95\linewidth]{../results/figures/fig_feature_selection_real} 
+<!-- This heatmap illustrates the similarity in performance profiles of different multiomics integration methods across real datasets, as measured by Spearman rank correlation. -->
 
-}
+<!-- Several clear clusters emerge. For example, the mofa-Factor1 + glmnet, and diablo-full-ncomp-2 methods show high mutual correlations of ..., suggesting they tend to rank datasets similarly and may be interchangeable in some contexts. In contrast, methods such as mognonet and sgcca-null-ncomp-2 + lda exhibit low correlations with most others (as low as $0.010$), indicating divergent behavior and possibly unique selection or ranking criteria. -->
 
-\caption{Pairwise Spearman rank correlations of multiomics integration methods based on real datasets. The heatmap depicts Spearman correlations between method rankings across real datasets. A higher correlation (darker red) indicates greater agreement in performance between two methods. Methods are hierarchically clustered to highlight similarity in performance patterns. Colors on the top and side bars indicate method identity.}(\#fig:real-feat-sel-plot)
-\end{figure}
+<!-- Interestingly, diablo-null-ncomp-1 and diablo-null-ncomp-2 form a tight subcluster, implying internal consistency between parameter settings of the same method family. Meanwhile, multiview and sgcca-full-ncomp-2 + lda show only moderate to weak correlation with other methods, suggesting less alignment with the dominant trends. -->
 
-This heatmap illustrates the similarity in performance profiles of different multiomics integration methods across real datasets, as measured by Spearman rank correlation.
+<!-- These findings highlight methodological distinctions even within the same family (e.g., different components or priors in DIABLO) and reinforce the importance of method choice depending on downstream goals—whether to maximize consensus with other tools or to uncover novel patterns -->
 
-Several clear clusters emerge. For example, the mofa-Factor1 + glmnet, and diablo-full-ncomp-2 methods show high mutual correlations of 0.731, suggesting they tend to rank datasets similarly and may be interchangeable in some contexts. In contrast, methods such as mognonet and sgcca-null-ncomp-2 + lda exhibit low correlations with most others (as low as $0.010$), indicating divergent behavior and possibly unique selection or ranking criteria.
-
-Interestingly, diablo-null-ncomp-1 and diablo-null-ncomp-2 form a tight subcluster, implying internal consistency between parameter settings of the same method family. Meanwhile, multiview and sgcca-full-ncomp-2 + lda show only moderate to weak correlation with other methods, suggesting less alignment with the dominant trends.
-
-These findings highlight methodological distinctions even within the same family (e.g., different components or priors in DIABLO) and reinforce the importance of method choice depending on downstream goals—whether to maximize consensus with other tools or to uncover novel patterns
-
---->
+<!-- ---> 
 
 ## Biological Relevance Interpretation
 
