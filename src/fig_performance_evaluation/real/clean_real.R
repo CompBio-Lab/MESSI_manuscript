@@ -28,8 +28,8 @@ source(here::here("src/fig_performance_evaluation/_performance_evaluation_utils.
 # Function to clean real data for plot
 clean_real <- function(wr_df) {
   auc_matrix <- wr_df %>%
-    select(method, dataset, auc_mean) %>%
-    pivot_wider(names_from = dataset, values_from = auc_mean) %>%
+    select(method, dataset, auc) %>%
+    pivot_wider(names_from = dataset, values_from = auc) %>%
     arrange(method) %>%
     select(order(colnames(.))) %>%
     tibble::column_to_rownames(var="method") %>%

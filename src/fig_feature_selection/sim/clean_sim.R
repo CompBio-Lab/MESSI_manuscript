@@ -142,10 +142,10 @@ main <- function(input_path, output_path) {
     as_tibble() %>%
     wrangle_feat_selection() %>%
     # Retain ncomp / factor 1 only
-    filter(
-     !str_detect(view, "-Factor|ncomp") |                  # keep views that don't use Factor/ncomp at all
-       str_detect(view, "Factor1") | str_detect(view, "ncomp.*1")  # OR only keep -Factor1 / -ncomp1
-    ) %>%
+    #filter(
+    # !str_detect(view, "-Factor|ncomp") |                  # keep views that don't use Factor/ncomp at all
+    #   str_detect(view, "Factor1") | str_detect(view, "ncomp.*1")  # OR only keep -Factor1 / -ncomp1
+    #) %>%
     # And additionally remove those extra info in view
     # Need additional standardizing of views
     mutate(view = case_when(
@@ -153,6 +153,7 @@ main <- function(input_path, output_path) {
       str_detect(view, "-ncomp") ~ str_remove(view, "-ncomp.*"),
       TRUE ~ view
     ))
+
 
 
   # # Handle data type-specific processing

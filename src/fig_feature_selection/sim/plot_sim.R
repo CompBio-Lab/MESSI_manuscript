@@ -96,7 +96,7 @@ plot_sim <- function(input_data, method_palette, text_size) {
   corr_labels <- paste0("Cor = ", plot_data$corr |> unique())
   names(corr_labels) <- plot_data$corr |> unique()
 
-  custom_method_palette <-  RColorBrewer::brewer.pal(n = 10, name = method_palette)
+  custom_method_palette <-  RColorBrewer::brewer.pal(n = 12, name = method_palette)
   method_order_names <- c(
     "diablo-full_ncomp-1",
     "diablo-full_ncomp-2",
@@ -107,28 +107,36 @@ plot_sim <- function(input_data, method_palette, text_size) {
     "mogonet",
     "multiview",
     "rgcca-full_ncomp-1 + lda",
-    "rgcca-null_ncomp-1 + lda"
+    "rgcca-null_ncomp-1 + lda",
+    "rgcca-full_ncomp-2 + lda",
+    "rgcca-null_ncomp-2 + lda"
   )
   names(custom_method_palette) <- method_order_names
 
   sim_plot <- plot_data %>%
-    ggplot(aes(x = method, y = sensitivity, fill = method)) +
-    stat_boxplot(geom ='errorbar', width=0.25) +
-    geom_boxplot(
-      alpha = 0.7,
-      position = position_dodge(width = 0.8), # Adjust dodge width
-      width = 0.6, # Box width
-      outlier.size = 1.5 # Smaller outliers
-    ) +
+    #group_by(method, dataset, signal, corr) %>%
+    #summarize(mean_sensitivity = mean(sensitivity)) %>%
+    # TODO: Note used a mean here
+    #ggplot(aes(x = method, y = sensitivity, fill = method)) +
+    ggplot(aes(x = method, y = sensitivity, color = method)) +
+    #stat_boxplot(geom ='errorbar', width=0.25) +
+    # geom_boxplot(
+    #   alpha = 0.7,
+    #   position = position_dodge(width = 0.8), # Adjust dodge width
+    #   width = 0.6, # Box width
+    #   outlier.size = 1.5 # Smaller outliers
+    # ) +
+    #geom_bar(stat="identity") +
+    geom_point(aes(shape=view), size=3) +
     theme_half_open(text_size) +
     panel_border() +
     background_grid() +
-    labs(x = "Method", y = "Sensitivity", fill = "Method") +
+    labs(x = "Method", y = "Mean sensitivity across views", fill = "Method") +
     # we set the left and right margins to 0 to remove
     # unnecessary spacing in the final plot arrangement.
     # remove extra space between panel and axis
     #scale_y_continuous(expand = c(1, 1)) +
-    scale_fill_manual(values = custom_method_palette) +
+    scale_color_manual(values = custom_method_palette) +
     facet_grid(
       corr ~ signal,
       #scales = "free",
@@ -151,7 +159,7 @@ plot_sim <- function(input_data, method_palette, text_size) {
       strip.background = element_rect(fill = "white", color = NA),
       strip.text = element_text(color = "black", face = "bold", size = text_size - 2),
     ) +
-    guides(fill = guide_legend(nrow = 3))
+    guides(color = guide_legend(nrow = 3))
 
 
   # # KINDA useless here since I knew only 3 corr

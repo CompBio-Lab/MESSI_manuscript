@@ -25,7 +25,7 @@ library(ggplot2)
 # BOXPLOT DISTRIBUTION (DEPRECATED FOR NOW)
 plot_box_dist <- function(sim_df, custom_method_palette, text_size, signal_labels, corr_labels, x_lab, y_lab) {
   p <- sim_df %>%
-    ggplot(aes(x=method, y=auc_mean, fill=method)) +
+    ggplot(aes(x=method, y=auc, fill=method)) +
     stat_boxplot(geom ='errorbar', width=0.25) +
     geom_boxplot()+
     #scale_fill_brewer(palette = method_palette) +
@@ -71,7 +71,7 @@ plot_box_dist <- function(sim_df, custom_method_palette, text_size, signal_label
 # BAR PLOT
 plot_bar_dist <- function(sim_df, custom_method_palette, text_size, signal_labels, corr_labels, x_lab, y_lab) {
   p <- sim_df %>%
-    ggplot(aes(x=method, y=auc_mean, fill=method)) +
+    ggplot(aes(x=method, y=auc, fill=method)) +
     geom_bar(stat="identity")+
     #scale_fill_brewer(palette = method_palette) +
     # TODO: use manual colors now to match everywhere
@@ -126,7 +126,7 @@ plot_fig1_sim <- function(
   sim_df <- input_data
 
   # Use a custom method palette for now thats based on Paired
-  custom_method_palette <-  RColorBrewer::brewer.pal(n = 10, name = "Paired")
+  custom_method_palette <-  RColorBrewer::brewer.pal(n = 12, name = method_palette)
   method_order_names <- c(
     "diablo-full_ncomp-1",
     "diablo-full_ncomp-2",
@@ -137,7 +137,9 @@ plot_fig1_sim <- function(
     "mogonet",
     "multiview",
     "rgcca-full_ncomp-1 + lda",
-    "rgcca-null_ncomp-1 + lda"
+    "rgcca-null_ncomp-1 + lda",
+    "rgcca-full_ncomp-2 + lda",
+    "rgcca-null_ncomp-2 + lda"
   )
   names(custom_method_palette) <- method_order_names
 

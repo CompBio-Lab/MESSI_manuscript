@@ -29,7 +29,7 @@ clean_sim <- function(wr_df) {
     retrieve_sim_params() %>%
     # Then only retain relevant cols
     select(method, dataset, ranking ,
-           auc_mean, auc_sd, f1_score_mean, f1_score_sd,
+           auc, f1_score,
            signal, corr, n, p)
 
   return(clean_df)
