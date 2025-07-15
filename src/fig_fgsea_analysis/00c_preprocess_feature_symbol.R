@@ -3,7 +3,8 @@ suppressPackageStartupMessages(library(dplyr))
 library(stringr)
 library(tidyr)
 
-source(here::here("src/common_helpers.R"))
+
+source(here::here("src/common_helpers/retrieve_sim_params.R"))
 source(here::here("src/fig_fgsea_analysis/_parse_db_utils.R"))
 
 # Custom functions
@@ -50,7 +51,6 @@ create_category <- function(view) {
 
 # ===================================================================
 # Actual block goes here
-
 input_path <- "data/raw/real_data_results/all_feature_selection_results.csv"
 
 df <- data.table::fread(input_path)
@@ -74,7 +74,7 @@ all_feats_list <- feat_df |>
   dplyr::mutate(name = paste(dataset, view, sep = "_")) %>%
   dplyr::select(name, feat) %>%
   deframe() %>%
-  map(unlist)
+  purrr::map(unlist)
 
 # Now apply it different function for each item in list via lapply
 # then combine it back as one single df
@@ -107,6 +107,7 @@ parsed_list_df <- lapply(names(all_feats_list), function(dataset_view_comb) {
 }) %>%
   bind_rows()
 
+
 # Lastly combine both parsed symbols with original dataset that has symbol in it
 merged <- feat_df %>%
   mutate(comb_label = paste(dataset, view, sep="_")) %>%
@@ -133,6 +134,8 @@ merged <- feat_df %>%
   mutate(category = create_category(view)) %>%
   # And drop feat
   dplyr::select(-c(feat))
+
+
 
 # And save this to file
 data.table::fwrite(merged, file = "data/processed/feat_selection_symbols.csv", row.names = F)

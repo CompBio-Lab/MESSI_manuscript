@@ -1,3 +1,6 @@
+library(biomaRt)
+library(purrr)
+library(MiRSEA)
 # There isnt any other way to standardize the approach of mapping symbols, specially those of GSE studies
 # So the illuminaMethylation annotation here
 
