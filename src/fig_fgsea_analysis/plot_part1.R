@@ -1,14 +1,34 @@
 library(ggplot2)
 library(tidytext)
 library(data.table)
+library(dplyr)
 
 width <- 10
 height <- 8
 palette <- "Paired"
 
-combined_summary <- fread("data/processed/fgsea_part1_summary_df.csv")
+combined_summary <- fread("data/processed/fgsea_part1_summary_df.csv") |>
+# TODO: move this fix to somewhere else
+  dplyr::mutate(
+    method = stringr::str_replace(method, "-ncomp", "_ncomp")
+    )
 
-
+custom_method_palette <-  RColorBrewer::brewer.pal(n = 12, name = "Paired")
+method_order_names <- c(
+  "diablo-full_ncomp-1",
+  "diablo-full_ncomp-2",
+  "diablo-null_ncomp-1",
+  "diablo-null_ncomp-2",
+  "mofa-Factor1 + glmnet",
+  "mofa-Factor2 + glmnet",
+  "mogonet",
+  "multiview",
+  "rgcca-full_ncomp-1 + lda",
+  "rgcca-null_ncomp-1 + lda",
+  "rgcca-full_ncomp-2 + lda",
+  "rgcca-null_ncomp-2 + lda"
+)
+names(custom_method_palette) <- method_order_names
 
 significant_pathways_method_gs_plot_obj <- combined_summary %>%
   # And reorder it for plotting
@@ -24,7 +44,7 @@ significant_pathways_method_gs_plot_obj <- combined_summary %>%
   tidytext::scale_x_reordered() +
   scale_y_log10(expand = expansion(mult = c(0, 0.1))) +
   coord_flip() +
-  scale_fill_brewer(palette = palette) +
+  scale_fill_manual(values = custom_method_palette) +
   theme(
     plot.title = element_text(hjust = 0.5),
     panel.grid.major.y = element_blank()

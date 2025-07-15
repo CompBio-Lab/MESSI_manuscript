@@ -16,23 +16,46 @@ get_text_color <- function(fill_color) {
 }
 
 
-wide_n_sig_tab <- fread("data/processed/fgsea_part2_summary_df.csv")
+wide_n_sig_tab <- fread("data/processed/fgsea_part2_summary_df.csv") %>%
+  # TODO: move this fix to elsewhere
+  mutate(method = stringr::str_replace(method, "-ncomp", "_ncomp")) %>%
+  mutate(method = stringr::str_replace(method, "-factor", "-Factor"))
 wide_n_sig_mat <- wide_n_sig_tab %>%
   dplyr::select(-c("method", "dataset", "n", "group_num")) %>%
   as.matrix()
 # All methods labels
 
 
+wide_n_sig_tab$method |> unique()
 
-methods <- wide_n_sig_tab$method |> unique() |> sort()
+# THIS IS STALE CODE
+#
+# methods <- wide_n_sig_tab$method |> unique() |> sort()
+# #
+# # # Get a pastel color palette with the same number of colors as your methods
+# n_methods <- length(methods)
+# # # RColorBrewer's Pastel1 has up to 9 colors; use Pastel2 if you need more variation
+# pastel_colors <- RColorBrewer::brewer.pal(n = n_methods, name = "Paired")
+# #
+# # # Create a named vector of colors for each method
+# method_colors <- setNames(pastel_colors, methods)
 
-# Get a pastel color palette with the same number of colors as your methods
-n_methods <- length(methods)
-# RColorBrewer's Pastel1 has up to 9 colors; use Pastel2 if you need more variation
-pastel_colors <- RColorBrewer::brewer.pal(n = n_methods, name = "Paired")
-
-# Create a named vector of colors for each method
-method_colors <- setNames(pastel_colors, methods)
+custom_method_palette <-  RColorBrewer::brewer.pal(n = 12, name = "Paired")
+method_order_names <- c(
+  "diablo-full_ncomp-1",
+  "diablo-full_ncomp-2",
+  "diablo-null_ncomp-1",
+  "diablo-null_ncomp-2",
+  "mofa-Factor1 + glmnet",
+  "mofa-Factor2 + glmnet",
+  "mogonet",
+  "multiview",
+  "rgcca-full_ncomp-1 + lda",
+  "rgcca-null_ncomp-1 + lda",
+  "rgcca-full_ncomp-2 + lda",
+  "rgcca-null_ncomp-2 + lda"
+)
+names(custom_method_palette) <- method_order_names
 
 # =========================================================
 # Then the annotations here
@@ -41,12 +64,12 @@ row_ha <- rowAnnotation(
     wide_n_sig_tab$method,
     levels = unique(wide_n_sig_tab$method)
     ),
-  col = list(Method = method_colors),
+  col = list(Method = custom_method_palette),
   annotation_legend_param = list(
     Method = list(
       #title_gp = gpar(fontsize = 16),
       #labels_gp = gpar(fontsize = 8),
-      nrow=2
+      nrow=4
     )
   ),
   show_annotation_name = FALSE
@@ -112,7 +135,7 @@ annot_bar_plot <- wide_n_sig_tab$method %>%
   ggplot(aes(x=reorder(method, n), y=n, fill=method)) +
   geom_bar(stat="identity", width=0.7) +
   labs(x="Method", y="Frequency", fill="Method")+
-  scale_fill_manual(values = method_colors) +
+  scale_fill_manual(values = custom_method_palette) +
   theme_bw() +
   # And remove horizontal lines
   theme(

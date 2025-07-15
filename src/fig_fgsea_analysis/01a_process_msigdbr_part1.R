@@ -31,7 +31,7 @@ output_path <- opt$output_path
 
 # Main entrance of the script
 main <- function(result_dir, msigdr_pathways_path,
-                 output_path="fgsea_results_part1_df.csv") {
+                 output_path="fgsea_part1_df.csv") {
 
   if (is.null(result_dir)) {
     result_dir <- "data/raw/fgsea_results/fgsea_part1/"
