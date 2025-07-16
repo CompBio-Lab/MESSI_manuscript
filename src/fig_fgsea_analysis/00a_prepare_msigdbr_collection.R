@@ -1,29 +1,54 @@
+doc <- "
+
+This script is used to prepare gene symbols from the msigdbr collection database
+Usage:
+  00a_prepare_msigdbr_collection.R [options]
+
+Options:
+  --output_path=OUTPUT_PATH     File to output the processed database
+"
+
+
 # Need to get the pathways first
 library(msigdbr)
 library(MiRSEA)
-# Load the pathways first and combine it together
+suppressPackageStartupMessages(library(dplyr))
 
-output_path <- here::here("data/processed/msigdbr_pathways_collection.rds")
-reactome_pathways <- msigdbr(species = "Homo sapiens", collection = "C2",
-                             subcollection = "CP:REACTOME")
-oncogenic_pathways <- msigdbr(species = "Homo sapiens", collection = "C6")
 
-# Select relevant columns
-relevant_cols <- c("gene_symbol", "gs_name", "gs_collection",
-                   "gs_collection_name")
+main <- function(output_path) {
+  if (is.null(output_path)) {
+    output_path <- "data/processed/msigdbr_pathways_collection.rds"
+  }
+  message("\nNote this script requires internet connection to work, so it should take some time")
+  # Load the pathways first and combine it together
+  # NOTE: these require internet connections
+  reactome_pathways <- msigdbr(species = "Homo sapiens", collection = "C2",
+                               subcollection = "CP:REACTOME")
+  oncogenic_pathways <- msigdbr(species = "Homo sapiens", collection = "C6")
 
-msigdbr_pathways <- bind_rows(reactome_pathways, oncogenic_pathways) |>
-  # And filter those of human only
-  dplyr::filter(gs_source_species == "HS") %>%
-  dplyr::select(all_of(relevant_cols)) %>%
-  as_tibble()
+  # Select relevant columns
+  relevant_cols <- c("gene_symbol", "gs_name", "gs_collection",
+                     "gs_collection_name")
 
-# First save this for plotting later
-unique_pathways_collection <- msigdbr_pathways %>%
-  distinct(gs_name, gs_collection, gs_collection_name)
+  msigdbr_pathways <- bind_rows(reactome_pathways, oncogenic_pathways) |>
+    # And filter those of human only
+    filter(gs_source_species == "HS") %>%
+    select(all_of(relevant_cols)) %>%
+    as_tibble()
 
-saveRDS(object = unique_pathways_collection,
-        file = output_path)
+  # First save this for plotting later
+  unique_pathways_collection <- msigdbr_pathways %>%
+    distinct(gs_name, gs_collection, gs_collection_name)
+
+  saveRDS(object = unique_pathways_collection,
+          file = here::here(output_path))
+  message("\nSaved msigdbr collection into ", output_path)
+
+}
+
+# Lastly execute the main based on cli args
+opt <- docopt::docopt(doc)
+main(output_path=opt$output_path)
 
 # And this below is to run analysis with FGSEA
 
