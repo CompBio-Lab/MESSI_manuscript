@@ -1,6 +1,13 @@
 # ===============================================================================
+# Makefile for MESSI figures
+# This Makefile is used to automate the process of generating figures and tables
+# for the MESSI project. It includes preprocessing, plotting, and generating
+# the final report.
+# Author: Tony Liang
+# Date: 2024-06-22
+# ===============================================================================
 # Important variables
-# ==========================
+# ===============================================================================
 # Plotting params
 WIDTH=7
 HEIGHT=7
@@ -104,6 +111,9 @@ FIG_SIM_TIME_OUT=${FIG_DIR}/fig_computational_time_sim.${DEVICE}
 FIG_REAL_FS_OUT=${FIG_DIR}/fig_feature_selection_real.${DEVICE}
 FIG_SIM_FS_OUT=${FIG_DIR}/fig_feature_selection_sim.${DEVICE}
 
+# FGSEA analysis
+FIG_FGSEA_OUT=${FIG_DIR}/fig_fgsea_analysis_two_panels.${DEVICE}
+
 # ================================================
 # TABLES
 TABLE_METHOD=${DATA_PROCESSED_DIR}/method_metadata.csv
@@ -112,7 +122,11 @@ TABLE_DATASET=${DATA_PROCESSED_DIR}/real_dataset_metadata.csv
 # ====================================================================================
 # All the outputs
 # Real data targets are always included
-OUTPUTS=${FIG_REAL_PERF_OUT} ${TABLE_METHOD} ${TABLE_DATASET} ${FIG_FGSEA_FINAL}
+
+
+TABLE_OUTPUTS=${TABLE_METHOD} ${TABLE_DATASET}
+
+OUTPUTS=${FIG_REAL_PERF_OUT} ${TABLE_METHOD} ${TABLE_DATASET} ${FIG_FGSEA_OUT}
 #${FIG_REAL_TIME_OUT}
 #${FIG_REAL_FS_OUT} ${TABLE_METHOD} ${TABLE_DATASET}
 # Conditionally include simulated data targets if input files exist
@@ -139,7 +153,23 @@ ${REPORT_PDF}: ${OUTPUTS} ${REPORT_SRC} docs/sections/background.Rmd docs/sectio
 
 .PHONY: clean all
 
+# all: ${OUTPUTS} ${REPORT_PDF}
+# 	@echo "All targets complete!"
 all: ${OUTPUTS} ${REPORT_PDF}
+	@echo "==========================================="
+	@echo "Running all targets..."
+	@echo "==========================================="
+	# Measure time taken to run all targets
+	# Using $$ to ensure the date command is executed in the shell
+	# and not in the Makefile context
+	# This allows us to capture the start time correctly
+	@start=$$(date +%s); \
+	echo "Running all targets..."; \
+	$(MAKE) ${OUTPUTS} ${REPORT_PDF}; \
+	end=$$(date +%s); \
+	elapsed=$$((end - start)); \
+	echo "All targets complete!"; \
+	echo "Total time elapsed: $$(date -u -d @$$elapsed +%M:%S) (mm:ss)"
 
 clean: clean_figures clean_data
 
@@ -388,22 +418,25 @@ ${FGSEA_PART2_PLOT_DATA}: src/fig_fgsea_analysis/03b_plot_fgsea_part2.R ${FGSEA_
 
 # ------------------------------------------
 # FGSEA FINAL FIGURE
-FIG_FGSEA_FINAL=${FIG_DIR}/fig_fgsea_analysis.png
-${FIG_FGSEA_FINAL}: ${FGSEA_PART1_PLOT_DATA} ${FGSEA_PART2_PLOT_DATA} src/fig_fgsea_analysis/04_plot_fgsea_panels.R
+${FIG_FGSEA_OUT}: ${FGSEA_PART1_PLOT_DATA} ${FGSEA_PART2_PLOT_DATA} src/fig_fgsea_analysis/04_plot_fgsea_panels.R
 	@echo ${BANNER}
 	@echo "Plotting final FGSEA figure..."
 	Rscript src/fig_fgsea_analysis/04_plot_fgsea_panels.R \
 		--part1_data_path ${FGSEA_PART1_PLOT_DATA} \
 		--part2_data_path ${FGSEA_PART2_PLOT_DATA} \
-		--output_path ${FIG_FGSEA_FINAL} \
+		--output_path ${FIG_FGSEA_OUT} \
 		--width 12 \
 		--height 12
 # ==============================================================================
 # TABLES
 TABLE_METHOD_SRC=src/table2_method_description/create_method.R
 ${TABLE_METHOD}: ${TABLE_METHOD_SRC}
+	@echo ${BANNER}
+	@echo "Creating method description table..."
 	Rscript ${TABLE_METHOD_SRC}
 
 TABLE_DATASET_SRC=src/table1_dataset_description/create_table_real_datasets.R
 ${TABLE_DATASET}: ${TABLE_DATASET_SRC}
+	@echo ${BANNER}
+	@echo "Creating dataset description table..."
 	Rscript ${TABLE_DATASET_SRC}
