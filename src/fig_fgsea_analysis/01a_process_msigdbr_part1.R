@@ -1,9 +1,9 @@
 doc <- "
 
-This script is used to make plot data msigdbr fgsea
+This script is used to clean raw results from fgsea evaluated on msigdbr (part1)
 
 Usage:
-  process_msigdbr_part1.R [options]
+  01a_process_msigdbr_part1.R [options]
 
 Options:
  --result_dir=DIR             Directory to read in fgsea top tables in rds

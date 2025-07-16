@@ -1,9 +1,8 @@
 doc <- "
 
-This script is used to make plot data msigdbr fgsea
-
+This script is used to clean raw results from fgsea evaluated on panglaodb (part2)
 Usage:
-  process_panglaodb_part2.R [options]
+  01b_process_panglaodb_part2.R [options]
 
 Options:
  --result_dir=DIR             Directory to read in fgsea top tables in rds
