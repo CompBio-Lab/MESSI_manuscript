@@ -104,13 +104,6 @@ FIG_SIM_TIME_OUT=${FIG_DIR}/fig_computational_time_sim.${DEVICE}
 FIG_REAL_FS_OUT=${FIG_DIR}/fig_feature_selection_real.${DEVICE}
 FIG_SIM_FS_OUT=${FIG_DIR}/fig_feature_selection_sim.${DEVICE}
 
-
-# FIG_FGSEA_PART1_PROCESSED=${DATA_PROCESSED_DIR}/fig_fgsea_part1_plot_data.rds
-
-# FIG_FGSEA_PART1=""
-# FIG_FGSEA_PART2=""
-
-
 # ================================================
 # TABLES
 TABLE_METHOD=${DATA_PROCESSED_DIR}/method_metadata.csv
@@ -119,7 +112,7 @@ TABLE_DATASET=${DATA_PROCESSED_DIR}/real_dataset_metadata.csv
 # ====================================================================================
 # All the outputs
 # Real data targets are always included
-OUTPUTS=${FIG_REAL_PERF_OUT} ${TABLE_METHOD} ${TABLE_DATASET}
+OUTPUTS=${FIG_REAL_PERF_OUT} ${TABLE_METHOD} ${TABLE_DATASET} ${FIG_FGSEA_FINAL}
 #${FIG_REAL_TIME_OUT}
 #${FIG_REAL_FS_OUT} ${TABLE_METHOD} ${TABLE_DATASET}
 # Conditionally include simulated data targets if input files exist
@@ -144,9 +137,10 @@ ${REPORT_PDF}: ${OUTPUTS} ${REPORT_SRC} docs/sections/background.Rmd docs/sectio
 	Rscript -e 'rmarkdown::render("${REPORT_SRC}")'
 	@echo "==========================================="
 
+.PHONY: clean all
+
 all: ${OUTPUTS} ${REPORT_PDF}
 
-.PHONY: clean
 clean: clean_figures clean_data
 
 clean_figures:
@@ -159,12 +153,6 @@ clean_data:
 
 # ==============================================================================
 # PREPROCESSING
-
-# Additional preprocessing
-feature_selection_with_symbol.csv: ${COMMON_R} ${REAL_FS_RESULTS_CSV}
-	@echo ${BANNER}
-	@echo hello
-
 # Common util for Performance evaluation util
 PERF_UTIL=${FIG1_SRC_DIR}/_performance_evaluation_utils.R
 
@@ -307,6 +295,25 @@ ${FIG_SIM_FS_OUT}: ${FIG3_PLOT_SIM_SRC} ${COMMON_R} ${FIG3_SIM_PROCESSED}
 # ==============================================================================
 # FGSEA ANALYSIS
 CUTOFF=0.2 # Cutoff for filtering results in fgsea part 1 & 2
+
+# Prepare feature selection data with gene symbols
+FEATURE_SELECTION_WITH_SYMBOL=data/processed/feature_selection_with_symbol.csv
+${FEATURE_SELECTION_WITH_SYMBOL}: src/fig_fgsea_analysis/prepare_feature_selection_with_symbol.R ${REAL_FS_RESULTS_CSV}
+	@echo ${BANNER}
+	@echo "Preparing feature selection data with gene symbols..."
+	Rscript src/fig_fgsea_analysis/prepare_feature_selection_with_symbol.R \
+		--input_path ${REAL_FS_RESULTS_CSV} \
+		--output_path ${FEATURE_SELECTION_WITH_SYMBOL}
+
+# Prepare the FGSEA inputs data (ranked gene lists) in batches of rds
+FGSEA_INPUTS_DIR=data/batched_input_for_fgsea
+${FGSEA_INPUTS_DIR}: ${FEATURE_SELECTION_WITH_SYMBOL} src/fig_fgsea_analysis/prepare_fgsea_inputs.R
+	@echo ${BANNER}
+	@echo "Preparing FGSEA inputs data (ranked gene list) in batches..."
+	Rscript src/fig_fgsea_analysis/prepare_fgsea_inputs.R \
+		--input_path ${FEATURE_SELECTION_WITH_SYMBOL} \
+		--output_dir ${FGSEA_INPUTS_DIR} \
+		--batch_size 10
 # FGSEA Preprocessing pathways
 MSIGDBR_DB=data/processed/msigdbr_pathways_collection.rds
 ${MSIGDBR_DB}: src/fig_fgsea_analysis/00a_prepare_msigdbr_collection.R
@@ -323,18 +330,18 @@ ${PANGLAO_DB}: src/fig_fgsea_analysis/00b_prepare_panglaodb_collection.R
 
 
 # FGSEA PART 1: preprocessing data
-FGSEA_PART1_RAW=fgsea_part1_df.csv
-${FGSEA_PART1_RAW}: src/fig_fgsea_analysis/01_preprocess_msigdbr_part1.R ${MSIGDBR_DB}
+FGSEA_PART1_RAW=data/processed/fgsea_part1_df.csv
+${FGSEA_PART1_RAW}: src/fig_fgsea_analysis/01a_process_msigdbr_part1.R ${MSIGDBR_DB}
 	@echo ${BANNER}
 	@echo "Preprocessing FGSEA part 1 data..."
-	Rscript src/fig_fgsea_analysis/01_preprocess_msigdbr_part1.R \
+	Rscript src/fig_fgsea_analysis/01a_process_msigdbr_part1.R \
 		--output_path ${FGSEA_PART1_RAW}
 
-FGSEA_PART1_PROCESSED=fgsea_part1_summary_df.csv
-${FGSEA_PART1_PROCESSED}: src/fig_fgsea_analysis/further_filter_part1.R ${FGSEA_PART1_RAW}
+FGSEA_PART1_PROCESSED=data/processed/fgsea_part1_summary_df.csv
+${FGSEA_PART1_PROCESSED}: src/fig_fgsea_analysis/02a_summary_fgsea_part1.R ${FGSEA_PART1_RAW}
 	@echo ${BANNER}
 	@echo "Summarizing FGSEA part 1 data..."
-	Rscript src/fig_fgsea_analysis/further_filter_part1.R \
+	Rscript src/fig_fgsea_analysis/02a_summary_fgsea_part1.R \
 		--input_path ${FGSEA_PART1_RAW} \
 		--output_path ${FGSEA_PART1_PROCESSED} \
 		--cutoff ${CUTOFF}
@@ -342,65 +349,55 @@ ${FGSEA_PART1_PROCESSED}: src/fig_fgsea_analysis/further_filter_part1.R ${FGSEA_
 # FGSEA PART 1: plotting
 
 FGSEA_PART1_PLOT_DATA=data/processed/fig_fgsea_panel_a_plot_data.rds
-${FGSEA_PART1_PLOT_DATA}: src/fig_fgsea_analysis/02_plot_fgsea_part1.R ${FGSEA_PART1_PROCESSED}
+${FGSEA_PART1_PLOT_DATA}: src/fig_fgsea_analysis/03a_plot_fgsea_part1.R ${FGSEA_PART1_PROCESSED}
 	@echo ${BANNER}
 	@echo "Plotting FGSEA part 1 data..."
-	Rscript src/fig_fgsea_analysis/plot_part1.R \
+	Rscript src/fig_fgsea_analysis/03a_plot_fgsea_part1.R \
 		--input_path ${FGSEA_PART1_PROCESSED} \
 		--output_path ${FGSEA_PART1_PLOT_DATA} \
-		--width ${WIDTH} \
-		--height ${HEIGHT} \
-		--device ${DEVICE} \
-		--dpi ${DPI} \
-		--show_title ${SHOW_TITLE}
+		--width 10 \
+		--height 8
 
 # FGSEA PART 2: preprocessing data
-FGSEA_PART2_RAW=fgsea_part2_df.csv
+FGSEA_PART2_RAW=data/processed/fgsea_part2_df.csv
 ${FGSEA_PART2_RAW}: src/fig_fgsea_analysis/01b_process_panglaodb_part2.R ${PANGLAO_DB}
 	@echo ${BANNER}
 	@echo "Preprocessing FGSEA part 2 data..."
 	Rscript src/fig_fgsea_analysis/01b_process_panglaodb_part2.R \
 		--output_path ${FGSEA_PART2_RAW}
 
-FGSEA_PART2_PROCESSED=fgsea_part2_summary_df.csv
-${FGSEA_PART2_PROCESSED}: src/fig_fgsea_analysis/further_filter_part2.R ${FGSEA_PART2_RAW}
+FGSEA_PART2_PROCESSED=data/processed/fgsea_part2_summary_df.csv
+${FGSEA_PART2_PROCESSED}: src/fig_fgsea_analysis/02b_summary_fgsea_part2.R ${FGSEA_PART2_RAW}
 	@echo ${BANNER}
 	@echo "Summarizing FGSEA part 2 data..."
-	Rscript src/fig_fgsea_analysis/further_filter_part2.R \
+	Rscript src/fig_fgsea_analysis/02b_summary_fgsea_part2.R\
 		--input_path ${FGSEA_PART2_RAW} \
 		--output_path ${FGSEA_PART2_PROCESSED} \
 		--cutoff ${CUTOFF}
 
 # FGSEA PART 2: plotting
 FGSEA_PART2_PLOT_DATA=data/processed/fig_fgsea_panel_b_plot_data.rds
-${FGSEA_PART2_PLOT_DATA}: src/fig_fgsea_analysis/03_plot_fgsea_part2.R ${FGSEA_PART2_PROCESSED}
+${FGSEA_PART2_PLOT_DATA}: src/fig_fgsea_analysis/03b_plot_fgsea_part2.R ${FGSEA_PART2_PROCESSED}
 	@echo ${BANNER}
 	@echo "Plotting FGSEA part 2 data..."
-	Rscript src/fig_fgsea_analysis/plot_part2.R \
+	Rscript src/fig_fgsea_analysis/03b_plot_fgsea_part2.R \
 		--input_path ${FGSEA_PART2_PROCESSED} \
 		--output_path ${FGSEA_PART2_PLOT_DATA} \
-		--width ${WIDTH} \
-		--height ${HEIGHT} \
-		--device ${DEVICE} \
-		--dpi ${DPI} \
-		--show_title ${SHOW_TITLE}
+		--width 12  \
+		--height 9
 
 # ------------------------------------------
 # FGSEA FINAL FIGURE
-FIG_FGSEA_FINAL=${FIG_DIR}/fig_fgsea_analysis.${DEVICE}
-${FIG_FGSEA_FINAL}: ${FGSEA_PART1_PLOT_DATA} ${FGSEA_PART2_PLOT_DATA} src/fig4_interpretation/plot_two_panels.R
+FIG_FGSEA_FINAL=${FIG_DIR}/fig_fgsea_analysis.png
+${FIG_FGSEA_FINAL}: ${FGSEA_PART1_PLOT_DATA} ${FGSEA_PART2_PLOT_DATA} src/fig_fgsea_analysis/04_plot_fgsea_panels.R
 	@echo ${BANNER}
 	@echo "Plotting final FGSEA figure..."
-	Rscript src/fig4_interpretation/plot_two_panels.R \
-		--part1_data ${FGSEA_PART1_PLOT_DATA} \
-		--part2_data ${FGSEA_PART2_PLOT_DATA} \
+	Rscript src/fig_fgsea_analysis/04_plot_fgsea_panels.R \
+		--part1_data_path ${FGSEA_PART1_PLOT_DATA} \
+		--part2_data_path ${FGSEA_PART2_PLOT_DATA} \
 		--output_path ${FIG_FGSEA_FINAL} \
-		--width ${WIDTH} \
-		--height ${HEIGHT} \
-		--device ${DEVICE} \
-		--dpi ${DPI} \
-		--show_title ${SHOW_TITLE}
-
+		--width 12 \
+		--height 12
 # ==============================================================================
 # TABLES
 TABLE_METHOD_SRC=src/table2_method_description/create_method.R
