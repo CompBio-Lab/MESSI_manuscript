@@ -1,6 +1,6 @@
-library(biomaRt)
+suppressPackageStartupMessages(library(biomaRt))
 library(purrr)
-library(MiRSEA)
+suppressPackageStartupMessages(library(MiRSEA))
 # There isnt any other way to standardize the approach of mapping symbols, specially those of GSE studies
 # So the illuminaMethylation annotation here
 
@@ -29,8 +29,8 @@ parse_gse_mrna <- function(dat, dname) {
   # Need more customize approach by dataset
   # For now only found to use hugene10sttranscriptcluster.db and illuminaHumanv4.db
   # Could add more in the future
-  library(hugene10sttranscriptcluster.db)
-  library(illuminaHumanv4.db)
+  suppressPackageStartupMessages(library(hugene10sttranscriptcluster.db))
+  suppressPackageStartupMessages(library(illuminaHumanv4.db))
 
   # Define the available databases
   db_choices <- list(
