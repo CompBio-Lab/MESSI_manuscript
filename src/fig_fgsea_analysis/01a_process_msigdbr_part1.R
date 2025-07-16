@@ -66,7 +66,7 @@ main <- function(result_dir, msigdr_pathways_path,
       too_many = "merge", too_few = "align_start"
     ) %>%
     group_by(method, dataset, view) %>%
-    mutate(padj = p.adjust(pval))
+    mutate(padj = p.adjust(pval, method="BH"))
   # Lastly write it to file
   data.table::fwrite(fgsea_results_part1_df, file=here::here(output_path))
   message("\nSaved fgsea part 1 raw result into ", output_path)
