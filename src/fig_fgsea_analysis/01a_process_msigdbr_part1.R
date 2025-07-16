@@ -11,34 +11,28 @@ Options:
  --output_path=OUTPUT_PATH    Path to write out output csv
 "
 
-opt <- docopt::docopt(doc)
-
 source(here::here("src/fig_fgsea_analysis/_utils.R"))
 # ===========================================
 # Use this script to process the result after running fgsea by looking
 # at msigdbr C2 reactome and C6
 # ===========================================
 library(purrr)
-library(dplyr)
+suppressPackageStartupMessages(library(dplyr))
 library(stringr)
-# Important variables
-
-
-result_dir <- opt$result_dir
-msigdr_pathways_path <- opt$pathway_path
-output_path <- opt$output_path
 
 
 # Main entrance of the script
 main <- function(result_dir, msigdr_pathways_path,
-                 output_path="fgsea_part1_df.csv") {
+                 output_path) {
 
   if (is.null(result_dir)) {
+    # This dir is where the raw results are located for FGSEA part 1
     result_dir <- "data/raw/fgsea_results/fgsea_part1/"
 
   }
 
   if (is.null(msigdr_pathways_path)) {
+    # This is a processed database based on 00a_prepare_msigdbr_collection.R
     msigdbr_pathways_path <- "data/processed/msigdbr_pathways_collection.rds"
   }
 
@@ -74,8 +68,18 @@ main <- function(result_dir, msigdr_pathways_path,
     group_by(method, dataset, view) %>%
     mutate(padj = p.adjust(pval))
   # Lastly write it to file
-  data.table::fwrite(fgsea_results_part1_df, file=output_path)
+  data.table::fwrite(fgsea_results_part1_df, file=here::here(output_path))
+  message("\nSaved fgsea part 1 raw result into ", output_path)
 }
+
+# Important variables
+
+opt <- docopt::docopt(doc)
+
+result_dir <- opt$result_dir
+msigdr_pathways_path <- opt$pathway_path
+output_path <- opt$output_path
+
 
 # Execute it
 main(result_dir=result_dir,

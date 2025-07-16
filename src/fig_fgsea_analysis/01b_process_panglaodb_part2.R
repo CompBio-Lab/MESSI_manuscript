@@ -19,25 +19,22 @@ source(here::here("src/fig_fgsea_analysis/_utils.R"))
 # at panglaodb
 # ===========================================
 library(purrr)
-library(dplyr)
+suppressPackageStartupMessages(library(dplyr))
 library(stringr)
-# Important variables
-
-result_dir <- opt$result_dir
-panglao_pathways_path <- opt$pathway_path
-output_path <- opt$output_path
 
 
 # Main entrance of the script
 main <- function(result_dir, panglao_pathways_path,
-                 output_path="fgsea_part2_df.csv") {
+                 output_path) {
 
   if (is.null(result_dir)) {
+    # This dir is where the raw results are located for FGSEA part2
     result_dir <- "data/raw/fgsea_results/fgsea_part2/"
 
   }
 
   if (is.null(panglao_pathways_path)) {
+    # This is a processed database based on 00b_prepare_panglaodb_collection.R
     panglao_pathways_path <- "data/processed/panglao_pathways_collection.rds"
   }
 
@@ -75,8 +72,17 @@ main <- function(result_dir, panglao_pathways_path,
     mutate(padj = p.adjust(pval))
 
   # Lastly write it to file
-  data.table::fwrite(fgsea_results_part2_df, file=output_path)
+  data.table::fwrite(fgsea_results_part2_df, file=here::here(output_path))
+  message("\nSaved fgsea part 2 raw result into ", output_path)
 }
+
+
+opt <- docopt::docopt(doc)
+# Important variables
+result_dir <- opt$result_dir
+panglao_pathways_path <- opt$pathway_path
+output_path <- opt$output_path
+
 
 # Execute it
 main(result_dir=result_dir,
