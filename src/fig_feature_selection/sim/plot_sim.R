@@ -125,7 +125,7 @@ plot_sim <- function(input_data, method_palette, text_size) {
     ) +
     theme(legend.direction = "vertical", legend.box = "horizontal") +
     theme(legend.position = "none") +
-    sim_feat_selection_theme(12) +
+    sim_feat_selection_theme(text_size) +
     guides(color=guide_legend(ncol=2, byrow=F))
 
 
