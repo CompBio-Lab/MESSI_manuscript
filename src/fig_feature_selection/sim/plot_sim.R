@@ -58,6 +58,7 @@ plot_corr_grid <- function(plot_data, cor, method_palette="Paired", text_size=12
     facet_grid(p ~ n, labeller = label_both, scales = "free")
 }
 
+
 plot_sim <- function(input_data, method_palette, text_size) {
   # This fun depends on the plot_corr_grid
   # Need to manually fix the levels of some columns
@@ -65,22 +66,24 @@ plot_sim <- function(input_data, method_palette, text_size) {
 
   #n_order <- input_data$n %>% unique() %>% sort()
   #p_order <- input_data$p %>% unique() %>% sort()
-  signal_order <- input_data$signal %>% unique() %>% sort()
-  corr_order <- input_data$corr %>% unique() %>% sort()
+  #signal_order <- input_data$signal %>% unique() %>% sort()
+  #corr_order <- input_data$corr %>% unique() %>% sort()
   # Then transform it here
   plot_data <- input_data %>%
+    # Keep the relevant levels only
+    filter(signal %in% c(0, 3, 100)) %>%
     mutate(
-      #n = factor(n, levels = n_order),
-      #p = factor(p, levels = p_order),
-      signal = factor(signal, levels = signal_order),
-      corr = factor(corr, levels = corr_order)
+      signal_level = recode(signal, `0` = "low", `3` = "med", `100` = "high"),
+      signal_level = factor(signal_level, levels = c("low", "med", "high")),
     )
 
 
-  signal_labels <- paste0("Signal = ", plot_data$signal |> unique())
-  names(signal_labels) <- plot_data$signal |> unique()
+  signal_labels <- paste0("Signal = ", plot_data$signal_level |> unique())
+  names(signal_labels) <- plot_data$signal_level |> unique()
   corr_labels <- paste0("Cor = ", plot_data$corr |> unique())
   names(corr_labels) <- plot_data$corr |> unique()
+
+
 
   # Get the color palette for methods
   custom_method_palette <- get_method_custom_colors(method_palette)
@@ -110,9 +113,9 @@ plot_sim <- function(input_data, method_palette, text_size) {
     #scale_y_continuous(expand = c(1, 1)) +
     scale_color_manual(values = custom_method_palette) +
     facet_grid(
-      corr ~ signal,
+      corr ~ signal_level,
       #scales = "free",
-      labeller = labeller(signal = signal_labels, corr = corr_labels)
+      labeller = labeller(signal_level = signal_labels, corr = corr_labels)
     ) +
     #scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
     theme(
@@ -133,70 +136,6 @@ plot_sim <- function(input_data, method_palette, text_size) {
     ) +
     guides(color = guide_legend(nrow = 3))
 
-
-  # # KINDA useless here since I knew only 3 corr
-  # # https://wilkelab.org/cowplot/articles/shared_legends.html
-  # # Make the individual plots first
-  # # p1 <- plot_corr_grid(plot_data, cor = corr_order[1],
-  # #                      method_palette = method_palette,
-  # #                      text_size=text_size) + xlab(NULL)
-  # # p2 <- plot_corr_grid(plot_data, cor = corr_order[2],
-  # #                      method_palette = method_palette,
-  # #                      text_size=text_size) + ylab(NULL)
-  # # p3 <- plot_corr_grid(plot_data, cor = corr_order[3],
-  # #                      method_palette = method_palette,
-  # #                      text_size=text_size) + xlab(NULL) + ylab(NULL)
-  # # # arrange the three plots in a single row
-  # # prow <- plot_grid(
-  # #   p1 + theme(legend.position="none"),
-  # #   p2 + theme(legend.position="none"),
-  # #   p3 + theme(legend.position="none"),
-  # #   align = 'vh',
-  # #   labels = c("i", "ii", "iii"),
-  # #   hjust = -1,
-  # #   nrow = 1
-  # # )
-  # # extract the legend from one of the plots
-  # # legend <- get_legend(
-  # #   # create some space to the left of the legend
-  # #   p1 + theme(legend.box.margin = margin(0, 0, 0, 12))
-  # # )
-  #
-  # # now add the title
-  # title <- ggdraw() +
-  #   draw_label(
-  #     "Feature Selection Sensitivity for simulated data with varied n, p, signal and correlation",
-  #     #fontface = 'bold',
-  #     x = 0.5,
-  #     hjust = 0.5
-  #   ) +
-  #   theme(
-  #     # Possible themes to add on later
-  #   )
-  # # add the legend to the row we made earlier. Give it one-third of
-  # # the width of one plot (via rel_widths).
-  # # the height via rel_heights
-  # prow <- plot_grid(
-  #   title, prow,
-  #   ncol = 1,
-  #   # rel_heights values control vertical title margins
-  #   rel_heights = c(0.1, 1)
-  # )
-  #
-  #
-  # # extract a legend that is laid out horizontally
-  # legend <- get_legend_35(
-  #   p1 +
-  #     guides(fill = guide_legend(nrow = 1)) +
-  #     theme(
-  #       legend.direction = "horizontal",
-  #       legend.justification="center" ,
-  #       legend.box.just = "bottom"
-  #     )
-  # )
-  #
-  # # Add legend
-  # sim_plot <- plot_grid(prow, legend, nrow = 2, rel_heights = c(1, 0.2))
 
   return(sim_plot)
 }
@@ -241,8 +180,6 @@ if (!show_title) {
 }
 
 
-# TODO: making a placeholder now for sim data
-
 ggsave(output_path, plot = out_plot,
       width = width, height = height, device=device, dpi=dpi, bg="white")
 
@@ -252,5 +189,73 @@ saveRDS(out_plot,
 )
 message("Saved image of ", width, " x ", height, " to ", output_path)
 
+
+# ==========================================================
+# DEPRECATED CODE
+# ==========================================================
+
+# # KINDA useless here since I knew only 3 corr
+# # https://wilkelab.org/cowplot/articles/shared_legends.html
+# # Make the individual plots first
+# # p1 <- plot_corr_grid(plot_data, cor = corr_order[1],
+# #                      method_palette = method_palette,
+# #                      text_size=text_size) + xlab(NULL)
+# # p2 <- plot_corr_grid(plot_data, cor = corr_order[2],
+# #                      method_palette = method_palette,
+# #                      text_size=text_size) + ylab(NULL)
+# # p3 <- plot_corr_grid(plot_data, cor = corr_order[3],
+# #                      method_palette = method_palette,
+# #                      text_size=text_size) + xlab(NULL) + ylab(NULL)
+# # # arrange the three plots in a single row
+# # prow <- plot_grid(
+# #   p1 + theme(legend.position="none"),
+# #   p2 + theme(legend.position="none"),
+# #   p3 + theme(legend.position="none"),
+# #   align = 'vh',
+# #   labels = c("i", "ii", "iii"),
+# #   hjust = -1,
+# #   nrow = 1
+# # )
+# # extract the legend from one of the plots
+# # legend <- get_legend(
+# #   # create some space to the left of the legend
+# #   p1 + theme(legend.box.margin = margin(0, 0, 0, 12))
+# # )
+#
+# # now add the title
+# title <- ggdraw() +
+#   draw_label(
+#     "Feature Selection Sensitivity for simulated data with varied n, p, signal and correlation",
+#     #fontface = 'bold',
+#     x = 0.5,
+#     hjust = 0.5
+#   ) +
+#   theme(
+#     # Possible themes to add on later
+#   )
+# # add the legend to the row we made earlier. Give it one-third of
+# # the width of one plot (via rel_widths).
+# # the height via rel_heights
+# prow <- plot_grid(
+#   title, prow,
+#   ncol = 1,
+#   # rel_heights values control vertical title margins
+#   rel_heights = c(0.1, 1)
+# )
+#
+#
+# # extract a legend that is laid out horizontally
+# legend <- get_legend_35(
+#   p1 +
+#     guides(fill = guide_legend(nrow = 1)) +
+#     theme(
+#       legend.direction = "horizontal",
+#       legend.justification="center" ,
+#       legend.box.just = "bottom"
+#     )
+# )
+#
+# # Add legend
+# sim_plot <- plot_grid(prow, legend, nrow = 2, rel_heights = c(1, 0.2))
 
 
