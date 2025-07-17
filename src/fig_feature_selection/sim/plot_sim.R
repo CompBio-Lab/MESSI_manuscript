@@ -27,19 +27,7 @@ source(here::here("src/common_helpers/plot_utils.R"))
 
 
 #dd <- readRDS("data/processed/fig_feature_selection_sim_plot_data.rds")
-get_legend_35 <- function(plot) {
-  # return all legend candidates
-  legends <- get_plot_component(plot, "guide-box", return_all = TRUE)
-  # find non-zero legends
-  nonzero <- vapply(legends, \(x) !inherits(x, "zeroGrob"), TRUE)
-  idx <- which(nonzero)
-  # return first non-zero legend if exists, and otherwise first element (which will be a zeroGrob)
-  if (length(idx) > 0) {
-    return(legends[[idx[1]]])
-  } else {
-    return(legends[[1]])
-  }
-}
+
 
 # Base grid plot for simulated dataset filter by cor
 plot_corr_grid <- function(plot_data, cor, method_palette="Paired", text_size=12) {
