@@ -109,7 +109,8 @@ FIG_SIM_TIME_OUT=${FIG_DIR}/fig_computational_time_sim.${DEVICE}
 
 # Feature selection
 FIG_REAL_FS_OUT=${FIG_DIR}/fig_feature_selection_real.${DEVICE}
-FIG_SIM_FS_OUT=${FIG_DIR}/fig_feature_selection_sim.${DEVICE}
+FIG_SIM_FS_SENSITIVITY=${FIG_DIR}/fig_feature_selection_sim_sensitivity.${DEVICE}
+FIG_SIM_FS_SPECIFICITY=${FIG_DIR}/fig_feature_selection_sim_specificity.${DEVICE}
 
 # FGSEA analysis
 FIG_FGSEA_OUT=${FIG_DIR}/fig_fgsea_analysis_two_panels.${DEVICE}
@@ -137,7 +138,7 @@ endif
 #OUTPUTS+= ${FIG_SIM_TIME_OUT}
 #endif
 ifneq ($(wildcard ${SIM_FS_RESULTS_CSV}),)
-OUTPUTS+= ${FIG_SIM_FS_OUT}
+OUTPUTS+= ${FIG_SIM_FS_SENSITIVITY} ${FIG_SIM_FS_SPECIFICITY}
 endif
 
 # The report file containing the figures
@@ -155,7 +156,7 @@ ${REPORT_PDF}: ${OUTPUTS} ${REPORT_SRC} docs/sections/background.Rmd docs/sectio
 
 # all: ${OUTPUTS} ${REPORT_PDF}
 # 	@echo "All targets complete!"
-all: ${OUTPUTS} ${REPORT_PDF}
+all: ${OUTPUTS}
 	@echo "==========================================="
 	@echo "Running all targets..."
 	@echo "==========================================="
@@ -165,7 +166,7 @@ all: ${OUTPUTS} ${REPORT_PDF}
 	# This allows us to capture the start time correctly
 	@start=$$(date +%s); \
 	echo "Running all targets..."; \
-	$(MAKE) ${OUTPUTS} ${REPORT_PDF}; \
+	$(MAKE) ${OUTPUTS}; \
 	end=$$(date +%s); \
 	elapsed=$$((end - start)); \
 	echo "All targets complete!"; \
@@ -310,12 +311,28 @@ ${FIG_REAL_FS_OUT}: ${FIG3_PLOT_REAL_SRC} ${COMMON_R} ${FIG3_REAL_PROCESSED}
 		--show_title ${SHOW_TITLE}
 
 # FIGURE 3: Feature selection (Simulated Data)
-${FIG_SIM_FS_OUT}: ${FIG3_PLOT_SIM_SRC} ${COMMON_R} ${FIG3_SIM_PROCESSED}
+
+# Sensitivity plot
+${FIG_SIM_FS_SENSITIVITY}: ${FIG3_PLOT_SIM_SRC} ${COMMON_R} ${FIG3_SIM_PROCESSED}
 	@echo ${BANNER}
-	@echo "Plotting feature selection (Simulated Data)..."
+	@echo "Plotting feature selection sensitivity (Simulated Data)..."
 	Rscript ${FIG3_PLOT_SIM_SRC} \
 		--input_path ${FIG3_SIM_PROCESSED} \
-		--output_path ${FIG_SIM_FS_OUT} \
+		--output_path ${FIG_SIM_FS_SENSITIVITY} \
+		--metric sensitivity \
+		--width ${WIDTH} \
+		--height ${HEIGHT} \
+		--device ${DEVICE} \
+		--dpi ${DPI} \
+		--show_title ${SHOW_TITLE}
+# Specificity plot
+${FIG_SIM_FS_SPECIFICITY}: ${FIG3_PLOT_SIM_SRC} ${COMMON_R} ${FIG3_SIM_PROCESSED}
+	@echo ${BANNER}
+	@echo "Plotting feature selection specificity (Simulated Data)..."
+	Rscript ${FIG3_PLOT_SIM_SRC} \
+		--input_path ${FIG3_SIM_PROCESSED} \
+		--output_path ${FIG_SIM_FS_SPECIFICITY} \
+		--metric specificity \
 		--width ${WIDTH} \
 		--height ${HEIGHT} \
 		--device ${DEVICE} \

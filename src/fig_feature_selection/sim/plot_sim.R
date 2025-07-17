@@ -8,6 +8,7 @@ Usage:
 Options:
   --input_path=INPUT      Path to read in the feature selection result
   --output_path=OUTPUT    Path to write out output plot
+  --metric=METRIC         Metric to plot, one of sensitivity or specificity [default: sensitivity]
   --width=WIDTH           Width of the graph [default: 7]
   --height=height         Height of the graph [default: 7]
   --device=DEVICE         Device to print out [default: png]
@@ -80,7 +81,10 @@ plot_corr_grid <- function(plot_data, cor, method_palette="Paired", text_size=12
 }
 
 
-plot_sim <- function(input_data, method_palette, text_size) {
+plot_sim <- function(input_data, metric, method_palette, text_size) {
+
+  # Tidy evaluate the metric
+  metric_sym <- rlang::sym(metric)
   # This fun depends on the plot_corr_grid
   # Need to manually fix the levels of some columns
   # Since bug with mutate across ?
@@ -109,14 +113,15 @@ plot_sim <- function(input_data, method_palette, text_size) {
 
   # Get the color palette for methods
   custom_method_palette <- get_method_custom_colors(method_palette)
+  ylab <- paste0("Mean ", metric, " arcross views")
 
   sim_plot <- plot_data %>%
     ggplot() +
-    geom_point(aes(x = method, y = sensitivity, color = method, shape=view), size=3) +
+    geom_point(aes(x = method, y = !!metric_sym, color = method, shape=view), size=3) +
     theme_half_open(text_size) +
     panel_border() +
     background_grid() +
-    labs(x = "Method", y = "Mean sensitivity across views", fill = "Method") +
+    labs(x = "Method", y = ylab, fill = "Method") +
     scale_color_manual(values = custom_method_palette) +
     facet_grid(
       corr ~ signal_level,
@@ -151,9 +156,10 @@ if (is.null(output_path)) {
     here::here()
 }
 # Plot params
-text_size <- 8
-width <- as.numeric(opt$width)
-height <- as.numeric(opt$height)
+raw_text_size <- 8
+metric <- opt$metric
+raw_width <- as.numeric(opt$width)
+raw_height <- as.numeric(opt$height)
 device <- opt$device
 dpi <- as.numeric(opt$dpi)
 method_palette <- "Paired"
@@ -164,10 +170,11 @@ input_data <- readRDS(input_path)
 # Plot it
 #out_plot <- ggplot() + ggtitle("Fake plot placeholder for feature selection (sim)")
 const <- 2
-text_size <- text_size + 6
-width <- width + (const * 1.8)
-height <- height + const
-out_plot <- plot_sim(input_data, method_palette, text_size=text_size)
+text_size <- raw_text_size + 6
+width <- raw_width + (const * 1.8)
+height <- raw_height + const
+out_plot <- plot_sim(input_data, metric=metric, method_palette=method_palette,
+                     text_size=text_size)
 
 if (!show_title) {
   out_plot <- out_plot + theme(legend.title = element_blank())
@@ -177,9 +184,10 @@ if (!show_title) {
 ggsave(output_path, plot = out_plot,
       width = width, height = height, device=device, dpi=dpi, bg="white")
 
+rds_path <- paste0("feature_selection_sim", metric, "_plot.rds")
 
 saveRDS(out_plot,
-        file = here::here("data/processed/feature_selection_sim.rds")
+        file = here::here("data/processed", rds_path)
 )
 message("Saved image of ", width, " x ", height, " to ", output_path)
 
