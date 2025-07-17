@@ -91,6 +91,7 @@ plot_sim <- function(input_data, method_palette, text_size) {
   #corr_order <- input_data$corr %>% unique() %>% sort()
   # Then transform it here
   plot_data <- input_data %>%
+    ungroup() %>%
     # Keep the relevant levels only
     filter(signal %in% c(0, 3, 100)) %>%
     mutate(
@@ -110,37 +111,22 @@ plot_sim <- function(input_data, method_palette, text_size) {
   custom_method_palette <- get_method_custom_colors(method_palette)
 
   sim_plot <- plot_data %>%
-    #group_by(method, dataset, signal, corr) %>%
-    #summarize(mean_sensitivity = mean(sensitivity)) %>%
-    # TODO: Note used a mean here
-    #ggplot(aes(x = method, y = sensitivity, fill = method)) +
-    ggplot(aes(x = method, y = sensitivity, color = method)) +
-    #stat_boxplot(geom ='errorbar', width=0.25) +
-    # geom_boxplot(
-    #   alpha = 0.7,
-    #   position = position_dodge(width = 0.8), # Adjust dodge width
-    #   width = 0.6, # Box width
-    #   outlier.size = 1.5 # Smaller outliers
-    # ) +
-    #geom_bar(stat="identity") +
-    geom_point(aes(shape=view), size=3) +
+    ggplot() +
+    geom_point(aes(x = method, y = sensitivity, color = method, shape=view), size=3) +
     theme_half_open(text_size) +
     panel_border() +
     background_grid() +
     labs(x = "Method", y = "Mean sensitivity across views", fill = "Method") +
-    # we set the left and right margins to 0 to remove
-    # unnecessary spacing in the final plot arrangement.
-    # remove extra space between panel and axis
-    #scale_y_continuous(expand = c(1, 1)) +
     scale_color_manual(values = custom_method_palette) +
     facet_grid(
       corr ~ signal_level,
-      #scales = "free",
+      scales = "free",
       labeller = labeller(signal_level = signal_labels, corr = corr_labels)
     ) +
-    #scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
-    sim_feat_selection_theme(text_size) +
-    guides(color = guide_legend(nrow = 3))
+    theme(legend.direction = "vertical", legend.box = "horizontal") +
+    theme(legend.position = "none") +
+    sim_feat_selection_theme(12) +
+    guides(color=guide_legend(ncol=2, byrow=F))
 
 
   return(sim_plot)
