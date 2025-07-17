@@ -25,13 +25,8 @@ library(cowplot)
 
 #dd <- readRDS("data/processed/fig_feature_selection_sim_plot_data.rds")
 
-# Function to determine text color based on background color
-get_text_color <- function(fill_color) {
-  rgb <- col2rgb(fill_color)
-  luminance <- (0.299 * rgb[1] + 0.587 * rgb[2] + 0.114 * rgb[3]) / 255
-  ifelse(luminance < 0.5, "white", "black")
-}
-
+# Load common plotting utilities
+source(here::here("src/common_helpers/plot_utils.R"))
 
 
 # This function plots heatmap for visualizing real data feature

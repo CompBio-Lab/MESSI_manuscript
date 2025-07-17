@@ -1,7 +1,11 @@
+# ==============================================================================
+# GGPLOT2 USAGE
+# ==============================================================================
+
 # Custom palette for the methods
 get_method_custom_colors <- function(method_palette="Paired") {
   # This fun is to match the color choices used for the methods
-  custom_method_palette <-  RColorBrewer::brewer.pal(n = 12, name = method_palette)
+  custom_method_palette <-  RColorBrewer::brewer.pal(n=12, name=method_palette)
   method_order_names <- c(
     "diablo-full_ncomp-1",
     "diablo-full_ncomp-2",
@@ -34,3 +38,25 @@ get_legend_35 <- function(plot) {
     return(legends[[1]])
   }
 }
+
+# ==============================================================================
+# COMPLEX HEATMAP USAGE
+# ==============================================================================
+
+# Function to determine text color based on background color for heatmap
+get_text_color <- function(fill_color) {
+  # Convert the input color (e.g., "red", "#FF0000") to RGB components (0–255 scale)
+  rgb <- grDevices::col2rgb(fill_color)
+
+  # Calculate perceived luminance using the standard formula from ITU-R BT.601:
+  # Luminance = 0.299 * R + 0.587 * G + 0.114 * B
+  # These weights reflect human sensitivity: we see green most strongly, then red, then blue.
+  # The result is then normalized to a 0–1 scale by dividing by 255.
+  luminance <- (0.299 * rgb[1] + 0.587 * rgb[2] + 0.114 * rgb[3]) / 255
+
+  # Choose text color based on luminance:
+  # If the background is dark (luminance < 0.5), use white text for contrast.
+  # Otherwise, use black text.
+  ifelse(luminance < 0.5, "white", "black")
+}
+
