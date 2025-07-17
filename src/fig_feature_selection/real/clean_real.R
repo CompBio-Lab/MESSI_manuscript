@@ -59,7 +59,6 @@ main <- function(input_path, output_path) {
   # First load in data and wrangle it
   feat_result_df <- data.table::fread(input_path) %>%
     dplyr::select(-c(feature_type, dataset_type)) %>%
-    as_tibble() %>%
     wrangle_feat_selection()
 
   # # Handle data type-specific processing

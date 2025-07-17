@@ -67,47 +67,35 @@ library(tidyr)
 #   select(method, dataset)
 
 
-
-# Custom function
 wrangle_feat_selection <- function(df) {
   df %>%
-  rename(dataset = dataset_name) %>%
-  # Need to fix error for mogonet appending view in front of feature
-  mutate(
-    feature = case_when(
-      str_detect(method, "mogonet") ~ paste(view, feature, sep="_"),
+    dtplyr::lazy_dt() %>%  # Translates dplyr to fast data.table
+    rename(dataset = dataset_name) %>%
+
+    # Fix mogonet feature naming
+    mutate(feature = case_when(
+      str_detect(method, "mogonet") ~ paste(view, feature, sep = "_"),
       TRUE ~ feature
-    )
-    # ~~Rename rgcca to sgcca~~
-    #method = case_when(
-    #  str_detect(method, "rgcca") ~ str_replace(method, "r", "s"),
-    #  TRUE ~ method
-    #)
-  ) %>%
-    # SGCCA has slight problem in missing a feature in tcga-brca and tcga-kipan???
-    # So need to drop this
-    filter(! (
-      (feature == "RNAseq_HiSeq_Gene_level_GAGE1" & dataset == "tcga-brca") |
-        (feature == "RNAseq_HiSeq_Gene_level_C8orf71" & dataset == "tcga-kipan")
-    )
-    ) %>%
-    # The view contains additional info for specific options used in methods
-    # For example mofa's factor, rgcca and diablo's ncomp
-    mutate(
-      method = case_when(
-        str_detect(view, "Factor") ~ paste0(method, "_", str_extract(view, "Factor.*")),
-        str_detect(view, "ncomp") ~ paste0(method, "_", str_extract(view, "ncomp.*")),
-        TRUE ~ method
-      )
-    ) %>%
-    # Rename the method names by adding additional layers
-    mutate(
-      method = case_when(
-        # TODO: this is a manual fix here, rgcca's ncomp should be recorded
-        str_detect(method, "gcca") ~ paste0(method, " + lda"),
-        str_detect(method, "mofa") ~ paste0(method, " + glmnet"),
-        str_detect(method, "cooperative") ~ "multiview",
-        TRUE ~ method
-      )
-    )
+    )) %>%
+
+    # Remove problematic features
+    filter(!(feature == "RNAseq_HiSeq_Gene_level_GAGE1" & dataset == "tcga-brca") &
+             !(feature == "RNAseq_HiSeq_Gene_level_C8orf71" & dataset == "tcga-kipan")) %>%
+
+    # Append view-related info to method
+    mutate(method = case_when(
+      str_detect(view, "Factor") ~ paste0(method, "-", str_extract(view, "Factor.*")),
+      str_detect(view, "ncomp")  ~ paste0(method, "_", str_extract(view, "ncomp.*")),
+      TRUE ~ method
+    )) %>%
+
+    # Final renaming of method
+    mutate(method = case_when(
+      str_detect(method, "gcca")        ~ paste0(method, " + lda"),
+      str_detect(method, "mofa")        ~ paste0(method, " + glmnet"),
+      str_detect(method, "cooperative") ~ "multiview",
+      TRUE ~ method
+    )) %>%
+
+    as_tibble()  # Materialize result (computed now)
 }

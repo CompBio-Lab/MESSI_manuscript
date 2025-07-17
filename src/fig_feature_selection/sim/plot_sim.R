@@ -69,13 +69,6 @@ plot_sim <- function(input_data, method_palette, text_size) {
   corr_order <- input_data$corr %>% unique() %>% sort()
   # Then transform it here
   plot_data <- input_data %>%
-    # Fix: mofa factor uses - and not _ to delim
-    mutate(
-      method = case_when(
-        stringr::str_detect(method, "Factor") ~ stringr::str_replace(method, "_", "-") ,
-        TRUE ~ method
-      )
-    ) %>%
     mutate(
       #n = factor(n, levels = n_order),
       #p = factor(p, levels = p_order),
