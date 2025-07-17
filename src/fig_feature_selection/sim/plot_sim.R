@@ -29,6 +29,27 @@ source(here::here("src/common_helpers/plot_utils.R"))
 #dd <- readRDS("data/processed/fig_feature_selection_sim_plot_data.rds")
 
 
+# The theme to use for this plot
+sim_feat_selection_theme <- function(text_size) {
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    #plot.margin = margin(6, 0, 6, 0),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.title.x = element_blank(),
+    legend.title = element_text(size = text_size + 2),
+    legend.text = element_text(size = text_size),
+    legend.position = "bottom",
+    legend.justification = "center",
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.y = element_blank(),
+    strip.background = element_rect(fill = "white", color = NA),
+    strip.text = element_text(color = "black", face = "bold", size = text_size - 2),
+  )
+}
+
+
 # Base grid plot for simulated dataset filter by cor
 plot_corr_grid <- function(plot_data, cor, method_palette="Paired", text_size=12) {
   #title <- paste0("Feature Selection Sensitivity for simulated data with correlation = ", cor)
@@ -118,27 +139,14 @@ plot_sim <- function(input_data, method_palette, text_size) {
       labeller = labeller(signal_level = signal_labels, corr = corr_labels)
     ) +
     #scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
-    theme(
-      plot.title = element_text(hjust = 0.5),
-      #plot.margin = margin(6, 0, 6, 0),
-      axis.text.x = element_blank(),
-      axis.ticks.x = element_blank(),
-      axis.title.x = element_blank(),
-      legend.title = element_text(size = text_size + 2),
-      legend.text = element_text(size = text_size),
-      legend.position = "bottom",
-      legend.justification = "center",
-      panel.grid.major.x = element_blank(),
-      panel.grid.minor.x = element_blank(),
-      panel.grid.major.y = element_blank(),
-      strip.background = element_rect(fill = "white", color = NA),
-      strip.text = element_text(color = "black", face = "bold", size = text_size - 2),
-    ) +
+    sim_feat_selection_theme(text_size) +
     guides(color = guide_legend(nrow = 3))
 
 
   return(sim_plot)
 }
+
+
 
 # ==============================================================================
 # Parse the cli
