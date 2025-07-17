@@ -21,6 +21,11 @@ library(ggplot2)
 suppressPackageStartupMessages(library(ComplexHeatmap))
 library(cowplot)
 
+# Load plotting helpers like colors
+source(here::here("src/common_helpers/plot_utils.R"))
+
+
+
 #dd <- readRDS("data/processed/fig_feature_selection_sim_plot_data.rds")
 get_legend_35 <- function(plot) {
   # return all legend candidates
@@ -96,22 +101,8 @@ plot_sim <- function(input_data, method_palette, text_size) {
   corr_labels <- paste0("Cor = ", plot_data$corr |> unique())
   names(corr_labels) <- plot_data$corr |> unique()
 
-  custom_method_palette <-  RColorBrewer::brewer.pal(n = 12, name = method_palette)
-  method_order_names <- c(
-    "diablo-full_ncomp-1",
-    "diablo-full_ncomp-2",
-    "diablo-null_ncomp-1",
-    "diablo-null_ncomp-2",
-    "mofa-Factor1 + glmnet",
-    "mofa-Factor2 + glmnet",
-    "mogonet",
-    "multiview",
-    "rgcca-full_ncomp-1 + lda",
-    "rgcca-null_ncomp-1 + lda",
-    "rgcca-full_ncomp-2 + lda",
-    "rgcca-null_ncomp-2 + lda"
-  )
-  names(custom_method_palette) <- method_order_names
+  # Get the color palette for methods
+  custom_method_palette <- get_method_custom_colors(method_palette)
 
   sim_plot <- plot_data %>%
     #group_by(method, dataset, signal, corr) %>%

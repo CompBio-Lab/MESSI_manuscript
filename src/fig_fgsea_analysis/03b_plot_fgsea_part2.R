@@ -22,6 +22,8 @@ suppressPackageStartupMessages(library(dplyr))
 
 # Load other utilities
 source(here::here("src/fig_fgsea_analysis/_utils.R"))
+# Load plotting helpers
+source(here::here("src/common_helpers/plot_utils.R"))
 
 # Custom function for plotting
 
@@ -29,27 +31,6 @@ get_text_color <- function(fill_color) {
   rgb <- col2rgb(fill_color)
   luminance <- (0.299 * rgb[1] + 0.587 * rgb[2] + 0.114 * rgb[3]) / 255
   ifelse(luminance < 0.5, "white", "black")
-}
-
-get_method_custom_colors <- function(method_palette="Paired") {
-  # This fun is to match the color choices used for the methods
-  custom_method_palette <-  RColorBrewer::brewer.pal(n = 12, name = method_palette)
-  method_order_names <- c(
-    "diablo-full_ncomp-1",
-    "diablo-full_ncomp-2",
-    "diablo-null_ncomp-1",
-    "diablo-null_ncomp-2",
-    "mofa-Factor1 + glmnet",
-    "mofa-Factor2 + glmnet",
-    "mogonet",
-    "multiview",
-    "rgcca-full_ncomp-1 + lda",
-    "rgcca-null_ncomp-1 + lda",
-    "rgcca-full_ncomp-2 + lda",
-    "rgcca-null_ncomp-2 + lda"
-  )
-  names(custom_method_palette) <- method_order_names
-  return(custom_method_palette)
 }
 
 # =============================================================================

@@ -21,52 +21,56 @@ opt <- docopt::docopt(doc)
 # Load libraries
 suppressPackageStartupMessages(library(dplyr))
 library(ggplot2)
+
+# Load plotting helpers like colors
+source(here::here("src/common_helpers/plot_utils.R"))
+
 # ==============================================================================
 # BOXPLOT DISTRIBUTION (DEPRECATED FOR NOW)
-plot_box_dist <- function(sim_df, custom_method_palette, text_size, signal_labels, corr_labels, x_lab, y_lab) {
-  p <- sim_df %>%
-    ggplot(aes(x=method, y=auc, fill=method)) +
-    stat_boxplot(geom ='errorbar', width=0.25) +
-    geom_boxplot()+
-    #scale_fill_brewer(palette = method_palette) +
-    # TODO: use manual colors now to match everywhere
-    scale_fill_manual(values = custom_method_palette) +
-    facet_grid(
-      corr ~ signal,
-      #scales = "free",
-      labeller = labeller(signal = signal_labels, corr = corr_labels)
-    ) +
-    theme_bw() +
-    ggtitle("Performance evaluation on simulated datasets") +
-    # And change Grid label names
-    theme(
-      # Rotate text of methods names
-      #axis.text.x = element_text(angle = 45, hjust=1),
-      axis.text.y = element_text(
-        size = text_size
-      ),
-      axis.title.y = element_text(size = text_size + 2),
-      axis.title.x = element_blank(),
-      axis.text.x = element_blank(),
-      axis.ticks.x = element_blank(),
-      strip.text.x = element_text(
-        size = text_size, color = "red", face = "bold.italic"
-      ),
-      # TODO: Maybe consider changing color of the grid ribbon color?
-      #strip.background.x = element_rect(fill="blue"),
-      strip.text.y = element_text(
-        size = text_size, color = "red", face = "bold.italic"
-      ),
-      plot.title = element_text(hjust = 0.5),
-      legend.title = element_text(size = text_size + 2),
-      legend.text = element_text(size = text_size),
-      legend.position = "bottom"
-    ) +
-    guides(fill = guide_legend(nrow = 3)) +
-    # Lastly the labels
-    labs(x=x_lab, fill=x_lab, y = y_lab)
-  return(p)
-}
+# plot_box_dist <- function(sim_df, custom_method_palette, text_size, signal_labels, corr_labels, x_lab, y_lab) {
+#   p <- sim_df %>%
+#     ggplot(aes(x=method, y=auc, fill=method)) +
+#     stat_boxplot(geom ='errorbar', width=0.25) +
+#     geom_boxplot()+
+#     #scale_fill_brewer(palette = method_palette) +
+#     # TODO: use manual colors now to match everywhere
+#     scale_fill_manual(values = custom_method_palette) +
+#     facet_grid(
+#       corr ~ signal,
+#       #scales = "free",
+#       labeller = labeller(signal = signal_labels, corr = corr_labels)
+#     ) +
+#     theme_bw() +
+#     ggtitle("Performance evaluation on simulated datasets") +
+#     # And change Grid label names
+#     theme(
+#       # Rotate text of methods names
+#       #axis.text.x = element_text(angle = 45, hjust=1),
+#       axis.text.y = element_text(
+#         size = text_size
+#       ),
+#       axis.title.y = element_text(size = text_size + 2),
+#       axis.title.x = element_blank(),
+#       axis.text.x = element_blank(),
+#       axis.ticks.x = element_blank(),
+#       strip.text.x = element_text(
+#         size = text_size, color = "red", face = "bold.italic"
+#       ),
+#       # TODO: Maybe consider changing color of the grid ribbon color?
+#       #strip.background.x = element_rect(fill="blue"),
+#       strip.text.y = element_text(
+#         size = text_size, color = "red", face = "bold.italic"
+#       ),
+#       plot.title = element_text(hjust = 0.5),
+#       legend.title = element_text(size = text_size + 2),
+#       legend.text = element_text(size = text_size),
+#       legend.position = "bottom"
+#     ) +
+#     guides(fill = guide_legend(nrow = 3)) +
+#     # Lastly the labels
+#     labs(x=x_lab, fill=x_lab, y = y_lab)
+#   return(p)
+# }
 # ==============================================================================
 # BAR PLOT
 plot_bar_dist <- function(sim_df, custom_method_palette, text_size, signal_labels, corr_labels, x_lab, y_lab) {
@@ -125,23 +129,8 @@ plot_fig1_sim <- function(
   if (!is.data.frame(input_data)) stop("Plot data for simulated data should be dataframe")
   sim_df <- input_data
 
-  # Use a custom method palette for now thats based on Paired
-  custom_method_palette <-  RColorBrewer::brewer.pal(n = 12, name = method_palette)
-  method_order_names <- c(
-    "diablo-full_ncomp-1",
-    "diablo-full_ncomp-2",
-    "diablo-null_ncomp-1",
-    "diablo-null_ncomp-2",
-    "mofa-Factor1 + glmnet",
-    "mofa-Factor2 + glmnet",
-    "mogonet",
-    "multiview",
-    "rgcca-full_ncomp-1 + lda",
-    "rgcca-null_ncomp-1 + lda",
-    "rgcca-full_ncomp-2 + lda",
-    "rgcca-null_ncomp-2 + lda"
-  )
-  names(custom_method_palette) <- method_order_names
+  # Get the color palette for methods
+  custom_method_palette <- get_method_custom_colors(method_palette)
 
   # Labeller for facetting
   signal_labels <- paste0("Signal = ", sim_df$signal |> unique())
