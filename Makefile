@@ -156,7 +156,7 @@ ${REPORT_PDF}: ${OUTPUTS} ${REPORT_SRC} docs/sections/background.Rmd docs/sectio
 
 # all: ${OUTPUTS} ${REPORT_PDF}
 # 	@echo "All targets complete!"
-all: ${OUTPUTS}
+all: ${OUTPUTS} ${REPORT_PDF}
 	@echo "==========================================="
 	@echo "Running all targets..."
 	@echo "==========================================="
