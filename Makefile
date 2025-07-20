@@ -53,7 +53,7 @@ SIM_FS_RESULTS_CSV=${SIM_DATA_DIR}/all_feature_selection_results.csv
 # Processed file names
 # Performance evaluation
 FIG1_REAL_PROCESSED=${DATA_PROCESSED_DIR}/fig_performance_evaluation_real_plot_data.rds
-FIG1_SIM_PROCESSED=${DATA_PROCESSED_DIR}/fig_performance_evaluation_sim_plot_data.rds
+FIG_SIM_PERF_PROCESSED=${DATA_PROCESSED_DIR}/fig_performance_evaluation_sim_plot_data.rds
 
 # Computational time
 FIG2_REAL_PROCESSED=${DATA_PROCESSED_DIR}/fig_computational_time_real_plot_data.csv
@@ -61,7 +61,7 @@ FIG2_SIM_PROCESSED=${DATA_PROCESSED_DIR}/fig_computational_time_sim_plot_data.cs
 
 # Feature selection
 FIG3_REAL_PROCESSED=${DATA_PROCESSED_DIR}/fig_feature_selection_real_plot_data.rds
-FIG3_SIM_PROCESSED=${DATA_PROCESSED_DIR}/fig_feature_selection_sim_plot_data.rds
+FIG_SIM_FS_PROCESSED=${DATA_PROCESSED_DIR}/fig_feature_selection_sim_plot_data.rds
 
 # Common R utilities
 COMMON_R=${SRC_DIR}/_utils.R
@@ -111,6 +111,8 @@ FIG_SIM_TIME_OUT=${FIG_DIR}/fig_computational_time_sim.${DEVICE}
 FIG_REAL_FS_OUT=${FIG_DIR}/fig_feature_selection_real.${DEVICE}
 FIG_SIM_FS_METRIC=${FIG_DIR}/fig_feature_selection_sim.${DEVICE}
 
+# Combined performance evaluation and feature selection for simulated data
+FIG_SIM_GRID_OUT=${FIG_DIR}/fig_simulated_performance_grid.${DEVICE}
 
 # FGSEA analysis
 FIG_FGSEA_OUT=${FIG_DIR}/fig_fgsea_analysis_two_panels.${DEVICE}
@@ -120,26 +122,33 @@ FIG_FGSEA_OUT=${FIG_DIR}/fig_fgsea_analysis_two_panels.${DEVICE}
 TABLE_METHOD=${DATA_PROCESSED_DIR}/method_metadata.csv
 TABLE_DATASET=${DATA_PROCESSED_DIR}/real_dataset_metadata.csv
 
+
+
 # ====================================================================================
-# All the outputs
-# Real data targets are always included
+# NOTE: all newer targets output should be defined before this section
+# ====================================================================================
+# The following targets are the outputs of the Makefile
+# They are used to track the progress of the Makefile and ensure that all targets
+# are completed before generating the final report
+# The outputs are the processed data files, figures, and tables
+# The outputs are used to generate the final report
 
 
 TABLE_OUTPUTS=${TABLE_METHOD} ${TABLE_DATASET}
 
-OUTPUTS=${FIG_REAL_PERF_OUT} ${TABLE_METHOD} ${TABLE_DATASET} ${FIG_FGSEA_OUT}
+OUTPUTS=${FIG_REAL_PERF_OUT} ${TABLE_METHOD} ${TABLE_DATASET} ${FIG_FGSEA_OUT} ${FIG_SIM_GRID_OUT} ${FIG_SIM_PERF_OUT} ${FIG_SIM_FS_METRIC}
 #${FIG_REAL_TIME_OUT}
 #${FIG_REAL_FS_OUT} ${TABLE_METHOD} ${TABLE_DATASET}
 # Conditionally include simulated data targets if input files exist
-ifneq ($(wildcard ${SIM_METRICS_CSV}),)
-OUTPUTS+= ${FIG_SIM_PERF_OUT}
-endif
-#ifneq ($(wildcard ${SIM_METADATA_CSV}),)
-#OUTPUTS+= ${FIG_SIM_TIME_OUT}
-#endif
-ifneq ($(wildcard ${SIM_FS_RESULTS_CSV}),)
-OUTPUTS+= ${FIG_SIM_FS_METRIC} ${FIG_SIM_FS_SPECIFICITY}
-endif
+# ifneq ($(wildcard ${SIM_METRICS_CSV}),)
+# OUTPUTS+= ${FIG_SIM_PERF_OUT}
+# endif
+# #ifneq ($(wildcard ${SIM_METADATA_CSV}),)
+# #OUTPUTS+= ${FIG_SIM_TIME_OUT}
+# #endif
+# ifneq ($(wildcard ${SIM_FS_RESULTS_CSV}),)
+# OUTPUTS+= ${FIG_SIM_FS_METRIC} ${FIG_SIM_FS_SPECIFICITY}
+# endif
 
 # The report file containing the figures
 REPORT_SRC=docs/report.Rmd
@@ -196,12 +205,12 @@ ${FIG1_REAL_PROCESSED}: ${FIG1_WRANGLE_REAL_SRC} ${COMMON_R} ${REAL_METRICS_CSV}
 		--output_path ${FIG1_REAL_PROCESSED}
 
 # Figure 1: Performance evaluation (Simulated Data)
-${FIG1_SIM_PROCESSED}: ${FIG1_WRANGLE_SIM_SRC} ${COMMON_R} ${SIM_METRICS_CSV} ${PERF_UTIL}
+${FIG_SIM_PERF_PROCESSED}: ${FIG1_WRANGLE_SIM_SRC} ${COMMON_R} ${SIM_METRICS_CSV} ${PERF_UTIL}
 	@echo ${BANNER}
 	@echo "Processing simulated data for performance evaluation"
 	Rscript ${FIG1_WRANGLE_SIM_SRC} \
 		--input_csv ${SIM_METRICS_CSV} \
-		--output_path ${FIG1_SIM_PROCESSED}
+		--output_path ${FIG_SIM_PERF_PROCESSED}
 
 # Figure 2: Computational time (Real Data)
 #${FIG2_REAL_PROCESSED}: ${FIG2_WRANGLE_REAL_SRC} ${COMMON_R} ${REAL_METADATA_CSV} ${REAL_TRACE_TXT}
@@ -230,12 +239,12 @@ ${FIG3_REAL_PROCESSED}: ${FIG3_WRANGLE_REAL_SRC} ${COMMON_R} ${REAL_FS_RESULTS_C
 		--output_path ${FIG3_REAL_PROCESSED}
 
 # Figure 3: Feature selection (Simulated Data)
-${FIG3_SIM_PROCESSED}: ${FIG3_WRANGLE_SIM_SRC} ${COMMON_R} ${SIM_FS_RESULTS_CSV}
+${FIG_SIM_FS_PROCESSED}: ${FIG3_WRANGLE_SIM_SRC} ${COMMON_R} ${SIM_FS_RESULTS_CSV}
 	@echo ${BANNER}
 	@echo "Processing simulated data for feature selection"
 	Rscript ${FIG3_WRANGLE_SIM_SRC} \
 		--input_csv ${SIM_FS_RESULTS_CSV} \
-		--output_path ${FIG3_SIM_PROCESSED}
+		--output_path ${FIG_SIM_FS_PROCESSED}
 
 # Figure 4: Preprocessing pathways
 
@@ -257,11 +266,11 @@ ${FIG_REAL_PERF_OUT}: ${FIG1_PLOT_REAL_SRC} ${COMMON_R} ${FIG1_REAL_PROCESSED}
 		--show_title ${SHOW_TITLE}
 
 # FIGURE 1: Performance evaluation (Simulated Data)
-${FIG_SIM_PERF_OUT}: ${FIG1_PLOT_SIM_SRC} ${COMMON_R} ${FIG1_SIM_PROCESSED}
+${FIG_SIM_PERF_OUT}: ${FIG1_PLOT_SIM_SRC} ${COMMON_R} ${FIG_SIM_PERF_PROCESSED}
 	@echo ${BANNER}
 	@echo "Plotting performance evaluation (Simulated Data)..."
 	Rscript ${FIG1_PLOT_SIM_SRC} \
-		--input_path ${FIG1_SIM_PROCESSED} \
+		--input_path ${FIG_SIM_PERF_PROCESSED} \
 		--output_path ${FIG_SIM_PERF_OUT} \
 		--width ${WIDTH} \
 		--height ${HEIGHT} \
@@ -312,15 +321,39 @@ ${FIG_REAL_FS_OUT}: ${FIG3_PLOT_REAL_SRC} ${COMMON_R} ${FIG3_REAL_PROCESSED}
 
 # FIGURE 3: Feature selection (Simulated Data)
 
-# Sensitivity plot
-${FIG_SIM_FS_METRIC}: ${FIG3_PLOT_SIM_SRC} ${COMMON_R} ${FIG3_SIM_PROCESSED}
+# Sensitivity and Specificity plot
+${FIG_SIM_FS_METRIC}: ${FIG3_PLOT_SIM_SRC} ${COMMON_R} ${FIG_SIM_FS_PROCESSED}
 	@echo ${BANNER}
 	@echo "Plotting feature selection performance metrics (Simulated Data)..."
 	Rscript ${FIG3_PLOT_SIM_SRC} \
-		--input_path ${FIG3_SIM_PROCESSED} \
+		--input_path ${FIG_SIM_FS_PROCESSED} \
 		--output_path ${FIG_SIM_FS_METRIC} \
 		--width ${WIDTH} \
 		--height ${HEIGHT} \
+		--device ${DEVICE} \
+		--dpi ${DPI} \
+		--show_title ${SHOW_TITLE}
+
+# FIGURE 4: Combined performance evaluation and feature selection for simulated data
+# This is not a separate figure, but rather a combination of the previous figures
+FIG_SIM_GRID_PROCESSED=data/processed/simulation_performance_grid_df.csv
+${FIG_SIM_GRID_PROCESSED}: src/fig_simulated_performances_grid/clean_sim.R ${COMMON_R} ${FIG_SIM_FS_PROCESSED} ${FIG_SIM_PERF_PROCESSED}
+	@echo ${BANNER}
+	@echo "Processsing simulated data for performance evaluation and feature selection grid..."
+	Rscript src/fig_simulated_performances_grid/clean_sim.R \
+		--perf_input_path ${FIG_SIM_PERF_PROCESSED} \
+		--feat_input_path ${FIG_SIM_FS_PROCESSED} \
+		--output_path ${FIG_SIM_GRID_PROCESSED}
+
+# Plotting the combined performance evaluation and feature selection grid
+${FIG_SIM_GRID_OUT}: ${FIG_SIM_GRID_PROCESSED} src/fig_simulated_performances_grid/plot_simulated_grid.R
+	@echo ${BANNER}
+	@echo "Plotting simulated data performance evaluation and feature selection grid..."
+	Rscript src/fig_simulated_performances_grid/plot_simulated_grid.R \
+		--input_path ${FIG_SIM_GRID_PROCESSED} \
+		--output_path ${FIG_SIM_GRID_OUT} \
+		--width 10 \
+		--height 12 \
 		--device ${DEVICE} \
 		--dpi ${DPI} \
 		--show_title ${SHOW_TITLE}
