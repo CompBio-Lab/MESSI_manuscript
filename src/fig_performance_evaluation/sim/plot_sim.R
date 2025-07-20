@@ -72,48 +72,69 @@ source(here::here("src/common_helpers/plot_utils.R"))
 #   return(p)
 # }
 # ==============================================================================
-# BAR PLOT
-plot_bar_dist <- function(sim_df, custom_method_palette, text_size, signal_labels, corr_labels, x_lab, y_lab) {
+# BAR PLOT DEPRECATED NOW
+# plot_bar_dist <- function(sim_df, custom_method_palette, text_size, signal_labels, corr_labels, x_lab, y_lab) {
+#   p <- sim_df %>%
+#     ggplot(aes(x=method, y=auc, fill=method)) +
+#     geom_bar(stat="identity")+
+#     #scale_fill_brewer(palette = method_palette) +
+#     # TODO: use manual colors now to match everywhere
+#     scale_fill_manual(values = custom_method_palette) +
+#     facet_grid(
+#       corr ~ signal,
+#       #scales = "free",
+#       labeller = labeller(signal = signal_labels, corr = corr_labels)
+#     ) +
+#     theme_bw() +
+#     ggtitle("Performance evaluation on simulated datasets") +
+#     # And change Grid label names
+#     theme(
+#       # Rotate text of methods names
+#       #axis.text.x = element_text(angle = 45, hjust=1),
+#       axis.text.y = element_text(
+#         size = text_size
+#       ),
+#       axis.title.y = element_text(size = text_size + 2),
+#       axis.title.x = element_blank(),
+#       axis.text.x = element_blank(),
+#       axis.ticks.x = element_blank(),
+#       strip.text.x = element_text(
+#         size = text_size, color = "red", face = "bold.italic"
+#       ),
+#       # TODO: Maybe consider changing color of the grid ribbon color?
+#       #strip.background.x = element_rect(fill="blue"),
+#       strip.text.y = element_text(
+#         size = text_size, color = "red", face = "bold.italic"
+#       ),
+#       plot.title = element_text(hjust = 0.5),
+#       legend.title = element_text(size = text_size + 2),
+#       legend.text = element_text(size = text_size),
+#       legend.position = "bottom"
+#     ) +
+#     guides(fill = guide_legend(nrow = 3)) +
+#     # Lastly the labels
+#     labs(x=x_lab, fill=x_lab, y = y_lab)
+#   return(p)
+# }
+
+
+plot_line_point <- function(sim_df, custom_method_palette, text_size, signal_labels, corr_labels, x_lab, y_lab) {
   p <- sim_df %>%
-    ggplot(aes(x=method, y=auc, fill=method)) +
-    geom_bar(stat="identity")+
-    #scale_fill_brewer(palette = method_palette) +
-    # TODO: use manual colors now to match everywhere
-    scale_fill_manual(values = custom_method_palette) +
-    facet_grid(
-      corr ~ signal,
-      #scales = "free",
-      labeller = labeller(signal = signal_labels, corr = corr_labels)
+    filter(signal %in% c(0, 3 , 100)) %>%
+    ggplot(aes(x=method, y=auc, group=factor(corr), color=factor(corr))) +
+    geom_point() +
+    geom_line() +
+    facet_wrap(~signal, scales="free") +
+    scale_color_manual(
+      values = c("0" = "#D55E00", "0.5" = "#0072B2", "1" = "#009E73"),
+      labels = c("0" = "Low", "0.5" = "Medium", "1" = "High")
     ) +
+    scale_x_discrete(labels = function(x) str_wrap(x, width = 12)) +
     theme_bw() +
-    ggtitle("Performance evaluation on simulated datasets") +
-    # And change Grid label names
-    theme(
-      # Rotate text of methods names
-      #axis.text.x = element_text(angle = 45, hjust=1),
-      axis.text.y = element_text(
-        size = text_size
-      ),
-      axis.title.y = element_text(size = text_size + 2),
-      axis.title.x = element_blank(),
-      axis.text.x = element_blank(),
-      axis.ticks.x = element_blank(),
-      strip.text.x = element_text(
-        size = text_size, color = "red", face = "bold.italic"
-      ),
-      # TODO: Maybe consider changing color of the grid ribbon color?
-      #strip.background.x = element_rect(fill="blue"),
-      strip.text.y = element_text(
-        size = text_size, color = "red", face = "bold.italic"
-      ),
-      plot.title = element_text(hjust = 0.5),
-      legend.title = element_text(size = text_size + 2),
-      legend.text = element_text(size = text_size),
-      legend.position = "bottom"
-    ) +
-    guides(fill = guide_legend(nrow = 3)) +
-    # Lastly the labels
-    labs(x=x_lab, fill=x_lab, y = y_lab)
+    custom_theme_for_sim_plot() +
+    labs(x = x_lab, y_lab, color="Correlation")
+
+
   return(p)
 }
 
@@ -138,7 +159,7 @@ plot_fig1_sim <- function(
   corr_labels <- paste0("Cor = ", sim_df$corr |> unique())
   names(corr_labels) <- sim_df$corr |> unique()
   # Then the plotting
-  p <- plot_bar_dist(
+  p <- plot_line_point(
     sim_df, custom_method_palette = custom_method_palette,
     text_size = text_size, signal_labels, corr_labels = corr_labels,
     x_lab = x_lab, y_lab = y_lab
