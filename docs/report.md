@@ -534,7 +534,19 @@ In addition to predictive performance, we measured the computational cost of eac
 
 We examined the methods on controlled setting of simulation studies with varying parameters like number of observations, number of predictors in each omics, proportion of signal and correlation between omics and fixed number omics at $3$. Each of these combination of parameters were replicated $3$ times to account for data variability.  
 
-We noticed that as signal increases, method tend to perform better, ultimately its AUC score plateaus at 1 as ilustrated in Fig \@ref(fig:sim-perf-plot). 
+We noticed that as signal increases, method tend to perform better, ultimately its AUC score plateaus at 1 as ilustrated in Fig \@ref(fig:sim-grid-plot). 
+
+
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.96\linewidth]{../results/figures/fig_simulated_performance_grid} 
+
+}
+
+\caption{Simulation studies performances on AUC and feature selection sensitivity/specificity  with varied signal and correlation in the data. Each grid is combination of amount of signal to differentiate response variable classes, and correlation of omics within one complete set of multiomics simulated data. The Area under the curve (AUC) score measures ability of method predictive performance on the response variable. The sensititivity here is to measure how good methods are identifying the actual signal variables given noise in other variables. The specificity here is to measure how good methods are detecting the noises out.}(\#fig:sim-grid-plot)
+\end{figure}
+
 
 This is expected, as more clear pattern exist in different groups (i.e. positive vs negative), labels are better and easier for methods to learn.  On the other hand, we also prove that when there's no signal present, method gives a median AUC of 0.5 , which means it turns out to be randomly guessing the response. This result is also trivial, as there's not clear difference between groups, hence hard to distinguish and models struggle to learn anything meaningful. 
 
@@ -545,26 +557,10 @@ We also tested against varying correlation in the omics within each dataset. But
 From this simulation for classification performance, DIABLO with different design matrices showed relatively good performance ranking at top. Cooperative Learning follows next with consistent distribution of AUC scores, and less variable compared to other methods. MOFA + glmnet and RGCCA + LDA are in the middle, with high variability. Lastly, MOGONET showed consistenly low performance compared to others and only performing well at no signal and full correlation between omics. 
 
 
-\begin{figure}
 
-{\centering \includegraphics[width=0.85\linewidth,height=0.8\textheight]{../results/figures/fig_performance_evaluation_sim} 
-
-}
-
-\caption{Classification performance of all simulated datasets via varied signal and correlation in the data. Each grid is a specific combination of signal and correlation of datasets. Each box inside grids represents auc mean score from a 5 fold cross validation of method evaluated data at one combination of parameters. The bold line on each box indicates the median of auc mean. Grey points are considered outliers.}(\#fig:sim-perf-plot)
-\end{figure}
-
-In terms of ability and quality of feature selection (Fig \@ref(fig:sim-feat-sel-plot)), only Cooperative Learning showed consistent behavior and choosing those meaningful biomarkers out compared to other methods. DIABLO is slightly behind it, and with higher variability at the sensitivity distribution. All other methods performed poorly, since they're quite unstable and could have any performance. 
+In terms of ability and quality of feature selection (Fig \@ref(fig:sim-grid-plot)), only Cooperative Learning showed consistent behavior and choosing those meaningful biomarkers out compared to other methods. DIABLO is slightly behind it, and with higher variability at the sensitivity distribution. All other methods performed poorly, since they're quite unstable and could have any performance. 
 
 
-\begin{figure}
-
-{\centering \includegraphics[width=0.96\linewidth]{../results/figures/fig_feature_selection_sim} 
-
-}
-
-\caption{Simulation studies feature selection sensitivity performance with varied signal and correlation in the data. Each grid is combination of amount of signal to differentiate response variable classes, and correlation of omics within one complete set of multiomics simulated data. Boxplots shows overall sensitivity score distribution on each method for specific combinations of simulation parameters. The sensititivity here is to measure how good methods are identifying the actual signal variables given noise in other variables. A score of 0.75 is considered good.}(\#fig:sim-feat-sel-plot)
-\end{figure}
 
 
 We believe these sets of simulation studies could be used for future method development, and test them against various scenarios of multiomics data. More parameters could be involved to rigorously test method's robustness. This could be achieved with ease with our proposed pipeline, as we need is to setup the correct data and rest is just handled by these fixed and reproducible workflows.
@@ -595,10 +591,29 @@ Therefore, we prove the pipeline provides an easy way to benchmark multiomics in
 \end{figure}
 
 
+<!----------- Stale Code ------------------->
 
-<!---
+<!-----------
+\begin{figure}
+
+{\centering \includegraphics[width=0.85\linewidth,height=0.8\textheight]{../results/figures/fig_performance_evaluation_sim} 
+
+}
+
+\caption{Classification performance of all simulated datasets via varied signal and correlation in the data. Each grid is a specific combination of signal and correlation of datasets. Each box inside grids represents auc mean score from a 5 fold cross validation of method evaluated data at one combination of parameters. The bold line on each box indicates the median of auc mean. Grey points are considered outliers.}(\#fig:sim-perf-plot)
+\end{figure}
 
 
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.96\linewidth]{../results/figures/fig_feature_selection_sim} 
+
+}
+
+\caption{Simulation studies feature selection sensitivity performance with varied signal and correlation in the data. Each grid is combination of amount of signal to differentiate response variable classes, and correlation of omics within one complete set of multiomics simulated data. Boxplots shows overall sensitivity score distribution on each method for specific combinations of simulation parameters. The sensititivity here is to measure how good methods are identifying the actual signal variables given noise in other variables. A score of 0.75 is considered good.}(\#fig:sim-feat-sel-plot)
+\end{figure}
+---------->
 
 
 

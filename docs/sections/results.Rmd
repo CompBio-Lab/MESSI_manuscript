@@ -252,18 +252,18 @@ real_data_tbl %>%
   dplyr::select(all_of(select_cols)) %>%
   arrange(obs) %>%
   # Change ordering
-  kbl(
+  kableExtra::kbl(
     caption = "Overview of real datasets to benchmark",
     booktab = T,
     longtable = T,
     col.names = tbl_col,
     escape = T) %>%
   # Previously scale down
-  kable_styling(latex_options = c("repeat_header"), full_width = F, font_size = 7) %>%
-  column_spec(1, width = "0.75in") %>%
-  column_spec(3:4, width = "0.7in") %>%
+  kableExtra::kable_styling(latex_options = c("repeat_header"), full_width = F, font_size = 7) %>%
+  kableExtra::column_spec(1, width = "0.75in") %>%
+  kableExtra::column_spec(3:4, width = "0.7in") %>%
   # middle would not work if merging too many cells
-  collapse_rows(valign = "bottom", longtable_clean_cut = F,
+  kableExtra::collapse_rows(valign = "bottom", longtable_clean_cut = F,
                 latex_hline = "custom",
                 custom_latex_hline = c(1, 3, 4)) %>%
   {.}
@@ -286,7 +286,14 @@ In addition to predictive performance, we measured the computational cost of eac
 
 We examined the methods on controlled setting of simulation studies with varying parameters like number of observations, number of predictors in each omics, proportion of signal and correlation between omics and fixed number omics at $3$. Each of these combination of parameters were replicated $3$ times to account for data variability.  
 
-We noticed that as signal increases, method tend to perform better, ultimately its AUC score plateaus at 1 as ilustrated in Fig \@ref(fig:sim-perf-plot). 
+We noticed that as signal increases, method tend to perform better, ultimately its AUC score plateaus at 1 as ilustrated in Fig \@ref(fig:sim-grid-plot). 
+
+
+
+```{r sim-grid-plot, echo=FALSE, out.width="96%", fig.cap="Simulation studies performances on AUC and feature selection sensitivity/specificity  with varied signal and correlation in the data. Each grid is combination of amount of signal to differentiate response variable classes, and correlation of omics within one complete set of multiomics simulated data. The Area under the curve (AUC) score measures ability of method predictive performance on the response variable. The sensititivity here is to measure how good methods are identifying the actual signal variables given noise in other variables. The specificity here is to measure how good methods are detecting the noises out."}
+knitr::include_graphics(here::here(fig_path, "fig_simulated_performance_grid.png"))
+```
+
 
 This is expected, as more clear pattern exist in different groups (i.e. positive vs negative), labels are better and easier for methods to learn.  On the other hand, we also prove that when there's no signal present, method gives a median AUC of 0.5 , which means it turns out to be randomly guessing the response. This result is also trivial, as there's not clear difference between groups, hence hard to distinguish and models struggle to learn anything meaningful. 
 
@@ -297,16 +304,10 @@ We also tested against varying correlation in the omics within each dataset. But
 From this simulation for classification performance, DIABLO with different design matrices showed relatively good performance ranking at top. Cooperative Learning follows next with consistent distribution of AUC scores, and less variable compared to other methods. MOFA + glmnet and RGCCA + LDA are in the middle, with high variability. Lastly, MOGONET showed consistenly low performance compared to others and only performing well at no signal and full correlation between omics. 
 
 
-```{r sim-perf-plot, echo=FALSE, out.width="85%", out.height="80%", eval=T, fig.cap="Classification performance of all simulated datasets via varied signal and correlation in the data. Each grid is a specific combination of signal and correlation of datasets. Each box inside grids represents auc mean score from a 5 fold cross validation of method evaluated data at one combination of parameters. The bold line on each box indicates the median of auc mean. Grey points are considered outliers."}
-knitr::include_graphics(here::here(fig_path, "fig_performance_evaluation_sim.png"))
-```
 
-In terms of ability and quality of feature selection (Fig \@ref(fig:sim-feat-sel-plot)), only Cooperative Learning showed consistent behavior and choosing those meaningful biomarkers out compared to other methods. DIABLO is slightly behind it, and with higher variability at the sensitivity distribution. All other methods performed poorly, since they're quite unstable and could have any performance. 
+In terms of ability and quality of feature selection (Fig \@ref(fig:sim-grid-plot)), only Cooperative Learning showed consistent behavior and choosing those meaningful biomarkers out compared to other methods. DIABLO is slightly behind it, and with higher variability at the sensitivity distribution. All other methods performed poorly, since they're quite unstable and could have any performance. 
 
 
-```{r sim-feat-sel-plot, echo=FALSE, out.width="96%", fig.cap="Simulation studies feature selection sensitivity performance with varied signal and correlation in the data. Each grid is combination of amount of signal to differentiate response variable classes, and correlation of omics within one complete set of multiomics simulated data. Boxplots shows overall sensitivity score distribution on each method for specific combinations of simulation parameters. The sensititivity here is to measure how good methods are identifying the actual signal variables given noise in other variables. A score of 0.75 is considered good."}
-knitr::include_graphics(here::here(fig_path, "fig_feature_selection_sim.png"))
-```
 
 
 We believe these sets of simulation studies could be used for future method development, and test them against various scenarios of multiomics data. More parameters could be involved to rigorously test method's robustness. This could be achieved with ease with our proposed pipeline, as we need is to setup the correct data and rest is just handled by these fixed and reproducible workflows.
@@ -332,12 +333,19 @@ knitr::include_graphics(here::here(fig_path, "fig_performance_evaluation_real.pn
 ```
 
 
+<!----------- Stale Code ------------------->
 
-<!---
-
-```{r sim-grid-plot, fig.cap="Simulation studies on signal, correlation, number of samples and number of predictors", echo=FALSE, out.width="96%"}
-#include_graphics(here(fig_path, "fig_sim_grid.png"))
+<!-----------
+```{r sim-perf-plot, echo=FALSE, out.width="85%", out.height="80%", eval=T, fig.cap="Classification performance of all simulated datasets via varied signal and correlation in the data. Each grid is a specific combination of signal and correlation of datasets. Each box inside grids represents auc mean score from a 5 fold cross validation of method evaluated data at one combination of parameters. The bold line on each box indicates the median of auc mean. Grey points are considered outliers."}
+knitr::include_graphics(here::here(fig_path, "fig_performance_evaluation_sim.png"))
 ```
+
+
+
+```{r sim-feat-sel-plot, echo=FALSE, out.width="96%", fig.cap="Simulation studies feature selection sensitivity performance with varied signal and correlation in the data. Each grid is combination of amount of signal to differentiate response variable classes, and correlation of omics within one complete set of multiomics simulated data. Boxplots shows overall sensitivity score distribution on each method for specific combinations of simulation parameters. The sensititivity here is to measure how good methods are identifying the actual signal variables given noise in other variables. A score of 0.75 is considered good."}
+knitr::include_graphics(here::here(fig_path, "fig_feature_selection_sim.png"))
+```
+---------->
 
 
 
