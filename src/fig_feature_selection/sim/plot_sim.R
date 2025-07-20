@@ -8,7 +8,6 @@ Usage:
 Options:
   --input_path=INPUT      Path to read in the feature selection result
   --output_path=OUTPUT    Path to write out output plot
-  --metric=METRIC         Metric to plot, one of sensitivity or specificity [default: sensitivity]
   --width=WIDTH           Width of the graph [default: 7]
   --height=height         Height of the graph [default: 7]
   --device=DEVICE         Device to print out [default: png]
@@ -81,10 +80,9 @@ plot_corr_grid <- function(plot_data, cor, method_palette="Paired", text_size=12
 }
 
 
-plot_sim <- function(input_data, metric, method_palette, text_size) {
+plot_sim <- function(input_data, method_palette, text_size) {
 
   # Tidy evaluate the metric
-  metric_sym <- rlang::sym(metric)
   # This fun depends on the plot_corr_grid
   # Need to manually fix the levels of some columns
   # Since bug with mutate across ?
@@ -101,7 +99,8 @@ plot_sim <- function(input_data, metric, method_palette, text_size) {
     mutate(
       signal_level = recode(signal, `0` = "low", `3` = "med", `100` = "high"),
       signal_level = factor(signal_level, levels = c("low", "med", "high")),
-    )
+    ) %>%
+    tidyr::pivot_longer(sensitivity:specificity, names_to="metric")
 
 
   signal_labels <- paste0("Signal = ", plot_data$signal_level |> unique())
@@ -113,30 +112,27 @@ plot_sim <- function(input_data, metric, method_palette, text_size) {
 
   # Get the color palette for methods
   custom_method_palette <- get_method_custom_colors(method_palette)
-  ylab <- paste0("Mean ", metric, " arcross views")
-
   sim_plot <- plot_data %>%
-    ggplot() +
-    geom_point(aes(x = method, y = !!metric_sym, color = method, shape=view), size=3) +
+    ggplot(aes(x = method, y = value, color = factor(corr), group=factor(corr))) +
+    geom_point(size=3) +
+    geom_line() +
     theme_half_open(text_size) +
     panel_border() +
     background_grid() +
-    labs(x = "Method", y = ylab, fill = "Method") +
-    scale_color_manual(values = custom_method_palette) +
+    labs(x = "Method", y = "Mean metric arcross views", color="Correlation") +
+    #scale_color_manual(values = custom_method_palette) +
     facet_grid(
-      corr ~ signal_level,
-      scales = "free",
-      labeller = labeller(signal_level = signal_labels, corr = corr_labels)
+      metric ~ signal,
+      labeller = label_both
     ) +
     theme(legend.direction = "vertical", legend.box = "horizontal") +
     theme(legend.position = "none") +
     sim_feat_selection_theme(text_size) +
-    guides(color=guide_legend(ncol=2, byrow=F))
+    guides(color=guide_legend(ncol=3, byrow=F))
 
 
   return(sim_plot)
 }
-
 
 
 # ==============================================================================
@@ -157,7 +153,6 @@ if (is.null(output_path)) {
 }
 # Plot params
 raw_text_size <- 8
-metric <- opt$metric
 raw_width <- as.numeric(opt$width)
 raw_height <- as.numeric(opt$height)
 device <- opt$device
@@ -173,7 +168,7 @@ const <- 2
 text_size <- raw_text_size + 6
 width <- raw_width + (const * 1.8)
 height <- raw_height + const
-out_plot <- plot_sim(input_data, metric=metric, method_palette=method_palette,
+out_plot <- plot_sim(input_data, method_palette=method_palette,
                      text_size=text_size)
 
 if (!show_title) {
@@ -184,10 +179,8 @@ if (!show_title) {
 ggsave(output_path, plot = out_plot,
       width = width, height = height, device=device, dpi=dpi, bg="white")
 
-rds_path <- paste0("feature_selection_sim", metric, "_plot.rds")
-
 saveRDS(out_plot,
-        file = here::here("data/processed", rds_path)
+        file = here::here("data/processed", "feature_selection_sim_plot.rds")
 )
 message("Saved image of ", width, " x ", height, " to ", output_path)
 
