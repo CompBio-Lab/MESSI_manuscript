@@ -129,7 +129,7 @@ plot_line_point <- function(sim_df, custom_method_palette, text_size, signal_lab
       values = c("0" = "#D55E00", "0.5" = "#0072B2", "1" = "#009E73"),
       labels = c("0" = "Low", "0.5" = "Medium", "1" = "High")
     ) +
-    scale_x_discrete(labels = function(x) str_wrap(x, width = 12)) +
+    scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 12)) +
     theme_bw() +
     custom_theme_for_sim_plot() +
     labs(x = x_lab, y_lab, color="Correlation")
