@@ -109,8 +109,8 @@ FIG_SIM_TIME_OUT=${FIG_DIR}/fig_computational_time_sim.${DEVICE}
 
 # Feature selection
 FIG_REAL_FS_OUT=${FIG_DIR}/fig_feature_selection_real.${DEVICE}
-FIG_SIM_FS_SENSITIVITY=${FIG_DIR}/fig_feature_selection_sim_sensitivity.${DEVICE}
-FIG_SIM_FS_SPECIFICITY=${FIG_DIR}/fig_feature_selection_sim_specificity.${DEVICE}
+FIG_SIM_FS_METRIC=${FIG_DIR}/fig_feature_selection_sim.${DEVICE}
+
 
 # FGSEA analysis
 FIG_FGSEA_OUT=${FIG_DIR}/fig_fgsea_analysis_two_panels.${DEVICE}
@@ -138,7 +138,7 @@ endif
 #OUTPUTS+= ${FIG_SIM_TIME_OUT}
 #endif
 ifneq ($(wildcard ${SIM_FS_RESULTS_CSV}),)
-OUTPUTS+= ${FIG_SIM_FS_SENSITIVITY} ${FIG_SIM_FS_SPECIFICITY}
+OUTPUTS+= ${FIG_SIM_FS_METRIC} ${FIG_SIM_FS_SPECIFICITY}
 endif
 
 # The report file containing the figures
@@ -313,26 +313,12 @@ ${FIG_REAL_FS_OUT}: ${FIG3_PLOT_REAL_SRC} ${COMMON_R} ${FIG3_REAL_PROCESSED}
 # FIGURE 3: Feature selection (Simulated Data)
 
 # Sensitivity plot
-${FIG_SIM_FS_SENSITIVITY}: ${FIG3_PLOT_SIM_SRC} ${COMMON_R} ${FIG3_SIM_PROCESSED}
+${FIG_SIM_FS_METRIC}: ${FIG3_PLOT_SIM_SRC} ${COMMON_R} ${FIG3_SIM_PROCESSED}
 	@echo ${BANNER}
-	@echo "Plotting feature selection sensitivity (Simulated Data)..."
+	@echo "Plotting feature selection performance metrics (Simulated Data)..."
 	Rscript ${FIG3_PLOT_SIM_SRC} \
 		--input_path ${FIG3_SIM_PROCESSED} \
-		--output_path ${FIG_SIM_FS_SENSITIVITY} \
-		--metric sensitivity \
-		--width ${WIDTH} \
-		--height ${HEIGHT} \
-		--device ${DEVICE} \
-		--dpi ${DPI} \
-		--show_title ${SHOW_TITLE}
-# Specificity plot
-${FIG_SIM_FS_SPECIFICITY}: ${FIG3_PLOT_SIM_SRC} ${COMMON_R} ${FIG3_SIM_PROCESSED}
-	@echo ${BANNER}
-	@echo "Plotting feature selection specificity (Simulated Data)..."
-	Rscript ${FIG3_PLOT_SIM_SRC} \
-		--input_path ${FIG3_SIM_PROCESSED} \
-		--output_path ${FIG_SIM_FS_SPECIFICITY} \
-		--metric specificity \
+		--output_path ${FIG_SIM_FS_METRIC} \
 		--width ${WIDTH} \
 		--height ${HEIGHT} \
 		--device ${DEVICE} \
