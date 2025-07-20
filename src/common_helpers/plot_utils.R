@@ -2,6 +2,28 @@
 # GGPLOT2 USAGE
 # ==============================================================================
 
+# The theme for simulation data plot
+custom_theme_for_sim_plot <- function() {
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size = 11),
+    axis.title = element_text(size = 13),
+    strip.background = element_rect(fill = "gray95", color = "gray70"),
+    strip.text = element_text(size = 13, face = "bold"),
+    panel.grid.major.y = element_line(color = "gray90", linewidth = 0.4),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    legend.position = "bottom",
+    legend.title = element_text(size = 20),
+    legend.text = element_text(size = 15),
+    legend.key.width = unit(1.2, "cm"),
+    plot.margin = margin(10, 10, 10, 10),
+    panel.spacing = unit(1, "lines")
+  )
+}
+
+
+
 # Custom palette for the methods
 get_method_custom_colors <- function(method_palette="Paired") {
   # This fun is to match the color choices used for the methods
