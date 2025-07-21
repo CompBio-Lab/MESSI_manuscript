@@ -155,7 +155,7 @@ We introduce here the MESSI pipeline, *Multiple Experiments with SyStematic Inte
 
 \begin{figure}
 
-{\centering \includegraphics[width=0.96\linewidth]{assets/messi_workflow_overview} 
+{\centering \includegraphics[width=0.96\linewidth]{assets/MESSI_workflow_overview_diagram} 
 
 }
 

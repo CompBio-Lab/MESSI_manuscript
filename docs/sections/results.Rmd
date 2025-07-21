@@ -4,7 +4,7 @@
 We introduce here the MESSI pipeline, *Multiple Experiments with SyStematic Interrogation* (Fig \@ref(fig:messi-workflow-plot), and additional supplementary), which comprises of 4 main steps: 1) [Prepare data], 2) [Data splitting], 3) [Cross validation], 4) [Feature selection].
 
 ```{r messi-workflow-plot, eval=TRUE, out.width="96%", fig.cap="Workflow design of MESSI for benchmarking integration methods with supervised setting. MESSI has a modular design between stages of preparing data, splitting data, cross validation (CV), and feature selection. The CV stage enables parallel computing of many methods implemented in different languages like R and Python seamleslly and reproducibly through independent containers.", fig.align="center"}
-knitr::include_graphics(here::here("docs/assets/", "messi_workflow_overview.png"))
+knitr::include_graphics(here::here("docs/assets/", "MESSI_workflow_overview_diagram.png"))
 ```
 
 
