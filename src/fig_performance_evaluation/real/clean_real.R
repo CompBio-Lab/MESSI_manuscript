@@ -43,14 +43,17 @@ clean_real <- function(wr_df) {
     tibble::column_to_rownames(var="method") %>%
     as.matrix()
 
-  return(list(auc_matrix=auc_matrix, rank_matrix=rank_matrix))
+  annotation_df <- wr_df %>%
+    select(dataset, disease) %>%
+    distinct()
+
+  return(list(auc_matrix=auc_matrix, rank_matrix=rank_matrix, annotation_df=annotation_df))
 }
 
 # ==================================================
 # First load data and clean it for plotting
 
 #input_path <- "data/metrics.csv"
-
 
 
 main <- function(input_path, output_path) {
@@ -60,19 +63,20 @@ main <- function(input_path, output_path) {
   # Datasets to exclude
   exclude_data <- c("tcga-chol", "tcga-kipan")
   # First do common wrangling on the input data
-
-
   wrangle_df <- fread(input_path) %>%
     wrangle_data() %>%
-    # TODO: this a fix for real data only
-    mutate(method = str_remove(method, "_ncomp-2")) %>%
     # Filter the unwanted data
     filter(!(tolower(dataset) %in% exclude_data)) %>%
     # For performance eval, ncomp could use the latest ncomp as it includes
     # previous ncomp
     filter(!str_detect(tolower(method), "ncomp-1")) %>%
+    # TODO: this a fix for real data only
+    mutate(
+      method = str_remove(method, "_ncomp-2"),
+      dataset = str_to_lower(dataset)
+      ) %>%
+    mutate(disease = map_disease_name(dataset)) %>%
     as_tibble()
-
   # Handle data type-specific processing
   clean_rds <- clean_real(wrangle_df)
 

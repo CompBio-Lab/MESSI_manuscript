@@ -46,12 +46,18 @@ plot_fig1_real <- function(
     heatmap_title = "Mean AUC (5-fold CV) ranking in real datasets") {
   # Then now the figure for mean auc ranking in real data
   if (!is.list(input_data)) stop("Plot data of real data should be a list")
-  if (!all(names(input_data) %in% c("auc_matrix", "rank_matrix"))) {
-    stop("Plot data of real data should have 'auc_matrix' and 'rank_matrix'")
+  if (!all(names(input_data) %in% c("auc_matrix", "rank_matrix", "annotation_df"))) {
+    stop("Plot data of real data should have 'auc_matrix', 'rank_matrix', and 'annotation_df'")
   }
 
   auc_matrix <- input_data$auc_matrix
   rank_matrix <- input_data$rank_matrix
+  annotation_df <- input_data$annotation_df
+  # Then update the column names from dataset to its disease name
+  dataset_to_disease <- setNames(annotation_df$disease, annotation_df$dataset)
+  # Extract the current colnames first just in case it gets overriden badly
+  current_colnames <- colnames(auc_matrix)
+  colnames(auc_matrix) <- dataset_to_disease[current_colnames]
 
   #methods <- rownames(rank_matrix)
   methods <- rownames(auc_matrix)
@@ -185,7 +191,6 @@ plot_fig1_real <- function(
     #top_annotation = col_ha,
     #right_annotation = row_ha
   )
-
 
 
 
