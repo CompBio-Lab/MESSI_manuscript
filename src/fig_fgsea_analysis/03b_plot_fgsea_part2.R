@@ -31,6 +31,8 @@ source(here::here("src/common_helpers/plot_utils.R"))
 # PLOTTING OF THE HEATMAP
 # =============================================================================
 plot_heatmap <- function(plot_matrix, annotation_table, custom_method_palette) {
+  # Param of the cutoff
+  pval <- 0.2
   # =========================================================
   # Then the annotations here
   row_ha <- rowAnnotation(
@@ -73,7 +75,7 @@ plot_heatmap <- function(plot_matrix, annotation_table, custom_method_palette) {
   # Row split could be customized
   htmp <- Heatmap(
     plot_matrix,
-    name = "Proportion of significant cells",
+    name = paste0("Proportion of significant cells at p < ", pval),
     col = col_fun,
     right_annotation = row_ha,
     # This map_name is custom function found in _utils.R of the same dir
@@ -99,6 +101,7 @@ plot_heatmap <- function(plot_matrix, annotation_table, custom_method_palette) {
     heatmap_legend_param = list(
       at = c(0, 0.5, 1),
       labels = c("Low", "", "High"),
+      title = bquote(bold("Proportion of significant cells at ") * italic("p") < .(pval)),
       grid_height = unit(0.3, "cm"), grid_width = unit(0.3, "cm"),
       legend_width = unit(5, "cm"),
       #labels_gp = gpar(fontsize = text_size - 5),
