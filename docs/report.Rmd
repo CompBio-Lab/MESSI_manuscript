@@ -1,5 +1,7 @@
 ---
-title: "MESSI: A Nextflow pipeline for benchmarking multiomics integration methods for disease classification"
+title: "MESSI: Multi Experiments with SyStematic Interrogation"
+# Remove the old title
+# "A Nextflow pipeline for benchmarking multiomics integration methods for disease classification"
 author:
   - "Chunqing (Tony) Liang"
   - "Tajveer Grewal"
