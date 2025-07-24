@@ -1,5 +1,7 @@
 ---
-title: "MESSI: A Nextflow pipeline for benchmarking multiomics integration methods for disease classification"
+title: "MESSI: Multi Experiments with SyStematic Interrogation"
+# Remove the old title
+# "A Nextflow pipeline for benchmarking multiomics integration methods for disease classification"
 author:
   - "Chunqing (Tony) Liang"
   - "Tajveer Grewal"
@@ -283,13 +285,7 @@ Focusing on our current evaluation, we have only implemented mostly preprocess, 
 Then in the train step, the specific data $\text{data}_i-\text{fold}_j$ is fed. Its train set will be used for training a model with all default settings of the methods, further details are described under [Methods]. On the other hand, its test portion is past to the predict step and hunged to wait for until model is finish training, Note, there is the option to carry a inner CV on this one fold of data to tune hyperparameters provided if the method has this built-in CV functionality. This option is enable via the nextflow configuration `params.inner_cv`, where default is `False`.  
 Next, we evaluate the model against its fold specific test set in the test step, whereas all methods are processed to return common output like predicted probabilities on the repsonse variable, sample names of the fold data, method name, dataset name, and so on.
 
-Lastly, the results from test step are collected together looping all datasets in a method, then against all other method workflows as one full table of model assessment output. An ilustration of one complete method flow is shown at Fig \@ref(fig:one-method-flow-plot)
-
-
-
-\begin{center}\includegraphics{report_files/figure-latex/one-method-flow-plot-1} \end{center}
-
-With one method workflow, we just then generalize this to all other methods, and compute them all in parallel in this setting $\text{method}_a\text{-data}_i\text{-fold}_j$ where $a = 1, \dots, M$, $i = 1, \dots, N$, $j = 1, \dots, K$, $M$ is number of methods, $N$ is number of datasets, $K$ is number of folds.
+Lastly, the results from test step are collected together looping all datasets in a method, then against all other method workflows as one full table of model assessment output.  With one method workflow panel shown at Fig \@ref(fig:messi-workflow-plot), we just then generalize this to all other methods, and compute them all in parallel in this setting $\text{method}_a\text{-data}_i\text{-fold}_j$ where $a = 1, \dots, M$, $i = 1, \dots, N$, $j = 1, \dots, K$, $M$ is number of methods, $N$ is number of datasets, $K$ is number of folds.
 
 
 

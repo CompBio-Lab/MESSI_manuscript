@@ -36,7 +36,7 @@ plot_heatmap <- function(plot_matrix, annotation_table, custom_method_palette) {
   row_ha <- rowAnnotation(
     Method = factor(
       annotation_table$method,
-      levels = unique(annotation_table$method)
+      levels = names(custom_method_palette)  # ensure order and completeness
     ),
     col = list(Method = custom_method_palette),
     annotation_legend_param = list(
@@ -46,7 +46,8 @@ plot_heatmap <- function(plot_matrix, annotation_table, custom_method_palette) {
         nrow=4
       )
     ),
-    show_annotation_name = FALSE
+    show_annotation_name = FALSE,
+    show_legend=TRUE
     #Dataset = factor(annotation_table$dataset, levels = unique(annotation_table$dataset))
   )
 
@@ -107,14 +108,18 @@ plot_heatmap <- function(plot_matrix, annotation_table, custom_method_palette) {
 
   )
 
+
   # Draw heatmap and convert to grob
   ht_grob <- grid.grabExpr(
     #draw(ht, heatmap_legend_side="bottom", annotation_legend_side="right",
     #     legend_grouping = "original")
     draw(htmp, merge_legends = TRUE,
          heatmap_legend_side = "bottom",
-         annotation_legend_side = "bottom")
+         annotation_legend_side = "bottom"
+         )
   )
+
+
   return(ht_grob)
 }
 # =============================================================================
