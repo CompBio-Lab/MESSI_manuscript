@@ -6,9 +6,10 @@
 custom_theme_for_sim_plot <- function() {
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size = 11),
-    axis.title = element_text(size = 13),
+    #axis.title = element_text(size = 12),
+    axis.ticks.length.x = unit(0.2, "cm"),
     strip.background = element_rect(fill = "gray95", color = "gray70"),
-    strip.text = element_text(size = 13, face = "bold"),
+    strip.text = element_text(face = "bold"),
     panel.grid.major.y = element_line(color = "gray90", linewidth = 0.4),
     panel.grid.minor = element_blank(),
     panel.grid.major.x = element_blank(),
@@ -18,7 +19,7 @@ custom_theme_for_sim_plot <- function() {
     legend.text = element_text(size = 15),
     legend.key.width = unit(1.2, "cm"),
     plot.margin = margin(10, 10, 10, 10),
-    panel.spacing = unit(1, "lines")
+    panel.spacing = unit(1, "lines"),
   )
 }
 
