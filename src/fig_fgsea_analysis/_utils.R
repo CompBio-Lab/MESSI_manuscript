@@ -114,26 +114,3 @@ add_manual_label <- function(df) {
       )
     )
 }
-
-map_name <- function(dataset) {
-  dataset_mapping <- c(
-    "gse38609"  = "Autism",
-    "gse71669"  = "Bladder Cancer",
-    "rosmap"    = "Alzheimer's Disease",
-    "tcga_acc"  = "Adrenocortical Cancer",
-    "tcga_blca" = "Bladder Cancer",
-    "tcga_brca" = "Breast Cancer",
-    "tcga_chol" = "Bile Duct Cancer",
-    "tcga_esca" = "Esophageal Cancer",
-    "tcga_kich" = "Kidney Chromophobe",
-    "tcga_kirc" = "Kidney Renal Clear Cell Carcinoma",
-    "tcga_meso" = "Mesothelioma",
-    "tcga_skcm" = "Melanoma",
-    "tcga_stes" = "Stomach and Esophageal Cancer",
-    "tcga_thca" = "Thyroid Cancer"
-  )
-
-  # Safely map using named indexing (will return NA if not found)
-  mapped <- dataset_mapping[dataset] %>% as.character()
-  return(mapped)
-}

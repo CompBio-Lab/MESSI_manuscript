@@ -22,6 +22,8 @@ suppressPackageStartupMessages(library(dplyr))
 
 # Load other utilities
 source(here::here("src/fig_fgsea_analysis/_utils.R"))
+# Load common util
+source(here::here("src/common_helpers/map_disease_name.R"))
 # Load plotting helpers
 source(here::here("src/common_helpers/plot_utils.R"))
 
@@ -56,6 +58,9 @@ plot_heatmap <- function(plot_matrix, annotation_table, custom_method_palette) {
     show_annotation_name = FALSE
   )
 
+  # Get the disease name of dataset from the src/common_helpers/map_disease_name.R
+  mapped_disease_name <- annotation_table$dataset %>% map_disease_name()
+
   # Add number into the heatmap to show the actual ratio
   # Function of color
   col_fun <- colorRamp2(c(0, 0.5, 1), c("white", "steelblue1", "blue"))
@@ -71,7 +76,7 @@ plot_heatmap <- function(plot_matrix, annotation_table, custom_method_palette) {
     col = col_fun,
     right_annotation = row_ha,
     # This map_name is custom function found in _utils.R of the same dir
-    row_split = annotation_table$dataset %>% map_name(),
+    row_split = mapped_disease_name,
     cluster_rows = TRUE,
     #column_split = annotation_table$method,
     border = TRUE,

@@ -23,7 +23,7 @@ library(data.table)
 
 #source(here::here("src/common_helpers.R"))
 source(here::here("src/fig_performance_evaluation/_performance_evaluation_utils.R"))
-
+source(here::here("src/common_helpers/map_disease_name.R"))
 
 # Function to clean real data for plot
 clean_real <- function(wr_df) {

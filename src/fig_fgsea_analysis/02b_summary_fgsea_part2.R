@@ -38,10 +38,10 @@ main <- function(input_path, output_path, cutoff) {
     # Drop unwanted dataset early
     filter(!str_detect(dataset, "kipan")) %>%
     # Standardize dataset names before labeling
-    mutate(dataset = case_when(
-      str_detect(dataset, "tcga") ~ str_replace(dataset, "-", "_"),
-      TRUE ~ dataset
-    )) %>%
+    #mutate(dataset = case_when(
+    #  str_detect(dataset, "tcga") ~ str_replace(dataset, "-", "_"),
+    #  TRUE ~ dataset
+    #)) %>%
     # Apply manual labeling
     add_manual_label() %>%
     # Clean up method names
