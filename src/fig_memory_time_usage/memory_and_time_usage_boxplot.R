@@ -1,14 +1,23 @@
+# Load libraries
+source("src/fig_memory_time_usage/_utils.R")
+
+library(ggplot2)
+
+trace_path <- "data/raw/real_data_results/execution_trace.txt"
+
 # Read the trace in
-trace_df <- readr::read_tsv("data/raw/real_data_results/execution_trace.txt") |>
+trace_df <- readr::read_tsv(trace_path,
+                            col_types = readr::cols()) |>
   select(process,tag,realtime, peak_rss,peak_vmem, duration) |>
-  # Chop the long prefix
-  mutate(process = str_replace(
-    process,"NFCORE_MESSI_BENCHMARK:MESSI_BENCHMARK:", "")
-    ) |>
-  # Group the workflow
-  tidyr::separate_wider_delim(
-    process, delim=":", names=c("workflow", "process"),
-    too_many="merge", too_few="align_start") %>%
+  mutate(process = chop_nf_core_prefix(process)) %>%
+  separate_workflow_process(process) %>%
+  mutate(
+    realtime_sec = convert_to_seconds(realtime),
+    duration_sec = convert_to_seconds(duration),
+    peak_rss_mb = convert_to_mb(peak_rss),
+    peak_vmem_mb = convert_to_mb(peak_vmem)
+    ) %>%
+  select(-c("realtime", "peak_rss", "duration", "peak_vmem")) %>%
   mutate(process = case_when(
     # If the workflow is from cv do something special
     workflow == "CROSS_VALIDATION" ~ str_extract(process, "[^:]+$"),
@@ -16,55 +25,7 @@ trace_df <- readr::read_tsv("data/raw/real_data_results/execution_trace.txt") |>
     TRUE ~ process
   ))
 
-trace_df$realtime %>% sample(6)
-
-
-convert_to_seconds <- function(time_str) {
-  # Hours (digits before 'h')
-  hours <- str_extract(time_str, "\\d+(?=h)") %>% as.numeric()
-
-  # Minutes (digits before 'm' but NOT followed by 's')
-  minutes <- str_extract(time_str, "\\d+(?=m(?!s))") %>% as.numeric()
-
-  # Seconds (digits with optional decimals before 's' but NOT preceded by 'm')
-  seconds <- str_extract(time_str, "\\d+(\\.\\d+)?(?=s)") %>% as.numeric()
-
-  # Milliseconds (digits with optional decimals before 'ms')
-  milliseconds <- str_extract(time_str, "\\d+(\\.\\d+)?(?=ms)") %>% as.numeric()
-
-  # Replace NAs with 0
-  hours[is.na(hours)] <- 0
-  minutes[is.na(minutes)] <- 0
-  seconds[is.na(seconds)] <- 0
-  milliseconds[is.na(milliseconds)] <- 0
-
-  # Calculate total seconds
-  total_seconds <- hours * 3600 + minutes * 60 + seconds + milliseconds / 1000
-  return(total_seconds)
-}
-
-
-convert_to_mb <- function(x) {
-  # Extract numeric value and unit
-  value <- as.numeric(stringr::str_extract(x, "[0-9.]+"))
-  unit <- stringr::str_extract(x, "[KMG]B")
-
-  # Conversion based on unit
-  multiplier <- dplyr::case_when(
-    unit == "KB" ~ 1 / 1024,
-    unit == "MB" ~ 1,
-    unit == "GB" ~ 1024,
-    TRUE ~ NA_real_  # For unknown units
-  )
-
-  # Convert to MB
-  value * multiplier
-}
-
-
-plot_df <- trace_df %>%
-  mutate(realtime_sec = convert_to_seconds(realtime),
-         duration_sec = convert_to_seconds(duration)) %>%
+wrangle_df <- trace_df %>%
   filter(workflow %in%  c("CROSS_VALIDATION", "FEATURE_SELECTION")) %>%
   filter(!str_detect(process, "MERGE")) %>%
   # Change the label of multiview
@@ -82,10 +43,28 @@ plot_df <- trace_df %>%
     str_detect(tag, "null") ~ str_c(process, "NULL", sep="-"),
     str_detect(tag, "full") ~ str_c(process, "FULL", sep="-"),
     TRUE ~ process
-  )) %>%
-  mutate(peak_rss_mb = convert_to_mb(peak_rss))
+  ))
 
+plot_df <- wrangle_df %>%
+  select(workflow, process, tag, method, action, realtime_sec, peak_rss_mb)
 
+p_time <- plot_df %>%
+  select(-peak_rss_mb) %>%
+  mutate(metric = "realtime_sec") %>%
+  ggplot(aes(x=method, y=realtime_sec, fill=action)) +
+  geom_boxplot() +
+  scale_y_log10() +
+  theme_bw() +
+  ggh4x::facet_grid2(action ~ metric, scales = "free", independent = "all")
+
+p_mem <- plot_df %>%
+  select(-realtime_sec) %>%
+  mutate(metric = "peak_rss_mb") %>%
+  ggplot(aes(x=method, y=realtime_sec, fill=action)) +
+  geom_boxplot() +
+  scale_y_log10() +
+  theme_bw() +
+  ggh4x::facet_grid2(action ~ metric, scales = "free", independent = "all")
 
 
 # Special function to plot it
