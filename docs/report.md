@@ -161,20 +161,9 @@ We introduce here the MESSI pipeline, *Multiple Experiments with SyStematic Inte
 
 }
 
-\caption{Workflow design of MESSI for benchmarking integration methods with supervised setting. MESSI has a modular design between stages of preparing data, splitting data, cross validation (CV), and feature selection. The CV stage enables parallel computing of many methods implemented in different languages like R and Python seamleslly and reproducibly through independent containers.}(\#fig:messi-workflow-plot)
+\caption{Pipeline design of MESSI, Multi Experiments with SyStematic Interrogation. MESSI has a flexible modular design between stages of preparing data, splitting data, cross validation (CV), and feature selection. Each stage are further composed by individual modules, that can arbitrary number of tasks for execution. It is designed to evaluate as many data or experiments, and expand to parallel executions of  many methods implemented in different languages like R and Python seamleslly and reproducibly through independent containers. Module (solid box) represents an isolated process with all input/output/script definition of a task to execute. Workflow (dash box) is composed of one or many modules or even other smaller workflows. Colored lines here indicate a data format written in certain language and flows through series of workflows and modules. Dot indicate a starting point or end point of module/workflow.  }(\#fig:messi-workflow-plot)
 \end{figure}
 
-
-<!---
-\begin{figure}
-
-{\centering \includegraphics[width=0.6\linewidth]{assets/messi_workflow} 
-
-}
-
-\caption{Workflow design of MESSI for benchmarking integration methods with supervised setting. MESSI has a modular design between stages of preparing data, splitting data, cross validation (CV), and feature selection. The CV stage enables parallel computing of many methods implemented in different languages like R and Python seamleslly and reproducibly through independent containers.}(\#fig:messi-overflow-plot)
-\end{figure}
---->
 
 
 MESSI is implemented with Nextflow [@di2017nextflow], a domain specific language (DSL) primarily used by bioinformaticians. Compared to traditional workflow management systems like Snakemake [@koster2012snakemake] or GNU make [@stallman1988gnu], Nextflow breaks down complex workflows into modular components, and connect them with channels which determines the flow of pipeline. This feature allows us to customize each module, extending the pipeline to not only benchmark purposes but also multi-purpose usage. Additionally, This modular design enables rapid, efficient and reproducible way to test and maintain codebases.
@@ -257,10 +246,10 @@ Things to say
 --->
 
 
-To perform different types of analysis, we make sure to split data into folds as in usual cross validation way [insert citation here?] using the mudata part. This is because python libraries often have good support in dealing with these operations specifically libraries like scikit-learn [@kramer2016scikit] that provides well-tested API like stratifiedKFold. With this support we create the folds under a 5-fold setting and record the index of testing sets in each fold in txts for downstream usage. The number of folds can also be controlled via nextflow config option of `params.k`. 
+To perform different types of analysis, we make sure to split data into folds as in usual cross validation way [insert citation here?] using the MuData part. This is because python libraries often have good support in dealing with these operations specifically libraries like scikit-learn [@kramer2016scikit] that provides well-tested API like stratifiedKFold. With this support we create the folds under a 5-fold setting and record the index of testing sets in each fold in `.txt` for downstream usage. The number of folds can also be controlled via nextflow config option of `params.k`. 
 
 
-This module of splitting data ensures we could always cross validate the data even when an integration method do not have this built-in functionality. In addition, we create these common data splits for all methods making sure that they have same data setup, since the splits could be different in each method due to OS difference or random seed number generation problem. Moreover, this allows us to explore hyperparameters, where the pipeline itself constitutes of outer loop to assess performance, and within method could have inner loop cv for optimizing hyperparameters. Further details will be described under [Methods].
+This module of splitting data ensures we could always cross validate the data even when an integration method do not have this built-in functionality. In addition, we create these common data splits for all methods making sure that they have same data setup, since the splits could be different in each method due to OS difference or random seed number generation problem. Moreover, this allows us to explore hyperparameters, where the pipeline itself constitutes of outer loop to assess performance, and within method could have inner loop CV for optimizing hyperparameters. Further details will be described under [Methods].
 
 
 ### Cross Validation 
@@ -277,18 +266,16 @@ that follows some format
 
 ---->
 
-The cross validation subworkflow is one of the core component of the pipeline, as it have most computations occurring in place. The key part is we treat each integration method as one independent workflow from another method. Each method can consist different number of modules, but the required ones are: preprocess, train, predict.  The input of each method is either the MAE portion or MuData portion of the original datasets, determined by the language of the method is implemented. 
+The cross validation subworkflow is one of the core component of the pipeline, as it have most computations occurring in place. The key part is we treat each integration method as one independent workflow from another method as shown in 2b of Fig \@ref(fig:messi-workflow-plot). 
+Each method can consist different number of modules, but the required ones are: preprocess, train, predict.  The input of each method is either the MAE portion or MuData portion of the original datasets, determined by the language of the method is implemented. 
 
 This flexibility of treating each method as one workflow allows us to specify method dependent parameters within its workflow and also controlled via nextflow config. Moreover, it enable us to further customize and extend any method of preference, i.e. adding extra modules to utilize method's other built-in API like its exploratory data analysis (EDA), plotting functionalities, and so on.
 
 Focusing on our current evaluation, we have only implemented mostly preprocess, train, predict step in this cross validation stage. The preprocess step is to further transform those standardized MAE/MuData as described in [Prepare data] into method specific format. This is due to fact that method have its unique input format either in matrices, tensors, list or any other data types. Hence, this step is crucial and needs to be present. Furthermore, the data here is splitted based on the test set indices stored in txts from [Data Splitting], which results in a format like $\text{data}_i-\text{fold}_j$ where $i = 1, \dots, N$ and $j = 1, \dots, k$ at $k=5$ in a default setting. 
-Then in the train step, the specific data $\text{data}_i-\text{fold}_j$ is fed. Its train set will be used for training a model with all default settings of the methods, further details are described under [Methods]. On the other hand, its test portion is past to the predict step and hunged to wait for until model is finish training, Note, there is the option to carry a inner CV on this one fold of data to tune hyperparameters provided if the method has this built-in CV functionality. This option is enable via the nextflow configuration `params.inner_cv`, where default is `False`.  
-Next, we evaluate the model against its fold specific test set in the test step, whereas all methods are processed to return common output like predicted probabilities on the repsonse variable, sample names of the fold data, method name, dataset name, and so on.
+Then in the train step, the specific data $\text{data}_i-\text{fold}_j$ is fed. Its train set will be used for training a model with all default settings of the methods, further details are described under [Methods]. On the other hand, its test portion is past to the predict step and hunged to wait for until model is finish training, Note, there is the option to carry a inner CV on each fold of the data to tune hyperparameters provided if the method has this built-in CV functionality. This option is enable via the nextflow configuration `params.inner_cv`, where default is `False`.  
+Next, we evaluate the model against its fold specific test set in the test step, whereas all methods are processed to return common output like predicted probabilities on the repsonse variable, sample names of the fold data, method name, dataset name, in short a summary `csv`.
 
-Lastly, the results from test step are collected together looping all datasets in a method, then against all other method workflows as one full table of model assessment output.  With one method workflow panel shown at Fig \@ref(fig:messi-workflow-plot), we just then generalize this to all other methods, and compute them all in parallel in this setting $\text{method}_a\text{-data}_i\text{-fold}_j$ where $a = 1, \dots, M$, $i = 1, \dots, N$, $j = 1, \dots, K$, $M$ is number of methods, $N$ is number of datasets, $K$ is number of folds.
-
-
-
+Lastly, the results from test step are collected together looping all datasets in a method, output as shown at `Merge Results` Fig \@ref(fig:messi-workflow-plot) 2b. Rest methods just generalize , and compute them all in parallel in this setting $\text{method}_a\text{-data}_i\text{-fold}_j$ where $a = 1, \dots, M$, $i = 1, \dots, N$, $j = 1, \dots, K$, $M$ is number of methods, $N$ is number of datasets, $K$ is number of folds. This "collected" result is then passed to next stage of [output collection & reporting] [CITE HERE].
 
 
 ### Feature Selection
@@ -303,15 +290,14 @@ Things to say
 
 --->
 
-Besides the main flow of model assessment via cross validating data, we also provided an additional workflow in the pipeline that solely handles feature selection and return meaningful biomarkers or features from each dataset and method combination. 
-This takes in input directly after the common processing in [Prepare data] as it uses full data to tune for relevant features in the data. Similar to model assessment, this workflow is composed of various independent method workflow, which means computation is parallelizable as well.
+Besides the main flow of model assessment via cross validating data, we also provided an additional workflow in the pipeline that solely handles feature selection and return meaningful biomarkers or features from each dataset and method combination. This workflow can occur prior or same time of the model assessment part.
 
-The output of each method is a table of selected features along with the coefficient associated with it. And, these are collected for all method evaluated on each datasets full portion. Lastly, once collected these results, it is return to user for downstream analysis.
+It takes in input directly after the common processing in [Prepare data] as it uses full data to tune for relevant features in the data. Similar to model assessment, this workflow is composed of various independent method workflow, which means computation is parallelizable as well.
 
+The output of each method is a table of selected features along with the coefficient associated with it. And, these are collected for all method evaluated on each datasets of full portion without any data splitting. Lastly, the collected results is passed to [output collection & reporting] [CITE HERE].
 
 ### Configuration of parameters
 
-Configuration of Parameters
 To support flexible, reproducible, and modular execution, the pipeline is implemented using Nextflow, which allows multiple configuration profiles to be defined and composed dynamically. Each profile may inherit from others and override parameter values, supporting a hierarchical and modular approach to configuration. Further details on profile usage and inheritance can be found in the Nextflow official documentation [cite here].
 
 In our implementation, important options such as skipping specific methods, adjusting the number of cross-validation folds, modifying method-specific hyperparameters, or adapting to site/platform-specific computing environments are all controlled through Nextflow profiles.
@@ -322,11 +308,11 @@ Each profile is defined in a .config file using a Groovy-based syntax similar to
 // This is a top level profile that allows to contain multiple other profiles
 params {
   // Skip certain methods or not
-  skip_cplr     = true
+  skip_cplr     = false
   skip_mogonet  = false
   skip_diablo   = false
   skip_rgcca    = false
-  skip_mofa     = true
+  skip_mofa     = false
   // Also could have many more methods
   skip_method_i = false
   skip_method_j = true
@@ -366,17 +352,53 @@ nextlfow run messi-benchmark -profile aws,sim_data
 This modular and declarative approach enables extensive flexibility for users, allowing parameter tuning, environment adaptation, and reproducible configuration from a single control script. Changing a single parameter in a profile automatically propagates to all pipeline components where that parameter is used. Furthermore, this structure facilitates systematic exploration of hyperparameters and preserves a complete record of configurations used in each run—critical for reproducibility, benchmarking, and downstream analysis.
 
 
-### Model Assessment
+
+## Simulation studies
+
+We examined the methods on controlled setting of simulation studies with varying parameters like signal in the response variable, correlation between omics. And, we fixed other parameters like number of observations at $n = 1000$, number of variables in each omics at $p = 3000$ with $3$ omics. Furthermore, we set the proportion of "signal" variables to be $10\%$ in each omics, where rest are noisy variables.
+
+For full details on how we simulated the data, we also provide a R package that holds all implementation of it. Technical details can be found in [Methods].
+
+To access how methods perform in simulation studies, we look into its classification performance to see how well each method identify the response class. Also, we tested how often can methods identify the relevant variables, this case the "signal" variables that we setup. For the classification, we used area under the curve (AUC) score. For the feature selection part, we used a similar metric as sensitivity and specificity by assessing top ranked variables belong to signal or noise variable. To handle randomness and variability, we used a 5-fold CV here.
+
+
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.96\linewidth]{../results/figures/fig_simulated_performance_grid} 
+
+}
+
+\caption{Simulation studies performances on AUC and feature selection sensitivity/specificity  with varied signal and correlation in the data. Each grid is combination of amount of signal to differentiate response variable classes, and correlation of omics within one complete set of multiomics simulated data. A) Mean Area under the curve (AUC) score of a 5-fold CV. This measures ability of method predictive performance on the response variable, the closer score to 1 (max) is better. B) The sensititivity here is to measure how good methods are identifying the actual signal variables given noise in other variables. The specificity here is to measure how good methods are detecting the noises out. The values of signal are the following: 0, 3, 100 (Low, Medium, High). The values of correlation are the following: 0, 0.5, 1 (Low, Medium, High)}(\#fig:sim-grid-plot)
+\end{figure}
+
+
+
+We noticed that as signal increases, method tend to perform better, ultimately its AUC score plateaus at 1 as illustrated in Fig \@ref(fig:sim-grid-plot) **A**. This is expected, as more clear pattern exist in different groups (i.e. positive vs negative), labels are more distinguished for methods to learn.  On the other hand, we also prove that when there's no signal present, method gives a mean AUC of 0.5 , which means it turns out to be randomly guessing the response. This result is also trivial, as there's not clear difference between groups, hence hard to distinguish and models struggle to learn anything meaningful. 
+
+With these simple facts, we have showed that simulations are setup correctly, and verified how machine learning works with labelled data.
+Furthermore, we noticed that method given little signal, i.e. $\text{signal} = 3 > 0$, they all start to work well, quickly bumping its $0.5$ AUC to $0.7$ with the exception of mofa-Factor1 and rgcca-null_ncomp-1. 
+
+This have showed data with little variation provided it is clear difference among groups, current SOTA methods are capable to make reasonably well predictions. 
+We also tested against varying correlation in the omics within each dataset. But, the role of correlation in this simulation is not depicted clearly and requires further understanding and exploration.
+
+
+
+In terms of classification performance, DIABLO with different design matrices showed relatively good performance ranking at top. Cooperative Learning follows next with consistent distribution of AUC scores, and less variable compared to other methods. MOFA + glmnet and RGCCA + LDA are in the middle, with high variability. Lastly, MOGONET showed consistenly low performance compared to others and only performing well at no signal and full correlation between omics.
+
+Then from Fig \@ref(fig:sim-grid-plot) **B** we looked at ability and quality of feature selection to identified relevant signal variables or noise variables. Given the large amount of the noise variables in each omics of the data, where only $300$ of $3000$ variables in each are actual signal variables. Almost all methods failed at identifying signal variables when low signal. This gets better when increasing amount of signal, yet MOGONET still fails to distinguish signal variables from the noise variables at a signal of $100$.  RGCCA-full-ncomp 1 worked best in different settings of signal followed by DIABLO with null design. On the other hand, all methods due a quite good job in detecting noise variables, this is similar to a classification problem with mostly negative instances. 
+
+
+We believe these sets of simulation studies could be used for future method development, and test them against various scenarios of multiomics data. More parameters could be involved to rigorously test method's robustness. This could be achieved with ease with our proposed pipeline, as we need is to setup the correct data and rest is just handled by these fixed and reproducible workflows.
+
+## Model Assessment
 
 <!--- 
 - Describe how to evaluate the methods, but full technical details refer to methods instead
 --->
 
-To demonstrate the utility of our pipeline and to comprehensively assess the performance of integration methods, we evaluated both simulated and real-world datasets under a range of experimental conditions.
-
-Simulated datasets were generated with controlled parameters to test method robustness across varying signal strengths, feature correlations, and noise structures. The full details of the simulation framework are described in the [Methods] section.
-
-In addition, we benchmarked methods on $14$ real-world datasets collected from publicly available sources such as the Gene Expression Omnibus (GEO) [cite here] and The Cancer Genome Atlas (TCGA) [cite here], as summarized in Table \@ref(tab:benchmark-data-table).
+We further extended the pipeline usage to real-world dataset, such that it could
+demonstrate the utility of our pipeline and to comprehensively assess the performance of integration methods. We benchmarked the methods on $13$ real-world datasets collected from publicly available sources such as the Gene Expression Omnibus (GEO) [cite here] and The Cancer Genome Atlas (TCGA) [cite here], as summarized in Table \@ref(tab:benchmark-data-table).
 
 
 \begingroup\fontsize{7}{9}\selectfont
@@ -408,16 +430,7 @@ Dataset & N & Y=0 & Y=1 & Prop(Y = 1) & Omic & P & Disease\\
 
  &  &  &  &  & rppa & 42 & \\
 
-\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash TCGA-STES} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 25} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.600} & mrna & 5590 & \multirow[b]{-4}{*}{\raggedright\arraybackslash Stomach and Esophageal Carcinoma}\\
-\cmidrule{1-2}
-\cmidrule{5-8}
- &  &  &  &  & cpg & 7756 & \\
-
- &  &  &  &  & mirna & 168 & \\
-
- &  &  &  &  & rppa & 48 & \\
-
-\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash TCGA-CHOL} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 30} & \multirow[b]{-8}{0.7in}{\raggedright\arraybackslash stagei/stageii} & \multirow[b]{-8}{0.7in}{\raggedright\arraybackslash stageiii/stageiv} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.233} &  & 5407 & \multirow[b]{-4}{*}{\raggedright\arraybackslash Cholangiocarcinoma}\\
+\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash TCGA-STES} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 25} & \multirow[b]{-4}{0.7in}{\raggedright\arraybackslash stagei/stageii} & \multirow[b]{-4}{0.7in}{\raggedright\arraybackslash stageiii/stageiv} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.600} &  & 5590 & \multirow[b]{-4}{*}{\raggedright\arraybackslash Stomach and Esophageal Carcinoma}\\
 \cmidrule{1-5}
 \cmidrule{7-8}
  &  &  &  &  & \multirow[b]{-2}{*}{\raggedright\arraybackslash mrna} & 5831 & \\
@@ -519,48 +532,32 @@ In the meantime, we have benchmarked $5$ methods: DIABLO [@singh2019diablo], Coo
 
 <!--- add more here? -->
 
-We evaluated classification performance using standard binary classification metrics: area under the receiver operating characteristic curve (AUC), balanced accuracy, and F1 score, computed using 5-fold cross-validation. The full cross-validation procedure and metric definitions are detailed in the [Methods] section. This allowed us to compare each method’s predictive performance across all datasets in a consistent manner.
-
-To assess the quality of feature selection, we employed different evaluation strategies for simulated and real datasets. For simulated data, where the ground truth is known, we measured the sensitivity and specificity of the selected features to evaluate each method’s ability to distinguish informative variables from noise (see Methods). For real datasets, where ground truth is not available, we ranked features by importance for each method and computed pairwise Spearman rank correlations to quantify the similarity in feature prioritization between methods.
-
-In addition to predictive performance, we measured the computational cost of each method. This included the total runtime and memory usage across key stages of the pipeline: input preprocessing, model training, prediction, and feature selection. These resource metrics allow for a holistic comparison of methods in terms of both performance and computational efficiency.
+To start, we measured the computational cost of each method in terms of runtime and memory usage. This included the total runtime and memory usage across key stages of the pipeline: input preprocessing, model training, prediction, and feature selection. These resource metrics allow for a holistic comparison of methods in terms of both performance and computational efficiency.
 
 
-## Simulation studies
+Then, we evaluated classification performance using standard binary classification metrics: area under the receiver operating characteristic curve (AUC), balanced accuracy, and F1 score, computed using 5-fold cross-validation. The full cross-validation procedure and metric definitions are detailed in the [Methods] section. This allowed us to compare each method’s predictive performance across all datasets in a consistent manner.
 
-We examined the methods on controlled setting of simulation studies with varying parameters like number of observations, number of predictors in each omics, proportion of signal and correlation between omics and fixed number omics at $3$. Each of these combination of parameters were replicated $3$ times to account for data variability.  
+Due to the fact of ground truth of real datasets are not available, the interpretation of the feature selection part is different than the simulation studies. Hence, we have extracted features importances and run it against a Gene Set Enrichment Analysis (GSEA) [cite here] under two public source pathway databases like KEGG [cite here] and PanglaoDB [cite here] to see its biological relevance.
 
-We noticed that as signal increases, method tend to perform better, ultimately its AUC score plateaus at 1 as ilustrated in Fig \@ref(fig:sim-grid-plot). 
 
+
+### Computational Resourcs Usage
+
+The benchmarking results highlight substantial variation in both runtime duration and memory usage across multiview learning methods and computational stages. 
 
 
 \begin{figure}
 
-{\centering \includegraphics[width=0.96\linewidth]{../results/figures/fig_simulated_performance_grid} 
+{\centering \includegraphics[width=0.96\linewidth]{../results/figures/fig_computation_resources} 
 
 }
 
-\caption{Simulation studies performances on AUC and feature selection sensitivity/specificity  with varied signal and correlation in the data. Each grid is combination of amount of signal to differentiate response variable classes, and correlation of omics within one complete set of multiomics simulated data. The Area under the curve (AUC) score measures ability of method predictive performance on the response variable. The sensititivity here is to measure how good methods are identifying the actual signal variables given noise in other variables. The specificity here is to measure how good methods are detecting the noises out.}(\#fig:sim-grid-plot)
+\caption{Mean runtime and memory usage of methods across computational stages.(A) Duration (in seconds, log10 scale) of each method separated by stage: preprocessing, model training, prediction, and feature selection. (B) Corresponding RAM memory usage (in megabytes, log10 scale) for the same stages. Bars represent mean values with error bars indicating standard deviations. Each stage is color-coded: preprocessing (yellow), training (blue), prediction (green), and feature selection (pink).}(\#fig:computational-resource-plot)
 \end{figure}
 
+As shown in (Fig \@ref(fig:computational-resource-plot) panel A), model training is consistently the most time-consuming step across all methods, with MULTIVIEW and MOGONET requiring notably longer durations compared to RGCCA, MOFA, and DIABLO. Despite the high training time of MULTIVIEW, its prediction stage is relatively efficient and on par with other methods. Preprocessing time remains consistent across methods, suggesting similar data preparation pipelines or overheads. Feature selection duration shows more variability, with MULTIVIEW again standing out as the most computationally expensive, while DIABLO and MOFA appear to be the most efficient overall.
 
-This is expected, as more clear pattern exist in different groups (i.e. positive vs negative), labels are better and easier for methods to learn.  On the other hand, we also prove that when there's no signal present, method gives a median AUC of 0.5 , which means it turns out to be randomly guessing the response. This result is also trivial, as there's not clear difference between groups, hence hard to distinguish and models struggle to learn anything meaningful. 
-
-With these simple facts, we have showed that simulations are setup correctly, and verified how machine learning works with labelled data.
-Furthermore, we noticed that method given little signal, i.e. $\text{signal} = 1 > 0$, they all start to work well, quickly bumping its $0.5$ AUC to $0.7$. This have showed data with little variation provided it is clear difference among groups, current SOTA methods are capable to make reasonably well predictions. 
-We also tested against varying correlation in the omics within each dataset. But, the role of correlation in this simulation is not depicted clearly and requires further understanding and exploration.
-
-From this simulation for classification performance, DIABLO with different design matrices showed relatively good performance ranking at top. Cooperative Learning follows next with consistent distribution of AUC scores, and less variable compared to other methods. MOFA + glmnet and RGCCA + LDA are in the middle, with high variability. Lastly, MOGONET showed consistenly low performance compared to others and only performing well at no signal and full correlation between omics. 
-
-
-
-In terms of ability and quality of feature selection (Fig \@ref(fig:sim-grid-plot)), only Cooperative Learning showed consistent behavior and choosing those meaningful biomarkers out compared to other methods. DIABLO is slightly behind it, and with higher variability at the sensitivity distribution. All other methods performed poorly, since they're quite unstable and could have any performance. 
-
-
-
-
-We believe these sets of simulation studies could be used for future method development, and test them against various scenarios of multiomics data. More parameters could be involved to rigorously test method's robustness. This could be achieved with ease with our proposed pipeline, as we need is to setup the correct data and rest is just handled by these fixed and reproducible workflows.
-
+In terms of RAM usage (Fig \@ref(fig:computational-resource-plot) panel B), similar trends are observed. Model training and prediction steps tend to demand more memory than preprocessing or feature selection, particularly for MULTIVIEW and MOGONET, which consume the most memory during prediction. This is likely due to the complexity of their underlying architectures or model size. Interestingly, DIABLO and MOFA show efficient memory use across all stages, indicating their suitability for resource-constrained environments. The consistently higher memory demand during the prediction phase for MULTIVIEW raises practical concerns for deployment, especially in real-time or large-scale applications. Overall, while MULTIVIEW and MOGONET may offer modeling advantages, they do so at the cost of higher computational resource requirements. 
 
 ### Real dataset classification performances
 
@@ -583,7 +580,7 @@ Therefore, we prove the pipeline provides an easy way to benchmark multiomics in
 
 }
 
-\caption{Heatmap of mean AUC from 5 fold-CV. This heatmap represents the mean area under the curve score taken from a 5 fold cross validation evaluated for each method + dataset combination. Lighter color indicates better score or performance of the method. A mean AUC score > 0.7 is considered good. Dendograms indicates possibble relationship between two columns/rows. DIABLO, SGCCA and MOFA are fitting 2 components.}(\#fig:real-perf-plot)
+\caption{Heatmap of mean AUC from 5 fold-CV. This heatmap represents the mean area under the curve score taken from a 5 fold cross validation evaluated for each method + dataset combination. Lighter color indicates better score or performance of the method. A mean AUC score > 0.7 is considered good. Dendograms indicates possibble relationship between two columns/rows. DIABLO, RGCCA and MOFA are fitting 2 components.}(\#fig:real-perf-plot)
 \end{figure}
 
 
@@ -636,7 +633,7 @@ Therefore, we prove the pipeline provides an easy way to benchmark multiomics in
 
 <!-- ---> 
 
-## Biological Relevance Interpretation
+### Biological Relevance Interpretation
 
 To enhance biological relevance of these datasets, we examined FGSEA [insert citation] on all the datasets + method combination separately after the pipeline at Fig
 \@ref(fig:fgsea-analysis-plot)
@@ -656,21 +653,7 @@ Panel B highlights disease and tissue specific strengths of each method. For exa
 
 Overall, these results suggest that while some methods are more generalizable across datasets (e.g., diablo-full-ncomp-1), others may perform better in specific biological contexts. This has implications for selecting appropriate methods based on the disease or tissue of interest.
 
-## Computational time
-
-We observed notable variations in the computation time of most methods with changing dataset sizes (categorized as small if the size of dataset is less than median of all), while DIABLO exhibited consistent performance regardless of dataset size. Conversely, Cooperative Learning displayed a comparatively longer median time than other methods. (Fig 1A).
-
-
-
-<!----
-```{=html}
-<!---
-Fig1. Benchmark results of multiomics data and integration methods. (A) Computation time for each multiomics method of varying data size. (B) Classification performances by area under the curve of method and dataset combination. (C) Similarity in feature selection between methods and datasets.
-
-```
-
-
---->
+  
 
 # Discussion
 
