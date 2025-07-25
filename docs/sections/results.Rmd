@@ -198,30 +198,33 @@ This modular and declarative approach enables extensive flexibility for users, a
 
 ## Simulation studies
 
-We examined the methods on controlled setting of simulation studies with varying parameters like number of observations, number of predictors in each omics, proportion of signal and correlation between omics and fixed number omics at $3$. Each of these combination of parameters were replicated $3$ times to account for data variability.  
+We examined the methods on controlled setting of simulation studies with varying parameters like signal in the response variable, correlation between omics. And, we fixed other parameters like number of observations at $n = 1000$, number of variables in each omics at $p = 3000$ with $3$ omics. Furthermore, we set the proportion of "signal" variables to be $10\%$ in each omics, where rest are noisy variables.
 
-We noticed that as signal increases, method tend to perform better, ultimately its AUC score plateaus at 1 as ilustrated in Fig \@ref(fig:sim-grid-plot). 
+For full details on how we simulated the data, we also provide a R package that holds all implementation of it. Technical details can be found in [Methods].
+
+To access how methods perform in simulation studies, we look into its classification performance to see how well each method identify the response class. Also, we tested how often can methods identify the relevant variables, this case the "signal" variables that we setup. For the classification, we used area under the curve (AUC) score. For the feature selection part, we used a similar metric as sensitivity and specificity by assessing top ranked variables belong to signal or noise variable. To handle randomness and variability, we used a 5-fold CV here.
 
 
 
-```{r sim-grid-plot, echo=FALSE, out.width="96%", fig.cap="Simulation studies performances on AUC and feature selection sensitivity/specificity  with varied signal and correlation in the data. Each grid is combination of amount of signal to differentiate response variable classes, and correlation of omics within one complete set of multiomics simulated data. The Area under the curve (AUC) score measures ability of method predictive performance on the response variable. The sensititivity here is to measure how good methods are identifying the actual signal variables given noise in other variables. The specificity here is to measure how good methods are detecting the noises out."}
+```{r sim-grid-plot, echo=FALSE, out.width="96%", fig.cap="Simulation studies performances on AUC and feature selection sensitivity/specificity  with varied signal and correlation in the data. Each grid is combination of amount of signal to differentiate response variable classes, and correlation of omics within one complete set of multiomics simulated data. A) Mean Area under the curve (AUC) score of a 5-fold CV. This measures ability of method predictive performance on the response variable, the closer score to 1 (max) is better. B) The sensititivity here is to measure how good methods are identifying the actual signal variables given noise in other variables. The specificity here is to measure how good methods are detecting the noises out. The values of signal are the following: 0, 3, 100 (Low, Medium, High). The values of correlation are the following: 0, 0.5, 1 (Low, Medium, High)"}
 knitr::include_graphics(here::here(fig_path, "fig_simulated_performance_grid.png"))
 ```
 
 
-This is expected, as more clear pattern exist in different groups (i.e. positive vs negative), labels are better and easier for methods to learn.  On the other hand, we also prove that when there's no signal present, method gives a median AUC of 0.5 , which means it turns out to be randomly guessing the response. This result is also trivial, as there's not clear difference between groups, hence hard to distinguish and models struggle to learn anything meaningful. 
+
+We noticed that as signal increases, method tend to perform better, ultimately its AUC score plateaus at 1 as illustrated in Fig \@ref(fig:sim-grid-plot) **A**. This is expected, as more clear pattern exist in different groups (i.e. positive vs negative), labels are more distinguished for methods to learn.  On the other hand, we also prove that when there's no signal present, method gives a mean AUC of 0.5 , which means it turns out to be randomly guessing the response. This result is also trivial, as there's not clear difference between groups, hence hard to distinguish and models struggle to learn anything meaningful. 
 
 With these simple facts, we have showed that simulations are setup correctly, and verified how machine learning works with labelled data.
-Furthermore, we noticed that method given little signal, i.e. $\text{signal} = 1 > 0$, they all start to work well, quickly bumping its $0.5$ AUC to $0.7$. This have showed data with little variation provided it is clear difference among groups, current SOTA methods are capable to make reasonably well predictions. 
+Furthermore, we noticed that method given little signal, i.e. $\text{signal} = 3 > 0$, they all start to work well, quickly bumping its $0.5$ AUC to $0.7$ with the exception of mofa-Factor1 and rgcca-null_ncomp-1. 
+
+This have showed data with little variation provided it is clear difference among groups, current SOTA methods are capable to make reasonably well predictions. 
 We also tested against varying correlation in the omics within each dataset. But, the role of correlation in this simulation is not depicted clearly and requires further understanding and exploration.
 
-From this simulation for classification performance, DIABLO with different design matrices showed relatively good performance ranking at top. Cooperative Learning follows next with consistent distribution of AUC scores, and less variable compared to other methods. MOFA + glmnet and RGCCA + LDA are in the middle, with high variability. Lastly, MOGONET showed consistenly low performance compared to others and only performing well at no signal and full correlation between omics. 
 
 
+In terms of classification performance, DIABLO with different design matrices showed relatively good performance ranking at top. Cooperative Learning follows next with consistent distribution of AUC scores, and less variable compared to other methods. MOFA + glmnet and RGCCA + LDA are in the middle, with high variability. Lastly, MOGONET showed consistenly low performance compared to others and only performing well at no signal and full correlation between omics.
 
-In terms of ability and quality of feature selection (Fig \@ref(fig:sim-grid-plot)), only Cooperative Learning showed consistent behavior and choosing those meaningful biomarkers out compared to other methods. DIABLO is slightly behind it, and with higher variability at the sensitivity distribution. All other methods performed poorly, since they're quite unstable and could have any performance. 
-
-
+Then from Fig \@ref(fig:sim-grid-plot) **B** we looked at ability and quality of feature selection to identified relevant signal variables or noise variables. Given the large amount of the noise variables in each omics of the data, where only $300$ of $3000$ variables in each are actual signal variables. Almost all methods failed at identifying signal variables when low signal. This gets better when increasing amount of signal, yet MOGONET still fails to distinguish signal variables from the noise variables at a signal of $100$.  RGCCA-full-ncomp 1 worked best in different settings of signal followed by DIABLO with null design. On the other hand, all methods due a quite good job in detecting noise variables, this is similar to a classification problem with mostly negative instances. 
 
 
 We believe these sets of simulation studies could be used for future method development, and test them against various scenarios of multiomics data. More parameters could be involved to rigorously test method's robustness. This could be achieved with ease with our proposed pipeline, as we need is to setup the correct data and rest is just handled by these fixed and reproducible workflows.
@@ -232,11 +235,8 @@ We believe these sets of simulation studies could be used for future method deve
 - Describe how to evaluate the methods, but full technical details refer to methods instead
 --->
 
-To demonstrate the utility of our pipeline and to comprehensively assess the performance of integration methods, we evaluated both simulated and real-world datasets under a range of experimental conditions.
-
-Simulated datasets were generated with controlled parameters to test method robustness across varying signal strengths, feature correlations, and noise structures. The full details of the simulation framework are described in the [Methods] section.
-
-In addition, we benchmarked methods on $14$ real-world datasets collected from publicly available sources such as the Gene Expression Omnibus (GEO) [cite here] and The Cancer Genome Atlas (TCGA) [cite here], as summarized in Table \@ref(tab:benchmark-data-table).
+We further extended the pipeline usage to real-world dataset, such that it could
+demonstrate the utility of our pipeline and to comprehensively assess the performance of integration methods. We benchmarked the methods on $13$ real-world datasets collected from publicly available sources such as the Gene Expression Omnibus (GEO) [cite here] and The Cancer Genome Atlas (TCGA) [cite here], as summarized in Table \@ref(tab:benchmark-data-table).
 
 
 ```{r benchmark-data-table}
@@ -255,6 +255,8 @@ tbl_col <-  c(
   "P",
   "Disease"
   )
+
+real_data_tbl$dataset
 
 # longer cols
 real_data_tbl %>%
