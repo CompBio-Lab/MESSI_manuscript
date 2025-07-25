@@ -137,7 +137,9 @@ b_plot <- plot_metric(plot_df, "peak_vmem_mb", "Memory", y_lab = "RAM memory usa
 p_without_legend <- plot_grid(
   a_plot + theme(legend.position = "none",
                  strip.text.y = element_blank()),
-  b_plot + theme(legend.position = "none")
+  b_plot + theme(legend.position = "none"),
+  ncol=2,
+  labels=c("A", "B")
 )
 
 leg <- cowplot::get_legend(
