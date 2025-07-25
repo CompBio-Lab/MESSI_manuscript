@@ -126,6 +126,8 @@ metadata_df <- read.csv(metadata_path) |>
          neg_col = neg_col) %>%
   mutate(dataset = toupper(dataset),
          omics_names = tolower(omics_names)) %>%
+  # Remove the chol
+  filter(dataset != "TCGA-CHOL") %>%
   distinct() %>%                       # Remove duplicate rows
   dplyr::select(c("dataset", "obs", "diseases",
                   "positive_prop", "omics_names", "var", "pos_col", "neg_col")) %>%
