@@ -229,7 +229,7 @@ Then from Fig \@ref(fig:sim-grid-plot) **B** we looked at ability and quality of
 
 We believe these sets of simulation studies could be used for future method development, and test them against various scenarios of multiomics data. More parameters could be involved to rigorously test method's robustness. This could be achieved with ease with our proposed pipeline, as we need is to setup the correct data and rest is just handled by these fixed and reproducible workflows.
 
-### Model Assessment
+## Model Assessment
 
 <!--- 
 - Describe how to evaluate the methods, but full technical details refer to methods instead
@@ -291,26 +291,27 @@ In the meantime, we have benchmarked $5$ methods: DIABLO [@singh2019diablo], Coo
 
 <!--- add more here? -->
 
-We evaluated classification performance using standard binary classification metrics: area under the receiver operating characteristic curve (AUC), balanced accuracy, and F1 score, computed using 5-fold cross-validation. The full cross-validation procedure and metric definitions are detailed in the [Methods] section. This allowed us to compare each method’s predictive performance across all datasets in a consistent manner.
-
-To assess the quality of feature selection, we employed different evaluation strategies for simulated and real datasets. For simulated data, where the ground truth is known, we measured the sensitivity and specificity of the selected features to evaluate each method’s ability to distinguish informative variables from noise (see Methods). For real datasets, where ground truth is not available, we ranked features by importance for each method and computed pairwise Spearman rank correlations to quantify the similarity in feature prioritization between methods.
-
-In addition to predictive performance, we measured the computational cost of each method. This included the total runtime and memory usage across key stages of the pipeline: input preprocessing, model training, prediction, and feature selection. These resource metrics allow for a holistic comparison of methods in terms of both performance and computational efficiency.
+To start, we measured the computational cost of each method in terms of runtime and memory usage. This included the total runtime and memory usage across key stages of the pipeline: input preprocessing, model training, prediction, and feature selection. These resource metrics allow for a holistic comparison of methods in terms of both performance and computational efficiency.
 
 
+Then, we evaluated classification performance using standard binary classification metrics: area under the receiver operating characteristic curve (AUC), balanced accuracy, and F1 score, computed using 5-fold cross-validation. The full cross-validation procedure and metric definitions are detailed in the [Methods] section. This allowed us to compare each method’s predictive performance across all datasets in a consistent manner.
 
-## Computational time
-
-We observed notable variations in the computation time of most methods with changing dataset sizes (categorized as small if the size of dataset is less than median of all), while DIABLO exhibited consistent performance regardless of dataset size. Conversely, Cooperative Learning displayed a comparatively longer median time than other methods. (Fig 1A).
-
-TODO: THIS HERE NEED TO BE UPDATED
+Due to the fact of ground truth of real datasets are not available, the interpretation of the feature selection part is different than the simulation studies. Hence, we have extracted features importances and run it against a Gene Set Enrichment Analysis (GSEA) [cite here] under two public source pathway databases like KEGG [cite here] and PanglaoDB [cite here] to see its biological relevance.
 
 
-```{r computational-resource-plot, echo=FALSE, out.width="96%", fig.cap="Mean computational resource usage of methods on each steps of preprocessing, training model, predicting instances, and feature selection."}
+
+### Computational Resourcs Usage
+
+The benchmarking results highlight substantial variation in both runtime duration and memory usage across multiview learning methods and computational stages. 
+
+
+```{r computational-resource-plot, echo=FALSE, out.width="96%", fig.cap="Mean runtime and memory usage of methods across computational stages.(A) Duration (in seconds, log10 scale) of each method separated by stage: preprocessing, model training, prediction, and feature selection. (B) Corresponding RAM memory usage (in megabytes, log10 scale) for the same stages. Bars represent mean values with error bars indicating standard deviations. Each stage is color-coded: preprocessing (yellow), training (blue), prediction (green), and feature selection (pink)."}
 knitr::include_graphics(here::here(fig_path, "fig_computation_resources.png"))
 ```
 
+As shown in (Fig \@ref(fig:computational-resource-plot) panel A), model training is consistently the most time-consuming step across all methods, with MULTIVIEW and MOGONET requiring notably longer durations compared to RGCCA, MOFA, and DIABLO. Despite the high training time of MULTIVIEW, its prediction stage is relatively efficient and on par with other methods. Preprocessing time remains consistent across methods, suggesting similar data preparation pipelines or overheads. Feature selection duration shows more variability, with MULTIVIEW again standing out as the most computationally expensive, while DIABLO and MOFA appear to be the most efficient overall.
 
+In terms of RAM usage (Fig \@ref(fig:computational-resource-plot) panel B), similar trends are observed. Model training and prediction steps tend to demand more memory than preprocessing or feature selection, particularly for MULTIVIEW and MOGONET, which consume the most memory during prediction. This is likely due to the complexity of their underlying architectures or model size. Interestingly, DIABLO and MOFA show efficient memory use across all stages, indicating their suitability for resource-constrained environments. The consistently higher memory demand during the prediction phase for MULTIVIEW raises practical concerns for deployment, especially in real-time or large-scale applications. Overall, while MULTIVIEW and MOGONET may offer modeling advantages, they do so at the cost of higher computational resource requirements. 
 
 ### Real dataset classification performances
 
@@ -371,7 +372,7 @@ knitr::include_graphics(here::here(fig_path, "fig_feature_selection_sim.png"))
 
 <!-- ---> 
 
-## Biological Relevance Interpretation
+### Biological Relevance Interpretation
 
 To enhance biological relevance of these datasets, we examined FGSEA [insert citation] on all the datasets + method combination separately after the pipeline at Fig
 \@ref(fig:fgsea-analysis-plot)
