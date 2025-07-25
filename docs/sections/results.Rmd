@@ -133,15 +133,14 @@ Things to say
 
 --->
 
-Besides the main flow of model assessment via cross validating data, we also provided an additional workflow in the pipeline that solely handles feature selection and return meaningful biomarkers or features from each dataset and method combination. 
-This takes in input directly after the common processing in [Prepare data] as it uses full data to tune for relevant features in the data. Similar to model assessment, this workflow is composed of various independent method workflow, which means computation is parallelizable as well.
+Besides the main flow of model assessment via cross validating data, we also provided an additional workflow in the pipeline that solely handles feature selection and return meaningful biomarkers or features from each dataset and method combination. This workflow can occur prior or same time of the model assessment part.
 
-The output of each method is a table of selected features along with the coefficient associated with it. And, these are collected for all method evaluated on each datasets full portion. Lastly, once collected these results, it is return to user for downstream analysis.
+It takes in input directly after the common processing in [Prepare data] as it uses full data to tune for relevant features in the data. Similar to model assessment, this workflow is composed of various independent method workflow, which means computation is parallelizable as well.
 
+The output of each method is a table of selected features along with the coefficient associated with it. And, these are collected for all method evaluated on each datasets of full portion without any data splitting. Lastly, the collected results is passed to [output collection & reporting] [CITE HERE].
 
 ### Configuration of parameters
 
-Configuration of Parameters
 To support flexible, reproducible, and modular execution, the pipeline is implemented using Nextflow, which allows multiple configuration profiles to be defined and composed dynamically. Each profile may inherit from others and override parameter values, supporting a hierarchical and modular approach to configuration. Further details on profile usage and inheritance can be found in the Nextflow official documentation [cite here].
 
 In our implementation, important options such as skipping specific methods, adjusting the number of cross-validation folds, modifying method-specific hyperparameters, or adapting to site/platform-specific computing environments are all controlled through Nextflow profiles.
@@ -152,11 +151,11 @@ Each profile is defined in a .config file using a Groovy-based syntax similar to
 // This is a top level profile that allows to contain multiple other profiles
 params {
   // Skip certain methods or not
-  skip_cplr     = true
+  skip_cplr     = false
   skip_mogonet  = false
   skip_diablo   = false
   skip_rgcca    = false
-  skip_mofa     = true
+  skip_mofa     = false
   // Also could have many more methods
   skip_method_i = false
   skip_method_j = true
