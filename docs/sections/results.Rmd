@@ -3,16 +3,10 @@
 
 We introduce here the MESSI pipeline, *Multiple Experiments with SyStematic Interrogation* (Fig \@ref(fig:messi-workflow-plot), and additional supplementary), which comprises of 4 main steps: 1) [Prepare data], 2) [Data splitting], 3) [Cross validation], 4) [Feature selection].
 
-```{r messi-workflow-plot, eval=TRUE, out.width="96%", fig.cap="Workflow design of MESSI for benchmarking integration methods with supervised setting. MESSI has a modular design between stages of preparing data, splitting data, cross validation (CV), and feature selection. The CV stage enables parallel computing of many methods implemented in different languages like R and Python seamleslly and reproducibly through independent containers.", fig.align="center"}
+```{r messi-workflow-plot, eval=TRUE, out.width="96%", fig.cap="Pipeline design of MESSI, Multi Experiments with SyStematic Interrogation. MESSI has a flexible modular design between stages of preparing data, splitting data, cross validation (CV), and feature selection. Each stage are further composed by individual modules, that can arbitrary number of tasks for execution. It is designed to evaluate as many data or experiments, and expand to parallel executions of  many methods implemented in different languages like R and Python seamleslly and reproducibly through independent containers.", fig.align="center"}
 knitr::include_graphics(here::here("docs/assets/", "MESSI_workflow_overview_diagram.png"))
 ```
 
-
-<!---
-```{r messi-overflow-plot,fig.cap="Workflow design of MESSI for benchmarking integration methods with supervised setting. MESSI has a modular design between stages of preparing data, splitting data, cross validation (CV), and feature selection. The CV stage enables parallel computing of many methods implemented in different languages like R and Python seamleslly and reproducibly through independent containers.", fig.align="center",echo=FALSE, out.width="60%", eval=T}
-knitr::include_graphics(here::here("docs/assets", "messi_workflow.png"))
-```
---->
 
 
 MESSI is implemented with Nextflow [@di2017nextflow], a domain specific language (DSL) primarily used by bioinformaticians. Compared to traditional workflow management systems like Snakemake [@koster2012snakemake] or GNU make [@stallman1988gnu], Nextflow breaks down complex workflows into modular components, and connect them with channels which determines the flow of pipeline. This feature allows us to customize each module, extending the pipeline to not only benchmark purposes but also multi-purpose usage. Additionally, This modular design enables rapid, efficient and reproducible way to test and maintain codebases.
@@ -204,6 +198,37 @@ nextlfow run messi-benchmark -profile aws,sim_data
 This modular and declarative approach enables extensive flexibility for users, allowing parameter tuning, environment adaptation, and reproducible configuration from a single control script. Changing a single parameter in a profile automatically propagates to all pipeline components where that parameter is used. Furthermore, this structure facilitates systematic exploration of hyperparameters and preserves a complete record of configurations used in each run—critical for reproducibility, benchmarking, and downstream analysis.
 
 
+
+## Simulation studies
+
+We examined the methods on controlled setting of simulation studies with varying parameters like number of observations, number of predictors in each omics, proportion of signal and correlation between omics and fixed number omics at $3$. Each of these combination of parameters were replicated $3$ times to account for data variability.  
+
+We noticed that as signal increases, method tend to perform better, ultimately its AUC score plateaus at 1 as ilustrated in Fig \@ref(fig:sim-grid-plot). 
+
+
+
+```{r sim-grid-plot, echo=FALSE, out.width="96%", fig.cap="Simulation studies performances on AUC and feature selection sensitivity/specificity  with varied signal and correlation in the data. Each grid is combination of amount of signal to differentiate response variable classes, and correlation of omics within one complete set of multiomics simulated data. The Area under the curve (AUC) score measures ability of method predictive performance on the response variable. The sensititivity here is to measure how good methods are identifying the actual signal variables given noise in other variables. The specificity here is to measure how good methods are detecting the noises out."}
+knitr::include_graphics(here::here(fig_path, "fig_simulated_performance_grid.png"))
+```
+
+
+This is expected, as more clear pattern exist in different groups (i.e. positive vs negative), labels are better and easier for methods to learn.  On the other hand, we also prove that when there's no signal present, method gives a median AUC of 0.5 , which means it turns out to be randomly guessing the response. This result is also trivial, as there's not clear difference between groups, hence hard to distinguish and models struggle to learn anything meaningful. 
+
+With these simple facts, we have showed that simulations are setup correctly, and verified how machine learning works with labelled data.
+Furthermore, we noticed that method given little signal, i.e. $\text{signal} = 1 > 0$, they all start to work well, quickly bumping its $0.5$ AUC to $0.7$. This have showed data with little variation provided it is clear difference among groups, current SOTA methods are capable to make reasonably well predictions. 
+We also tested against varying correlation in the omics within each dataset. But, the role of correlation in this simulation is not depicted clearly and requires further understanding and exploration.
+
+From this simulation for classification performance, DIABLO with different design matrices showed relatively good performance ranking at top. Cooperative Learning follows next with consistent distribution of AUC scores, and less variable compared to other methods. MOFA + glmnet and RGCCA + LDA are in the middle, with high variability. Lastly, MOGONET showed consistenly low performance compared to others and only performing well at no signal and full correlation between omics. 
+
+
+
+In terms of ability and quality of feature selection (Fig \@ref(fig:sim-grid-plot)), only Cooperative Learning showed consistent behavior and choosing those meaningful biomarkers out compared to other methods. DIABLO is slightly behind it, and with higher variability at the sensitivity distribution. All other methods performed poorly, since they're quite unstable and could have any performance. 
+
+
+
+
+We believe these sets of simulation studies could be used for future method development, and test them against various scenarios of multiomics data. More parameters could be involved to rigorously test method's robustness. This could be achieved with ease with our proposed pipeline, as we need is to setup the correct data and rest is just handled by these fixed and reproducible workflows.
+
 ### Model Assessment
 
 <!--- 
@@ -274,35 +299,18 @@ To assess the quality of feature selection, we employed different evaluation str
 In addition to predictive performance, we measured the computational cost of each method. This included the total runtime and memory usage across key stages of the pipeline: input preprocessing, model training, prediction, and feature selection. These resource metrics allow for a holistic comparison of methods in terms of both performance and computational efficiency.
 
 
-## Simulation studies
 
-We examined the methods on controlled setting of simulation studies with varying parameters like number of observations, number of predictors in each omics, proportion of signal and correlation between omics and fixed number omics at $3$. Each of these combination of parameters were replicated $3$ times to account for data variability.  
+## Computational time
 
-We noticed that as signal increases, method tend to perform better, ultimately its AUC score plateaus at 1 as ilustrated in Fig \@ref(fig:sim-grid-plot). 
+We observed notable variations in the computation time of most methods with changing dataset sizes (categorized as small if the size of dataset is less than median of all), while DIABLO exhibited consistent performance regardless of dataset size. Conversely, Cooperative Learning displayed a comparatively longer median time than other methods. (Fig 1A).
+
+TODO: THIS HERE NEED TO BE UPDATED
 
 
-
-```{r sim-grid-plot, echo=FALSE, out.width="96%", fig.cap="Simulation studies performances on AUC and feature selection sensitivity/specificity  with varied signal and correlation in the data. Each grid is combination of amount of signal to differentiate response variable classes, and correlation of omics within one complete set of multiomics simulated data. The Area under the curve (AUC) score measures ability of method predictive performance on the response variable. The sensititivity here is to measure how good methods are identifying the actual signal variables given noise in other variables. The specificity here is to measure how good methods are detecting the noises out."}
-knitr::include_graphics(here::here(fig_path, "fig_simulated_performance_grid.png"))
+```{r computational-resource-plot, echo=FALSE, out.width="96%", fig.cap="Mean computational resource usage of methods on each steps of preprocessing, training model, predicting instances, and feature selection."}
+knitr::include_graphics(here::here(fig_path, "fig_computation_resources.png"))
 ```
 
-
-This is expected, as more clear pattern exist in different groups (i.e. positive vs negative), labels are better and easier for methods to learn.  On the other hand, we also prove that when there's no signal present, method gives a median AUC of 0.5 , which means it turns out to be randomly guessing the response. This result is also trivial, as there's not clear difference between groups, hence hard to distinguish and models struggle to learn anything meaningful. 
-
-With these simple facts, we have showed that simulations are setup correctly, and verified how machine learning works with labelled data.
-Furthermore, we noticed that method given little signal, i.e. $\text{signal} = 1 > 0$, they all start to work well, quickly bumping its $0.5$ AUC to $0.7$. This have showed data with little variation provided it is clear difference among groups, current SOTA methods are capable to make reasonably well predictions. 
-We also tested against varying correlation in the omics within each dataset. But, the role of correlation in this simulation is not depicted clearly and requires further understanding and exploration.
-
-From this simulation for classification performance, DIABLO with different design matrices showed relatively good performance ranking at top. Cooperative Learning follows next with consistent distribution of AUC scores, and less variable compared to other methods. MOFA + glmnet and RGCCA + LDA are in the middle, with high variability. Lastly, MOGONET showed consistenly low performance compared to others and only performing well at no signal and full correlation between omics. 
-
-
-
-In terms of ability and quality of feature selection (Fig \@ref(fig:sim-grid-plot)), only Cooperative Learning showed consistent behavior and choosing those meaningful biomarkers out compared to other methods. DIABLO is slightly behind it, and with higher variability at the sensitivity distribution. All other methods performed poorly, since they're quite unstable and could have any performance. 
-
-
-
-
-We believe these sets of simulation studies could be used for future method development, and test them against various scenarios of multiomics data. More parameters could be involved to rigorously test method's robustness. This could be achieved with ease with our proposed pipeline, as we need is to setup the correct data and rest is just handled by these fixed and reproducible workflows.
 
 
 ### Real dataset classification performances
@@ -379,20 +387,4 @@ Panel B highlights disease and tissue specific strengths of each method. For exa
 
 Overall, these results suggest that while some methods are more generalizable across datasets (e.g., diablo-full-ncomp-1), others may perform better in specific biological contexts. This has implications for selecting appropriate methods based on the disease or tissue of interest.
 
-## Computational time
-
-We observed notable variations in the computation time of most methods with changing dataset sizes (categorized as small if the size of dataset is less than median of all), while DIABLO exhibited consistent performance regardless of dataset size. Conversely, Cooperative Learning displayed a comparatively longer median time than other methods. (Fig 1A).
-
-
-
-<!----
-```{=html}
-<!---
-Fig1. Benchmark results of multiomics data and integration methods. (A) Computation time for each multiomics method of varying data size. (B) Classification performances by area under the curve of method and dataset combination. (C) Similarity in feature selection between methods and datasets.
-
-```
-
-```{r real-grid-plot, fig.cap="Benchmark results on real datasets.", echo=FALSE, out.width="92%"}
-#include_graphics(here(fig_path, "fig_real_grid.png"))
-```
---->
+  
