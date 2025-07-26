@@ -20,6 +20,7 @@ output:
     toc: false
     extra_dependencies: ["flafter"]
     keep_md: true
+    keep_text: true
     includes:
       in_header: common_header.tex
 header-includes:
@@ -157,7 +158,7 @@ We introduce here the MESSI pipeline, *Multiple Experiments with SyStematic Inte
 
 \begin{figure}
 
-{\centering \includegraphics[width=0.96\linewidth]{assets/MESSI_workflow_overview_diagram} 
+{\centering \includegraphics[width=0.8\linewidth]{assets/MESSI_workflow_overview_diagram} 
 
 }
 
@@ -548,7 +549,7 @@ The benchmarking results highlight substantial variation in both runtime duratio
 
 \begin{figure}
 
-{\centering \includegraphics[width=0.96\linewidth]{../results/figures/fig_computation_resources} 
+{\centering \includegraphics[width=0.96\linewidth]{../results/figures/fig_computational_resources_usage} 
 
 }
 
