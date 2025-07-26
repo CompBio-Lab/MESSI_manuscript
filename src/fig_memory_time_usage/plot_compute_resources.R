@@ -1,6 +1,8 @@
 # Load libraries
 library(ggplot2)
 library(forcats)
+library(dplyr)
+library(cowplot)
 
 
 # Load custom scripts
@@ -72,7 +74,7 @@ plot_df <- wrangle_df %>%
     action = factor(action, levels = c("PREPROCESS", "TRAIN", "PREDICT", "FEATURE_SELECT"))
   )
 
-plot_metric <- function(data, metric_col, metric_label, y_lab, text_size, alpha=0.5) {
+plot_metric <- function(data, metric_col, metric_label, y_lab, text_size, alpha=0.5, use_log=FALSE) {
 
   # Compute mean and sd for the metric
   summary_df <- data %>%
@@ -96,16 +98,10 @@ plot_metric <- function(data, metric_col, metric_label, y_lab, text_size, alpha=
     "FEATURE_SELECT" = "Feature Selection"
   )
 
-  # Plot
+  # Base Plot
   p <- ggplot(summary_df, aes(x = method, y = mean_val, fill = action)) +
     geom_bar(stat = "identity", width = 0.4, alpha = alpha) +
     geom_errorbar(aes(ymin = mean_val - sd_val, ymax = mean_val + sd_val), width = 0.2) +
-    scale_y_continuous(
-      trans = "log10",
-      labels = scales::label_log(),
-      expand = expansion(mult = c(0, 0.5))
-    ) +
-    labs(x = "", y = paste0(y_lab, " Log10 scale")) +
     scale_fill_manual(
       values = c(
         "#E69F00",  # orange
@@ -124,15 +120,25 @@ plot_metric <- function(data, metric_col, metric_label, y_lab, text_size, alpha=
       independent = "y",
       labeller = labeller(action = action_labels)
     )
-
-  return(p)
+  # Determine to use if log or not
+  if (use_log) {
+    y_lab <- paste0(y_lab, "Log 10 scale")
+    p <- p +
+        scale_y_continuous(
+          trans = "log10",
+          labels = scales::label_log(),
+          expand = expansion(mult = c(0, 0.5))
+          )
+  }
+  # Lastly add the label and output
+  return(p + labs(x="", y = y_lab))
 }
 
 
 text_size <- 12
-
-a_plot <- plot_metric(plot_df, "duration_sec", "Duration", y_lab = "Duration (seconds)", text_size)
-b_plot <- plot_metric(plot_df, "peak_vmem_mb", "Memory", y_lab = "RAM memory usage (MB)", text_size)
+use_log <- TRUE
+a_plot <- plot_metric(plot_df, "duration_sec", "Duration", y_lab = "Duration (seconds)", text_size=text_size, use_log=use_log)
+b_plot <- plot_metric(plot_df, "peak_vmem_mb", "Memory", y_lab = "RAM memory usage (MB)", text_size=text_size, use_log=use_log)
 
 p_without_legend <- plot_grid(
   a_plot + theme(legend.position = "none",
