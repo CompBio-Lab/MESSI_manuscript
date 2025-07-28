@@ -244,16 +244,16 @@ real_data_tbl <- data.table::fread(here::here("data/processed/real_dataset_metad
   as_tibble()
 
 
-select_cols <- c("dataset", "obs", "neg_class", "pos_class", "positive_prop", "omics_names", "var", "diseases")
+select_cols <- c("diseases", "obs", "neg_class", "pos_class", "positive_prop", "omics_names", "var","dataset")
 tbl_col <-  c(
-  "Dataset",
+  "Disease",
   "N",
   "Y=0",
   "Y=1",
   "Prop(Y = 1)",
   "Omic",
   "P",
-  "Disease"
+  "Dataset"
   )
 
 # longer cols
