@@ -78,11 +78,7 @@ main <- function(input_path, output_path) {
     )) %>%
     select(workflow, process, tag, method, action, realtime_sec, peak_vmem_mb, duration_sec)  %>%
     # Change values for FEATURE
-    mutate(action=str_replace(action, "FEATURE", "FEATURE_SELECT")) %>%
-    mutate(
-      # Let action to have fixed levels
-      action = factor(action, levels = c("PREPROCESS", "TRAIN", "PREDICT", "FEATURE_SELECT"))
-    )
+    mutate(action=str_replace(action, "FEATURE", "FEATURE_SELECT"))
 
   # Lastly write to file
   data.table::fwrite(plot_df, file=output_path |> here::here(), row.names = FALSE)

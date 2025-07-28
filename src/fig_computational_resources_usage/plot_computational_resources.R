@@ -120,7 +120,12 @@ main <- function(input_path, output_path, text_size, width, height, dpi, use_log
   }
 
   # Load data
-  plot_df <- data.table::fread(here::here(input_path))
+  plot_df <- data.table::fread(here::here(input_path)) %>%
+    # And coerce the factor
+    mutate(
+      # Let action to have fixed levels, this needs to be done here and not in other script
+      action = factor(action, levels = c("PREPROCESS", "TRAIN", "PREDICT", "FEATURE_SELECT"))
+    )
 
   # Plot the individual panels with raw scale (useLog=FALSE)
 
