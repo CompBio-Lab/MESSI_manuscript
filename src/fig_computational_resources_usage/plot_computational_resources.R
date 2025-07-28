@@ -1,7 +1,7 @@
 # Load libraries
 library(ggplot2)
 library(forcats)
-library(dplyr)
+suppressPackageStartupMessages(library(dplyr))
 library(cowplot)
 
 
@@ -89,10 +89,17 @@ plot_summary_metric <- function(data, metric_col, metric_label, y_lab, text_size
 
 
 # Main execute point of the script
-main <- function(output_path, plot_df, text_size, width, height, dpi, use_log=FALSE) {
-  if (is.null(output_path)) {
-    output_path <- "results/figures/fig_computation_resources.png"
+main <- function(input_path, output_path, text_size, width, height, dpi, use_log=FALSE) {
+  if (is.null(input_path)) {
+    input_path <- "data/processed/computational_resources_usage_df.csv"
   }
+
+  if (is.null(output_path)) {
+    output_path <- "results/figures/fig_computational_resources_usage.png"
+  }
+
+  # Load data
+  plot_df <- data.table::fread(here::here(input_path))
 
   # Plot the individual panels with raw scale (useLog=FALSE)
 
@@ -158,61 +165,9 @@ main <- function(output_path, plot_df, text_size, width, height, dpi, use_log=FA
 }
 
 
-
-trace_path <- "data/raw/real_data_results/execution_trace.txt"
-
-# Read the trace in
-trace_df <- readr::read_tsv(trace_path,
-                            col_types = readr::cols()) |>
-  select(process,tag,realtime, peak_rss,peak_vmem, duration) |>
-  mutate(process = chop_nf_core_prefix(process)) %>%
-  separate_workflow_process(process) %>%
-  mutate(
-    realtime_sec = convert_to_seconds(realtime),
-    duration_sec = convert_to_seconds(duration),
-    peak_rss_mb = convert_to_mb(peak_rss),
-    peak_vmem_mb = convert_to_mb(peak_vmem)
-  ) %>%
-  select(-c("realtime", "peak_rss", "duration", "peak_vmem")) %>%
-  mutate(process = case_when(
-    # If the workflow is from cv do something special
-    workflow == "CROSS_VALIDATION" ~ str_extract(process, "[^:]+$"),
-    workflow == "CALCULATE_METRICS" ~ "CALCULATE_METRICS",
-    TRUE ~ process
-  ))
-
-wrangle_df <- trace_df %>%
-  filter(workflow %in%  c("CROSS_VALIDATION", "FEATURE_SELECTION")) %>%
-  filter(!str_detect(process, "MERGE")) %>%
-  # Change the label of multiview
-  mutate(process = case_when(
-    str_detect(process, "COOPERATIVE") ~ str_replace(
-      process, "COOPERATIVE_LEARNING", "MULTIVIEW"
-    ),
-    TRUE ~ process
-  )) %>%
-  # Create a plot identifier for each workflow
-  mutate(method = str_replace(process, "_.*", ""),
-         action = str_replace(process, ".*_", "")) %>%
-  filter(action != "DOWNSTREAM") %>%
-  mutate(process = case_when(
-    str_detect(tag, "null") ~ str_c(process, "NULL", sep="-"),
-    str_detect(tag, "full") ~ str_c(process, "FULL", sep="-"),
-    TRUE ~ process
-  ))
-
-plot_df <- wrangle_df %>%
-  select(workflow, process, tag, method, action, realtime_sec, peak_vmem_mb, duration_sec)  %>%
-  # Change values for FEATURE
-  mutate(action=str_replace(action, "FEATURE", "FEATURE_SELECT")) %>%
-  mutate(
-    # Let action to have fixed levels
-    action = factor(action, levels = c("PREPROCESS", "TRAIN", "PREDICT", "FEATURE_SELECT"))
-  )
-
-
 # Lastly call the main function
 # Read in parameters
+input_path <- NULL
 output_path <- NULL
 text_size <- 12
 width <- 12
@@ -220,4 +175,4 @@ height <- 9
 dpi <- 700
 use_log <- FALSE
 
-main(output_path = output_path, plot_df = plot_df, text_size = text_size, width = width, height=height, dpi = dpi, use_log = use_log)
+main(input_path=  input_path, output_path = output_path, text_size = text_size, width = width, height=height, dpi = dpi, use_log = use_log)
