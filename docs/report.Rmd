@@ -20,7 +20,7 @@ output:
     toc: false
     extra_dependencies: ["flafter"]
     keep_md: true
-    keep_text: true
+    keep_tex: true
     includes:
       in_header: common_header.tex
 header-includes:

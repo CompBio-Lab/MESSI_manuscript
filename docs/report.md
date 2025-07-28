@@ -20,7 +20,7 @@ output:
     toc: false
     extra_dependencies: ["flafter"]
     keep_md: true
-    keep_text: true
+    keep_tex: true
     includes:
       in_header: common_header.tex
 header-includes:
@@ -407,12 +407,12 @@ demonstrate the utility of our pipeline and to comprehensively assess the perfor
 \begin{longtable}[t]{>{\raggedright\arraybackslash}p{0.75in}r>{\raggedright\arraybackslash}p{0.7in}>{\raggedright\arraybackslash}p{0.7in}rlrl}
 \caption{(\#tab:benchmark-data-table)Overview of real datasets to benchmark}\\
 \toprule
-Dataset & N & Y=0 & Y=1 & Prop(Y = 1) & Omic & P & Disease\\
+Disease & N & Y=0 & Y=1 & Prop(Y = 1) & Omic & P & Dataset\\
 \midrule
 \endfirsthead
 \caption[]{(\#tab:benchmark-data-table)Overview of real datasets to benchmark \textit{(continued)}}\\
 \toprule
-Dataset & N & Y=0 & Y=1 & Prop(Y = 1) & Omic & P & Disease\\
+Disease & N & Y=0 & Y=1 & Prop(Y = 1) & Omic & P & Dataset\\
 \midrule
 \endhead
 
@@ -423,7 +423,7 @@ Dataset & N & Y=0 & Y=1 & Prop(Y = 1) & Omic & P & Disease\\
 
  &  &  &  &  & cpg & 1674 & \\
 
-\multirow[b]{-3}{0.75in}{\raggedright\arraybackslash GSE38609} & \multirow[b]{-3}{*}{\raggedleft\arraybackslash 24} & \multirow[b]{-3}{0.7in}{\raggedright\arraybackslash control Cer} & \multirow[b]{-3}{0.7in}{\raggedright\arraybackslash autistic} & \multirow[b]{-3}{*}{\raggedleft\arraybackslash 0.458} & cc & 12 & \multirow[b]{-3}{*}{\raggedright\arraybackslash Autism}\\
+\multirow[b]{-3}{0.75in}{\raggedright\arraybackslash Autism} & \multirow[b]{-3}{*}{\raggedleft\arraybackslash 24} & \multirow[b]{-3}{0.7in}{\raggedright\arraybackslash control Cer} & \multirow[b]{-3}{0.7in}{\raggedright\arraybackslash autistic} & \multirow[b]{-3}{*}{\raggedleft\arraybackslash 0.458} & cc & 12 & \multirow[b]{-3}{*}{\raggedright\arraybackslash GSE38609}\\
 \cmidrule{1-8}
  &  &  &  &  & cpg & 4796 & \\
 
@@ -431,14 +431,14 @@ Dataset & N & Y=0 & Y=1 & Prop(Y = 1) & Omic & P & Disease\\
 
  &  &  &  &  & rppa & 42 & \\
 
-\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash TCGA-STES} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 25} & \multirow[b]{-4}{0.7in}{\raggedright\arraybackslash stagei/stageii} & \multirow[b]{-4}{0.7in}{\raggedright\arraybackslash stageiii/stageiv} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.600} &  & 5590 & \multirow[b]{-4}{*}{\raggedright\arraybackslash Stomach and Esophageal Carcinoma}\\
+\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Stomach and Esophageal Carcinoma} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 25} & \multirow[b]{-4}{0.7in}{\raggedright\arraybackslash stagei/stageii} & \multirow[b]{-4}{0.7in}{\raggedright\arraybackslash stageiii/stageiv} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.600} &  & 5590 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-STES}\\
 \cmidrule{1-5}
 \cmidrule{7-8}
  &  &  &  &  & \multirow[b]{-2}{*}{\raggedright\arraybackslash mrna} & 5831 & \\
 
  &  &  &  &  & cpg & 8915 & \\
 
-\multirow[b]{-3}{0.75in}{\raggedright\arraybackslash GSE71669} & \multirow[b]{-3}{*}{\raggedleft\arraybackslash 33} & \multirow[b]{-3}{0.7in}{\raggedright\arraybackslash non-invasive bladder cancer} & \multirow[b]{-3}{0.7in}{\raggedright\arraybackslash invasive bladder cancer} & \multirow[b]{-3}{*}{\raggedleft\arraybackslash 0.424} & cc & 10 & \multirow[b]{-3}{*}{\raggedright\arraybackslash Bladder Cancer}\\
+\multirow[b]{-3}{0.75in}{\raggedright\arraybackslash Bladder Cancer} & \multirow[b]{-3}{*}{\raggedleft\arraybackslash 33} & \multirow[b]{-3}{0.7in}{\raggedright\arraybackslash non-invasive bladder cancer} & \multirow[b]{-3}{0.7in}{\raggedright\arraybackslash invasive bladder cancer} & \multirow[b]{-3}{*}{\raggedleft\arraybackslash 0.424} & cc & 10 & \multirow[b]{-3}{*}{\raggedright\arraybackslash GSE71669}\\
 \cmidrule{1-8}
  &  &  &  &  & cpg & 7396 & \\
 
@@ -446,7 +446,7 @@ Dataset & N & Y=0 & Y=1 & Prop(Y = 1) & Omic & P & Disease\\
 
  &  &  &  &  & rppa & 40 & \\
 
-\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash TCGA-ACC} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 46} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.391} & mrna & 5660 & \multirow[b]{-4}{*}{\raggedright\arraybackslash Adrenocortical Carcinoma}\\
+\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Adrenocortical Carcinoma} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 46} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.391} & mrna & 5660 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-ACC}\\
 \cmidrule{1-2}
 \cmidrule{5-8}
  &  &  &  &  & cpg & 6489 & \\
@@ -455,7 +455,7 @@ Dataset & N & Y=0 & Y=1 & Prop(Y = 1) & Omic & P & Disease\\
 
  &  &  &  &  & rppa & 57 & \\
 
-\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash TCGA-KICH} &  &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.302} & mrna & 5517 & \multirow[b]{-4}{*}{\raggedright\arraybackslash Adenomas and Adenocarcinomas}\\
+\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Adenomas and Adenocarcinomas} &  &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.302} & mrna & 5517 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-KICH}\\
 \cmidrule{1-1}
 \cmidrule{5-8}
  &  &  &  &  & cpg & 7647 & \\
@@ -464,7 +464,7 @@ Dataset & N & Y=0 & Y=1 & Prop(Y = 1) & Omic & P & Disease\\
 
  &  &  &  &  & rppa & 41 & \\
 
-\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash TCGA-MESO} & \multirow[b]{-8}{*}{\raggedleft\arraybackslash 63} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.762} & mrna & 5852 & \multirow[b]{-4}{*}{\raggedright\arraybackslash Mesothelioma}\\
+\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Mesothelioma} & \multirow[b]{-8}{*}{\raggedleft\arraybackslash 63} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.762} & mrna & 5852 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-MESO}\\
 \cmidrule{1-2}
 \cmidrule{5-8}
  &  &  &  &  & cpg & 7534 & \\
@@ -473,7 +473,7 @@ Dataset & N & Y=0 & Y=1 & Prop(Y = 1) & Omic & P & Disease\\
 
  &  &  &  &  & rppa & 47 & \\
 
-\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash TCGA-SKCM} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 80} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.350} & mrna & 5691 & \multirow[b]{-4}{*}{\raggedright\arraybackslash Skin Cutaneous Melanoma}\\
+\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Skin Cutaneous Melanoma} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 80} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.350} & mrna & 5691 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-SKCM}\\
 \cmidrule{1-2}
 \cmidrule{5-8}
  &  &  &  &  & cpg & 7985 & \\
@@ -482,7 +482,7 @@ Dataset & N & Y=0 & Y=1 & Prop(Y = 1) & Omic & P & Disease\\
 
  &  &  &  &  & rppa & 43 & \\
 
-\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash TCGA-BRCA} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 109} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.358} & mrna & 5936 & \multirow[b]{-4}{*}{\raggedright\arraybackslash Breast Invasive Carcinoma}\\
+\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Breast Invasive Carcinoma} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 109} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.358} & mrna & 5936 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-BRCA}\\
 \cmidrule{1-2}
 \cmidrule{5-8}
  &  &  &  &  & cpg & 7963 & \\
@@ -491,7 +491,7 @@ Dataset & N & Y=0 & Y=1 & Prop(Y = 1) & Omic & P & Disease\\
 
  &  &  &  &  & rppa & 44 & \\
 
-\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash TCGA-ESCA} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 119} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.353} & mrna & 5709 & \multirow[b]{-4}{*}{\raggedright\arraybackslash Esophageal Carcinoma}\\
+\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Esophageal Carcinoma} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 119} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.353} & mrna & 5709 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-ESCA}\\
 \cmidrule{1-2}
 \cmidrule{5-8}
  &  &  &  &  & cpg & 7726 & \\
@@ -500,7 +500,7 @@ Dataset & N & Y=0 & Y=1 & Prop(Y = 1) & Omic & P & Disease\\
 
  &  &  &  &  & rppa & 44 & \\
 
-\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash TCGA-KIRC} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 123} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.520} & mrna & 5941 & \multirow[b]{-4}{*}{\raggedright\arraybackslash Kidney Renal Clear Cell Carcinoma}\\
+\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Kidney Renal Clear Cell Carcinoma} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 123} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.520} & mrna & 5941 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-KIRC}\\
 \cmidrule{1-2}
 \cmidrule{5-8}
  &  &  &  &  & cpg & 6367 & \\
@@ -509,7 +509,7 @@ Dataset & N & Y=0 & Y=1 & Prop(Y = 1) & Omic & P & Disease\\
 
  &  &  &  &  & rppa & 25 & \\
 
-\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash TCGA-THCA} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 217} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.318} & mrna & 5537 & \multirow[b]{-4}{*}{\raggedright\arraybackslash Thyroid Carcinoma}\\
+\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Thyroid Carcinoma} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 217} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.318} & mrna & 5537 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-THCA}\\
 \cmidrule{1-2}
 \cmidrule{5-8}
  &  &  &  &  & cpg & 8072 & \\
@@ -518,13 +518,13 @@ Dataset & N & Y=0 & Y=1 & Prop(Y = 1) & Omic & P & Disease\\
 
  &  &  &  &  & rppa & 44 & \\
 
-\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash TCGA-BLCA} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 336} & \multirow[b]{-36}{0.7in}{\raggedright\arraybackslash stagei/stageii} & \multirow[b]{-36}{0.7in}{\raggedright\arraybackslash stageiii/stageiv} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.685} & mrna & 6093 & \multirow[b]{-4}{*}{\raggedright\arraybackslash Bladder Urothelial Carcinoma}\\
+\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Bladder Urothelial Carcinoma} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 336} & \multirow[b]{-36}{0.7in}{\raggedright\arraybackslash stagei/stageii} & \multirow[b]{-36}{0.7in}{\raggedright\arraybackslash stageiii/stageiv} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.685} & mrna & 6093 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-BLCA}\\
 \cmidrule{1-8}
  &  &  &  &  & cpg & 58 & \\
 
  &  &  &  &  & genomics & 74 & \\
 
-\multirow[b]{-3}{0.75in}{\raggedright\arraybackslash ROSMAP} & \multirow[b]{-3}{*}{\raggedleft\arraybackslash 351} & \multirow[b]{-3}{0.7in}{\raggedright\arraybackslash normal control} & \multirow[b]{-3}{0.7in}{\raggedright\arraybackslash alzheimer's disease} & \multirow[b]{-3}{*}{\raggedleft\arraybackslash 0.519} & mrna & 90 & \multirow[b]{-3}{*}{\raggedright\arraybackslash Alzheimer's Disease}\\*
+\multirow[b]{-3}{0.75in}{\raggedright\arraybackslash Alzheimer's Disease} & \multirow[b]{-3}{*}{\raggedleft\arraybackslash 351} & \multirow[b]{-3}{0.7in}{\raggedright\arraybackslash normal control} & \multirow[b]{-3}{0.7in}{\raggedright\arraybackslash alzheimer's disease} & \multirow[b]{-3}{*}{\raggedleft\arraybackslash 0.519} & mrna & 90 & \multirow[b]{-3}{*}{\raggedright\arraybackslash ROSMAP}\\*
 \end{longtable}
 \endgroup{}
 
