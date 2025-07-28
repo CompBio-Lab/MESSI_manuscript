@@ -370,7 +370,7 @@ To access how methods perform in simulation studies, we look into its classifica
 
 }
 
-\caption{Simulation studies performances on AUC and feature selection sensitivity/specificity  with varied signal and correlation in the data. Each grid is combination of amount of signal to differentiate response variable classes, and correlation of omics within one complete set of multiomics simulated data. A) Mean Area under the curve (AUC) score of a 5-fold CV. This measures ability of method predictive performance on the response variable, the closer score to 1 (max) is better. B) The sensititivity here is to measure how good methods are identifying the actual signal variables given noise in other variables. The specificity here is to measure how good methods are detecting the noises out. The values of signal are the following: 0, 3, 100 (Low, Medium, High). The values of correlation are the following: 0, 0.5, 1 (Low, Medium, High)}(\#fig:sim-grid-plot)
+\caption{Simulation studies performances on AUC and feature selection sensitivity/specificity  with varied signal and correlation in the data. Each grid is combination of amount of signal to differentiate response variable classes, and correlation of omics within one complete set of multiomics simulated data. A) Mean Area under the curve (AUC) score of a 5-fold CV. This measures ability of method predictive performance on the response variable, the closer score to 1 (max) is better. B) The sensititivity here is to measure how good methods are identifying the actual signal variables given noise in other variables. The specificity here is to measure how good methods are detecting the noises out. The values of signal are the following: 0, 3, 100 (None, Low, High). The values of correlation are the following: 0, 0.5, 1 (Low, Medium, High)}(\#fig:sim-grid-plot)
 \end{figure}
 
 
@@ -431,7 +431,7 @@ Disease & N & Y=0 & Y=1 & Prop(Y = 1) & Omic & P & Dataset\\
 
  &  &  &  &  & rppa & 42 & \\
 
-\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Stomach and Esophageal Carcinoma} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 25} & \multirow[b]{-4}{0.7in}{\raggedright\arraybackslash stagei/stageii} & \multirow[b]{-4}{0.7in}{\raggedright\arraybackslash stageiii/stageiv} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.600} &  & 5590 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-STES}\\
+\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Stomach and Esophageal Cancer} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 25} & \multirow[b]{-4}{0.7in}{\raggedright\arraybackslash stagei/stageii} & \multirow[b]{-4}{0.7in}{\raggedright\arraybackslash stageiii/stageiv} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.600} &  & 5590 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-STES}\\
 \cmidrule{1-5}
 \cmidrule{7-8}
  &  &  &  &  & \multirow[b]{-2}{*}{\raggedright\arraybackslash mrna} & 5831 & \\
@@ -446,7 +446,7 @@ Disease & N & Y=0 & Y=1 & Prop(Y = 1) & Omic & P & Dataset\\
 
  &  &  &  &  & rppa & 40 & \\
 
-\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Adrenocortical Carcinoma} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 46} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.391} & mrna & 5660 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-ACC}\\
+\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Adrenocortical Cancer} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 46} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.391} & mrna & 5660 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-ACC}\\
 \cmidrule{1-2}
 \cmidrule{5-8}
  &  &  &  &  & cpg & 6489 & \\
@@ -473,7 +473,7 @@ Disease & N & Y=0 & Y=1 & Prop(Y = 1) & Omic & P & Dataset\\
 
  &  &  &  &  & rppa & 47 & \\
 
-\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Skin Cutaneous Melanoma} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 80} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.350} & mrna & 5691 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-SKCM}\\
+\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Skin Cutaneous Cancer} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 80} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.350} & mrna & 5691 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-SKCM}\\
 \cmidrule{1-2}
 \cmidrule{5-8}
  &  &  &  &  & cpg & 7985 & \\
@@ -482,7 +482,7 @@ Disease & N & Y=0 & Y=1 & Prop(Y = 1) & Omic & P & Dataset\\
 
  &  &  &  &  & rppa & 43 & \\
 
-\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Breast Invasive Carcinoma} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 109} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.358} & mrna & 5936 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-BRCA}\\
+\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Breast Invasive Cancer} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 109} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.358} & mrna & 5936 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-BRCA}\\
 \cmidrule{1-2}
 \cmidrule{5-8}
  &  &  &  &  & cpg & 7963 & \\
@@ -491,7 +491,7 @@ Disease & N & Y=0 & Y=1 & Prop(Y = 1) & Omic & P & Dataset\\
 
  &  &  &  &  & rppa & 44 & \\
 
-\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Esophageal Carcinoma} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 119} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.353} & mrna & 5709 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-ESCA}\\
+\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Esophageal Cancer} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 119} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.353} & mrna & 5709 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-ESCA}\\
 \cmidrule{1-2}
 \cmidrule{5-8}
  &  &  &  &  & cpg & 7726 & \\
@@ -500,7 +500,7 @@ Disease & N & Y=0 & Y=1 & Prop(Y = 1) & Omic & P & Dataset\\
 
  &  &  &  &  & rppa & 44 & \\
 
-\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Kidney Renal Clear Cell Carcinoma} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 123} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.520} & mrna & 5941 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-KIRC}\\
+\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Kidney Cancer} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 123} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.520} & mrna & 5941 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-KIRC}\\
 \cmidrule{1-2}
 \cmidrule{5-8}
  &  &  &  &  & cpg & 6367 & \\
@@ -509,7 +509,7 @@ Disease & N & Y=0 & Y=1 & Prop(Y = 1) & Omic & P & Dataset\\
 
  &  &  &  &  & rppa & 25 & \\
 
-\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Thyroid Carcinoma} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 217} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.318} & mrna & 5537 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-THCA}\\
+\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Thyroid Cancer} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 217} &  &  & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.318} & mrna & 5537 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-THCA}\\
 \cmidrule{1-2}
 \cmidrule{5-8}
  &  &  &  &  & cpg & 8072 & \\
@@ -518,7 +518,7 @@ Disease & N & Y=0 & Y=1 & Prop(Y = 1) & Omic & P & Dataset\\
 
  &  &  &  &  & rppa & 44 & \\
 
-\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Bladder Urothelial Carcinoma} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 336} & \multirow[b]{-36}{0.7in}{\raggedright\arraybackslash stagei/stageii} & \multirow[b]{-36}{0.7in}{\raggedright\arraybackslash stageiii/stageiv} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.685} & mrna & 6093 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-BLCA}\\
+\multirow[b]{-4}{0.75in}{\raggedright\arraybackslash Bladder Cancer} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 336} & \multirow[b]{-36}{0.7in}{\raggedright\arraybackslash stagei/stageii} & \multirow[b]{-36}{0.7in}{\raggedright\arraybackslash stageiii/stageiv} & \multirow[b]{-4}{*}{\raggedleft\arraybackslash 0.685} & mrna & 6093 & \multirow[b]{-4}{*}{\raggedright\arraybackslash TCGA-BLCA}\\
 \cmidrule{1-8}
  &  &  &  &  & cpg & 58 & \\
 
