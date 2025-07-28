@@ -137,26 +137,34 @@ main <- function(input_path, output_path, text_size, width, height, dpi, use_log
     )
 
   # The memory plot
-  memory_plot <- plot_summary_metric(
-    plot_df, "peak_vmem_mb", "Memory", y_lab = "RAM memory usage (MB)",
+  rss_memory_plot <- plot_summary_metric(
+    plot_df, "peak_rss_mb", "Actual Memory used", y_lab = "RSS RAM memory usage (MB)",
     text_size=text_size,
     use_log=use_log
     )
+
+  vmem_memory_plot <- plot_summary_metric(
+    plot_df, "peak_vmem_mb", "Virtual Memory", y_lab = "VMEM RAM memory usage (MB)",
+    text_size=text_size,
+    use_log=use_log
+  )
 
   # Combine individual plots and remove legend
   p_without_legend <- plot_grid(
     time_plot + theme(legend.position = "none",
                    strip.text.y = element_blank()),
-    memory_plot + theme(legend.position = "none"),
-    ncol=2,
-    labels=c("A", "B")
+    rss_memory_plot + theme(legend.position = "none",
+                            strip.text.y = element_blank()),
+    vmem_memory_plot + theme(legend.position = "none"),
+    ncol=3,
+    labels=c("A", "B", "C")
   )
 
   # Extract the legend from one of the plot is enough as it share legend
   # but the get_legend gives useless warning so suppress it
   leg <- suppressWarnings(
     cowplot::get_legend(
-      memory_plot +
+      time_plot +
         labs(fill="Method action") +
         guides(
           fill = guide_legend(

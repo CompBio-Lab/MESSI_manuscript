@@ -298,16 +298,16 @@ Due to the fact of ground truth of real datasets are not available, the interpre
 
 
 
-### Computational Resourcs Usage
+### Computational Resources Usage
 
-The benchmarking results highlight substantial variation in both runtime duration and memory usage across multiview learning methods and computational stages. 
+The pipeline provides raw trace file recording computational resources usage of all processes during execution. The benchmarking results highlight substantial variation in both runtime duration and memory usage across the integration methods in distinct computational stages like preprocessing data, training model, running prediction and feature selection. 
 
 
-```{r computational-resource-plot, echo=FALSE, out.width="96%", fig.cap="Mean runtime and memory usage of methods across computational stages.(A) Duration (in seconds, log10 scale) of each method separated by stage: preprocessing, model training, prediction, and feature selection. (B) Corresponding RAM memory usage (in megabytes, log10 scale) for the same stages. Bars represent mean values with error bars indicating standard deviations. Each stage is color-coded: preprocessing (yellow), training (blue), prediction (green), and feature selection (pink)."}
+```{r computational-resource-plot, echo=FALSE, out.width="96%", fig.cap="Mean runtime and memory usage of methods across computational stages.(A) Duration (in seconds) of each method separated by stage: preprocessing, model training, prediction, and feature selection. (B) Corresponding RAM memory usage (in megabytes) for the same stages. Bars represent mean values with error bars indicating standard deviations. Each stage is color-coded: preprocessing (yellow), training (blue), prediction (green), and feature selection (pink)."}
 knitr::include_graphics(here::here(fig_path, "fig_computational_resources_usage.png"))
 ```
 
-As shown in (Fig \@ref(fig:computational-resource-plot) panel A), model training is consistently the most time-consuming step across all methods, with MULTIVIEW and MOGONET requiring notably longer durations compared to RGCCA, MOFA, and DIABLO. Despite the high training time of MULTIVIEW, its prediction stage is relatively efficient and on par with other methods. Preprocessing time remains consistent across methods, suggesting similar data preparation pipelines or overheads. Feature selection duration shows more variability, with MULTIVIEW again standing out as the most computationally expensive, while DIABLO and MOFA appear to be the most efficient overall.
+As shown in (Fig \@ref(fig:computational-resource-plot) panel A), model training is consistently the most time-consuming step across all methods, with MULTIVIEW and MOGONET requiring notably longer durations compared to RGCCA, MOFA, and DIABLO regardless of their design matrices choices. Despite the high training time of MULTIVIEW, its prediction stage is relatively efficient and on par with other methods. Preprocessing time remains consistent across methods, suggesting similar data preparation pipelines or overheads. Feature selection duration shows more variability, with MULTIVIEW again standing out as the most computationally expensive, while DIABLO and MOFA appear to be the most efficient overall.
 
 In terms of RAM usage (Fig \@ref(fig:computational-resource-plot) panel B), similar trends are observed. Model training and prediction steps tend to demand more memory than preprocessing or feature selection, particularly for MULTIVIEW and MOGONET, which consume the most memory during prediction. This is likely due to the complexity of their underlying architectures or model size. Interestingly, DIABLO and MOFA show efficient memory use across all stages, indicating their suitability for resource-constrained environments. The consistently higher memory demand during the prediction phase for MULTIVIEW raises practical concerns for deployment, especially in real-time or large-scale applications. Overall, while MULTIVIEW and MOGONET may offer modeling advantages, they do so at the cost of higher computational resource requirements. 
 

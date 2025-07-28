@@ -76,7 +76,7 @@ main <- function(input_path, output_path) {
       str_detect(tag, "full") ~ str_c(process, "FULL", sep="-"),
       TRUE ~ process
     )) %>%
-    select(workflow, process, tag, method, action, realtime_sec, peak_vmem_mb, duration_sec)  %>%
+    select(workflow, process, tag, method, action, realtime_sec, peak_rss_mb, peak_vmem_mb, duration_sec)  %>%
     # Change values for FEATURE
     mutate(action=str_replace(action, "FEATURE", "FEATURE_SELECT"))
 
