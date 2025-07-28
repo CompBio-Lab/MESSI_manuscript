@@ -34,7 +34,7 @@ create_panel_plot <- function(data, metric_filter, metric_label, y_label_expr, t
     filter(metric == metric_filter) |>
     mutate(metric = metric_label) |>
     ggplot(aes(x = method, y = value, fill = corr)) +
-    geom_bar(stat = "identity", position = position_dodge2(padding = 0.4)) +
+    geom_bar(stat = "identity", position = position_dodge2(padding = 0.4), alpha=0.7) +
     ylab(y_label_expr) +
     theme_bw(base_size = text_size) +
     facet_grid(metric ~ signal) +
@@ -132,7 +132,7 @@ main <- function(input_path, output_path, width, height, text_size) {
   plot_data <- input_data |>
     dplyr::mutate(
       metric = as.factor(metric),
-      signal = factor(signal, labels = c("Signal: Low", "Signal: Medium ", "Signal: High")),
+      signal = factor(signal, labels = c("Signal: None", "Signal: Low ", "Signal: High")),
       corr = as.factor(corr),
       method = factor(method, levels=method_order)
     )
@@ -155,7 +155,7 @@ main <- function(input_path, output_path, width, height, text_size) {
   sensitivity_panel <- create_panel_plot(
     data = plot_data,
     metric_filter = "sensitivity",
-    metric_label = "Signal Variables",
+    metric_label = "True Variables",
     #y_label_expr = expression("Proportion of TP^* / TP^* + FN^*")
     #y_label_expr = expression("Proportion of " * TP^"*" / (TP^"*" + FN^"*"))
     y_label_expr = "Proportion of variables selected",
