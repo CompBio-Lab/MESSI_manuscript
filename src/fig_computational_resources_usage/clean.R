@@ -1,3 +1,15 @@
+doc <- "
+
+This script is used to make plot data for figure computational resources usage for real data.
+
+Usage:
+  clean.R [options]
+
+Options:
+  --input_path=INPUT_PATH       Path to read in the trace file
+  --output_path=OUTPUT          Path to write out plot data
+"
+
 # Load library
 suppressPackageStartupMessages(library(dplyr))
 
@@ -80,7 +92,8 @@ main <- function(input_path, output_path) {
 }
 
 # Call the fun here
-input_path <- NULL
-output_path <- NULL
+opt <- docopt::docopt(doc)
+input_path <- opt$input_path
+output_path <- opt$output_path
 main(input_path=input_path, output_path=output_path)
 

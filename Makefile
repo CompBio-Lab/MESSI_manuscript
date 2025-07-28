@@ -55,7 +55,9 @@ SIM_FS_RESULTS_CSV=${SIM_DATA_DIR}/all_feature_selection_results.csv
 FIG1_REAL_PROCESSED=${DATA_PROCESSED_DIR}/fig_performance_evaluation_real_plot_data.rds
 FIG_SIM_PERF_PROCESSED=${DATA_PROCESSED_DIR}/fig_performance_evaluation_sim_plot_data.rds
 
-# Computational time
+
+
+# DEPRECATED: Computational time
 FIG2_REAL_PROCESSED=${DATA_PROCESSED_DIR}/fig_computational_time_real_plot_data.csv
 FIG2_SIM_PROCESSED=${DATA_PROCESSED_DIR}/fig_computational_time_sim_plot_data.csv
 
@@ -103,7 +105,7 @@ FIG3_PLOT_SIM_SRC=${FIG3_SRC_DIR}/sim/plot_sim.R
 FIG_REAL_PERF_OUT=${FIG_DIR}/fig_performance_evaluation_real.${DEVICE}
 FIG_SIM_PERF_OUT=${FIG_DIR}/fig_performance_evaluation_sim.${DEVICE}
 
-# Computational time
+# DEPRECATED: Computational time
 FIG_REAL_TIME_OUT=${FIG_DIR}/fig_computational_time_real.${DEVICE}
 FIG_SIM_TIME_OUT=${FIG_DIR}/fig_computational_time_sim.${DEVICE}
 
@@ -116,6 +118,9 @@ FIG_SIM_GRID_OUT=${FIG_DIR}/fig_simulated_performance_grid.${DEVICE}
 
 # FGSEA analysis
 FIG_FGSEA_OUT=${FIG_DIR}/fig_fgsea_analysis_two_panels.${DEVICE}
+
+# Computational resources usage (time and memory)
+FIG_COMPUTATIONAL_RESOURCES_OUT=${FIG_DIR}/fig_computational_resources_usage.${DEVICE}
 
 # ================================================
 # TABLES
@@ -136,7 +141,7 @@ TABLE_DATASET=${DATA_PROCESSED_DIR}/real_dataset_metadata.csv
 
 TABLE_OUTPUTS=${TABLE_METHOD} ${TABLE_DATASET}
 
-OUTPUTS=${FIG_REAL_PERF_OUT} ${TABLE_METHOD} ${TABLE_DATASET} ${FIG_FGSEA_OUT} ${FIG_SIM_GRID_OUT} ${FIG_SIM_PERF_OUT} ${FIG_SIM_FS_METRIC}
+OUTPUTS=${FIG_REAL_PERF_OUT} ${TABLE_METHOD} ${TABLE_DATASET} ${FIG_FGSEA_OUT} ${FIG_SIM_GRID_OUT} ${FIG_SIM_PERF_OUT} ${FIG_SIM_FS_METRIC} ${FIG_COMPUTATIONAL_RESOURCES_OUT}
 #${FIG_REAL_TIME_OUT}
 #${FIG_REAL_FS_OUT} ${TABLE_METHOD} ${TABLE_DATASET}
 # Conditionally include simulated data targets if input files exist
@@ -354,6 +359,28 @@ ${FIG_SIM_GRID_OUT}: ${FIG_SIM_GRID_PROCESSED} src/fig_simulated_performances_gr
 		--output_path ${FIG_SIM_GRID_OUT} \
 		--width 10 \
 		--height 12 \
+		--device ${DEVICE} \
+		--dpi ${DPI} \
+		--show_title ${SHOW_TITLE}
+
+# FIGURE 5: Computational resources usage (time and memory)
+# Preprocess computational resources usage data
+FIG_COMPUTATIONAL_RESOURCES_PROCESSED=data/processed/fig_computational_resources_usage.csv
+${FIG_COMPUTATIONAL_RESOURCES_PROCESSED}: src/fig_computational_resources_usage/clean.R ${REAL_TRACE_TXT}
+	@echo ${BANNER}
+	@echo "Processing computational resources usage data (time and memory)..."
+	Rscript src/fig_computational_resources_usage/clean.R \
+		--input_path ${REAL_TRACE_TXT} \
+		--output_path ${FIG_COMPUTATIONAL_RESOURCES_PROCESSED}
+
+${FIG_COMPUTATIONAL_RESOURCES_OUT}: src/fig_computational_resources_usage/plot_computational_resources.R ${FIG_COMPUTATIONAL_RESOURCES_PROCESSED}
+	@echo ${BANNER}
+	@echo "Plotting computational resources usage (time and memory)..."
+	Rscript src/fig_computational_resources_usage/plot_computational_resources.R \
+		--input_path ${FIG_COMPUTATIONAL_RESOURCES_PROCESSED} \
+		--output_path ${FIG_COMPUTATIONAL_RESOURCES_OUT} \
+		--width 12 \
+		--height 9 \
 		--device ${DEVICE} \
 		--dpi ${DPI} \
 		--show_title ${SHOW_TITLE}

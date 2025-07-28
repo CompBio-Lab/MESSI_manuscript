@@ -1,3 +1,22 @@
+doc <- "
+
+This script is used to create figure of computational resources usage for real data
+
+Usage:
+  plot_sim.R [options]
+
+Options:
+  --input_path=INPUT      Path to read in the plot data
+  --output_path=OUTPUT    Path to write out output plot
+  --width=WIDTH           Width of the graph [default: 7]
+  --height=height         Height of the graph [default: 7]
+  --device=DEVICE         Device to print out [default: png]
+  --dpi=DPI               Dots per inch [default: 300]
+  --show_title=ST         Show plot title [default: 1]
+"
+
+
+
 # Load libraries
 library(ggplot2)
 library(forcats)
@@ -7,6 +26,8 @@ library(cowplot)
 
 # Load custom scripts
 source("src/fig_computational_resources_usage/_utils.R")
+
+
 # Custom theme to use
 resource_panel_theme <- function(text_size) {
   # Remove the vertical lines in x-axis
@@ -167,12 +188,13 @@ main <- function(input_path, output_path, text_size, width, height, dpi, use_log
 
 # Lastly call the main function
 # Read in parameters
-input_path <- NULL
-output_path <- NULL
+opt <- docopt::docopt(doc)
+input_path <- opt$input_path
+output_path <- opt$output_path
 text_size <- 12
-width <- 12
-height <- 9
-dpi <- 700
+width <- as.numeric(opt$width)
+height <- as.numeric(opt$height)
+dpi <- as.numeric(opt$dpi)
 use_log <- FALSE
 
 main(input_path=  input_path, output_path = output_path, text_size = text_size, width = width, height=height, dpi = dpi, use_log = use_log)
