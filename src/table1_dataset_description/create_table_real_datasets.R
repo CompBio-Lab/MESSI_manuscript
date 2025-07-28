@@ -66,18 +66,18 @@ diseases <- c(
   "Autism" , # GSE38609
   "Bladder Cancer", # GSE71669
   "Alzheimer's Disease", # rosmap
-  "Adrenocortical Carcinoma", # tcga-acc
-  "Bladder Urothelial Carcinoma", # tcga-blca
-  "Breast Invasive Carcinoma", # tcga-brca
+  "Adrenocortical Cancer", # tcga-acc
+  "Bladder Cancer", # tcga-blca
+  "Breast Invasive Cancer", # tcga-brca
   "Cholangiocarcinoma", # tcga-chol
-  "Esophageal Carcinoma", # tcga-esca
+  "Esophageal Cancer", # tcga-esca
   "Adenomas and Adenocarcinomas", # tcga-kich
   #"Kidney Cancer", # tcga-kipan
-  "Kidney Renal Clear Cell Carcinoma", # tcga-kirc
+  "Kidney Cancer", # tcga-kirc
   "Mesothelioma", # tcga-meso
-  "Skin Cutaneous Melanoma", # tcga-skcm
-  "Stomach and Esophageal Carcinoma", # tcga-stes
-  "Thyroid Carcinoma" # tcga-thca
+  "Skin Cutaneous Cancer", # tcga-skcm
+  "Stomach and Esophageal Cancer", # tcga-stes
+  "Thyroid Cancer" # tcga-thca
 )
 
 
