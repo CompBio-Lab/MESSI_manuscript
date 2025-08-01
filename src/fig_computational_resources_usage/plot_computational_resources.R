@@ -8,10 +8,10 @@ Usage:
 Options:
   --input_path=INPUT      Path to read in the plot data
   --output_path=OUTPUT    Path to write out output plot
-  --width=WIDTH           Width of the graph [default: 7]
-  --height=height         Height of the graph [default: 7]
+  --width=WIDTH           Width of the graph [default: 12]
+  --height=height         Height of the graph [default: 9]
   --device=DEVICE         Device to print out [default: png]
-  --dpi=DPI               Dots per inch [default: 300]
+  --dpi=DPI               Dots per inch [default: 700]
   --show_title=ST         Show plot title [default: 1]
 "
 
@@ -112,7 +112,7 @@ plot_summary_metric <- function(data, metric_col, metric_label, y_lab, text_size
 # Main execute point of the script
 main <- function(input_path, output_path, text_size, width, height, dpi, use_log=FALSE) {
   if (is.null(input_path)) {
-    input_path <- "data/processed/computational_resources_usage_df.csv"
+    input_path <- "data/processed/fig_computational_resources_usage.csv"
   }
 
   if (is.null(output_path)) {
