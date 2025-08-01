@@ -1,3 +1,7 @@
+source("src/common_helpers/standardize_data_funs.R")
+
+
+
 # Function to read and annotate each RDS file located in directory
 read_and_annotate <- function(file) {
   result <- readRDS(file)
@@ -42,6 +46,8 @@ wrangle_data <- function(df) {
       names = c("method", "dataset"), delim="_",
       too_many = "merge", too_few = "align_start"
     ) %>%
+    # Capitalize or to upper the method names
+    mutate(method = standardize_method_names(method)) %>%
     dplyr::select(-c("ES", "NES"))
 }
 

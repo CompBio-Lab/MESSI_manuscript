@@ -20,6 +20,8 @@ library(stringr)
 source(here::here("src/fig_fgsea_analysis/_utils.R"))
 
 
+source("src/common_helpers/standardize_data_funs.R")
+
 main <- function(input_path, output_path, cutoff) {
   if (is.null(input_path)) {
     input_path <- "data/processed/fgsea_part2_df.csv"
@@ -50,6 +52,8 @@ main <- function(input_path, output_path, cutoff) {
         str_replace("-ncomp", "_ncomp") |>
         str_replace("-factor", "-Factor")
     ) %>%
+    # Capitalize or to upper the method names
+    mutate(method = standardize_method_names(method)) %>%
     # Filter rows where organ matches label
     filter(str_detect(organ_label, organ)) %>%
     # Add columns in one mutate block

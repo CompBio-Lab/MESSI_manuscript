@@ -2,6 +2,8 @@ suppressPackageStartupMessages(library(dplyr))
 library(stringr)
 library(tidyr)
 
+source("src/common_helpers/standardize_data_funs.R")
+
 # common_preprocessing <- function(df) {
 #   workflow_prefix <- "NFCORE_MESSI_BENCHMARK:MESSI_BENCHMARK:"
 #   df  %>%
@@ -96,6 +98,7 @@ wrangle_feat_selection <- function(df) {
       str_detect(method, "cooperative") ~ "multiview",
       TRUE ~ method
     )) %>%
-
+    # Capitalize or to upper the method names
+    mutate(method = standardize_method_names(method)) %>%
     as_tibble()  # Materialize result (computed now)
 }

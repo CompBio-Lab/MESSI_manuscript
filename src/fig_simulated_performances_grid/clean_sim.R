@@ -16,6 +16,8 @@ Options:
 suppressPackageStartupMessages(library(dplyr))
 
 
+source("src/common_helpers/standardize_data_funs.R")
+
 main <- function(perf_input_path, feat_input_path, output_path) {
   if (is.null(perf_input_path)) {
     perf_input_path <- "data/processed/fig_performance_evaluation_sim_plot_data.rds" |>
@@ -45,11 +47,15 @@ main <- function(perf_input_path, feat_input_path, output_path) {
     summarize(sensitivity = mean(sensitivity),
               specificity = mean(specificity),
               .groups = "drop") %>%
-    select(method:specificity, signal, corr)
+    select(method:specificity, signal, corr) %>%
+    # Capitalize or to upper the method names
+    mutate(method = standardize_method_names(method))
 
   plot_data_perf <- perf_input_data %>%
     filter(signal %in% c(0,3,100)) %>%
-    select(method, dataset, auc, signal,corr)
+    select(method, dataset, auc, signal,corr) %>%
+    # Capitalize or to upper the method names
+    mutate(method = standardize_method_names(method))
 
   # ==============================================================================
   # Then join both and transform data for plotting

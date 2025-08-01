@@ -14,6 +14,8 @@ Options:
 suppressPackageStartupMessages(library(dplyr))
 
 
+source("src/common_helpers/standardize_data_funs.R")
+
 main <- function(input_path, output_path, cutoff) {
   if (is.null(input_path)) {
     input_path <- "data/processed/fgsea_part1_df.csv"
@@ -32,6 +34,8 @@ main <- function(input_path, output_path, cutoff) {
     dplyr::mutate(
       method = stringr::str_replace(method, "-ncomp", "_ncomp")
     ) %>%
+    # Capitalize or to upper the method names
+    mutate(method = standardize_method_names(method)) %>%
     #group_by(method, dataset, view, gs_collection_name) %>%
     group_by(method, dataset, gs_collection_name) %>%
     summarize(n_sig = n(), .groups = "drop") %>%

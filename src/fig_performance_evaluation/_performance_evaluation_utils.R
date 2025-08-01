@@ -4,6 +4,7 @@ library(here)
 library(stringr)
 library(tidyr)
 
+source("src/common_helpers/standardize_data_funs.R")
 
 wrangle_data <- function(df) {
   wrangle_df <- df %>%
@@ -37,6 +38,8 @@ wrangle_data <- function(df) {
         TRUE ~ method
         )
     ) %>%
+    # Capitalize or to upper the method names
+    mutate(method = standardize_method_names(method)) %>%
     select(
       method, dataset, ranking,
       auc, f1_score
