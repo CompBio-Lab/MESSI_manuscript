@@ -8,8 +8,8 @@ Usage:
 Options:
   --input_path=INPUT      Path to read in the plot data
   --output_path=OUTPUT    Path to write out output plot
-  --width=WIDTH           Width of the graph [default: 12]
-  --height=height         Height of the graph [default: 9]
+  --width=WIDTH           Width of the graph [default: 16]
+  --height=height         Height of the graph [default: 14]
   --device=DEVICE         Device to print out [default: png]
   --dpi=DPI               Dots per inch [default: 700]
   --show_title=ST         Show plot title [default: 1]
@@ -46,6 +46,10 @@ resource_panel_theme <- function(text_size) {
 
 
 
+
+
+
+
 plot_summary_metric <- function(data, metric_col, metric_label, y_lab, text_size, alpha=0.5, use_log=FALSE) {
   # The metric is summarized
   # Compute mean and sd for the metric
@@ -62,7 +66,7 @@ plot_summary_metric <- function(data, metric_col, metric_label, y_lab, text_size
   summary_df <- summary_df %>%
     mutate(method = fct_reorder(method, -mean_val))
 
-  # This vector value is for new label of action
+  # This vector value is for new label of
   action_labels <- c(
     "PREPROCESS" = "Preprocess",
     "TRAIN" = "Train Model",
@@ -70,18 +74,19 @@ plot_summary_metric <- function(data, metric_col, metric_label, y_lab, text_size
     "FEATURE_SELECT" = "Feature Selection"
   )
 
+
   # Base Plot
-  p <- ggplot(summary_df, aes(x = method, y = mean_val, fill = action)) +
+  p <- ggplot(summary_df, aes(x = method, y = mean_val, fill = method)) +
     geom_bar(stat = "identity", width = 0.4, alpha = alpha) +
     geom_errorbar(aes(ymin = mean_val - sd_val, ymax = mean_val + sd_val), width = 0.2) +
     scale_fill_manual(
       values = c(
-        "#E69F00",  # orange
-        "#56B4E9",  # sky blue
-        "#009E73",  # bluish green
-        "#CC79A7"   # reddish purple)
-      ),
-      labels = action_labels
+        "DIABLO" = "#1F78B4",  # sky blue
+        "MOFA" = "#E31A1C",  # bluish green
+        "MOGONET" = "#FDBF6F",   # reddish purple
+        "multiview" =  "#FF7F00",  # orange
+        "RGCCA" = "#6A3D9A"
+      )
     ) +
     theme_bw(base_size = text_size) +
     # Relies on another theme function
@@ -107,8 +112,6 @@ plot_summary_metric <- function(data, metric_col, metric_label, y_lab, text_size
 }
 
 
-
-
 # Main execute point of the script
 main <- function(input_path, output_path, text_size, width, height, dpi, use_log=FALSE) {
   if (is.null(input_path)) {
@@ -125,39 +128,95 @@ main <- function(input_path, output_path, text_size, width, height, dpi, use_log
     mutate(
       # Let action to have fixed levels, this needs to be done here and not in other script
       action = factor(action, levels = c("PREPROCESS", "TRAIN", "PREDICT", "FEATURE_SELECT"))
-    )
+    ) %>%
+    # Let multiview to follow all lowercase
+    mutate(method = str_replace(method, "MULTIVIEW", "multiview"))
 
+
+  # This is the top panel
+
+  # Time plot sum of sec ---> sum of hrs
+  overall_time_plot <- plot_df %>%
+    group_by(method) %>%
+    summarize(total_duration_sec = sum(duration_sec)) %>%
+    mutate(
+      total_duration_hr = total_duration_sec / 3600,
+      action = "Overall",
+      metric = "Total Duration"
+    ) %>%
+    mutate(method = fct_reorder(method, -total_duration_hr)) %>%
+    ggplot(aes(x=method, y=total_duration_hr, fill=method)) +
+    geom_bar(stat="identity", width=0.7, alpha=alpha) +
+    labs(x="", y="Total duration of computational time in hours") +
+    theme_bw(base_size=text_size) +
+    scale_fill_manual(
+      values = c(
+        "DIABLO" = "#1F78B4",  # sky blue
+        "MOFA" = "#E31A1C",  # bluish green
+        "MOGONET" = "#FDBF6F",   # reddish purple
+        "multiview" =  "#FF7F00",  # orange
+        "RGCCA" = "#6A3D9A"
+      )
+    ) +
+    resource_panel_theme(text_size) +
+    facet_grid(action ~ metric)
+
+  # RSS plot mean of all
+  overall_rss_plot <- plot_summary_metric(
+    plot_df %>% mutate(action="Overall"), "peak_rss_mb", "Actual Memory Used", y_lab = "Overall RSS RAM memory usage (MB)",
+    text_size = text_size, use_log = use_log
+  )
+
+  # VMem plot mean of all
+  overall_vmem_plot <- plot_summary_metric(
+    plot_df %>% mutate(action="Overall"), "peak_vmem_mb", "Virtual Memory", y_lab = "Oveall VMem RAM memory usage (MB)",
+    text_size=text_size,
+    use_log=use_log
+  )
+
+
+  # THIS is the bottom panel
   # Plot the individual panels with raw scale (useLog=FALSE)
 
   # The time plot
   time_plot <- plot_summary_metric(
-    plot_df, "duration_sec", "Duration", y_lab = "Duration (seconds)",
+    plot_df, "duration_sec", "Duration", y_lab = "Mean Duration (seconds)",
     text_size=text_size,
     use_log=use_log
     )
 
   # The memory plot
   rss_memory_plot <- plot_summary_metric(
-    plot_df, "peak_rss_mb", "Actual Memory used", y_lab = "RSS RAM memory usage (MB)",
+    plot_df, "peak_rss_mb", "Actual Memory used", y_lab = "Mean RSS RAM memory usage (MB)",
     text_size=text_size,
     use_log=use_log
     )
 
   vmem_memory_plot <- plot_summary_metric(
-    plot_df, "peak_vmem_mb", "Virtual Memory", y_lab = "VMEM RAM memory usage (MB)",
+    plot_df, "peak_vmem_mb", "Virtual Memory", y_lab = "Mean VMem RAM memory usage (MB)",
     text_size=text_size,
     use_log=use_log
   )
 
   # Combine individual plots and remove legend
-  p_without_legend <- plot_grid(
+  top_p_without_legend <- plot_grid(
+    overall_time_plot + theme(legend.position = "none",
+                      strip.text.y = element_blank()),
+    overall_rss_plot + theme(legend.position = "none",
+                            strip.text.y = element_blank()),
+    overall_vmem_plot + theme(legend.position = "none"),
+    ncol=3,
+    labels=c("A", "B", "C")
+  )
+
+  bottom_p_without_legend <- plot_grid(
     time_plot + theme(legend.position = "none",
                    strip.text.y = element_blank()),
     rss_memory_plot + theme(legend.position = "none",
                             strip.text.y = element_blank()),
     vmem_memory_plot + theme(legend.position = "none"),
     ncol=3,
-    labels=c("A", "B", "C")
+    labels=c("D", "E", "F")
   )
 
   # Extract the legend from one of the plot is enough as it share legend
@@ -179,10 +238,11 @@ main <- function(input_path, output_path, text_size, width, height, dpi, use_log
 
   # Lastly combine both the main plot and the legend
   output_plot <- plot_grid(
-    p_without_legend,
+    top_p_without_legend,
+    bottom_p_without_legend,
     leg,
-    nrow=2,
-    rel_heights = c(1, 0.1)
+    nrow=3,
+    rel_heights = c(0.4, 0.6, 0.1)
   )
 
   # Lastly save to file

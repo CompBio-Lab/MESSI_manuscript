@@ -379,8 +379,8 @@ ${FIG_COMPUTATIONAL_RESOURCES_OUT}: src/fig_computational_resources_usage/plot_c
 	Rscript src/fig_computational_resources_usage/plot_computational_resources.R \
 		--input_path ${FIG_COMPUTATIONAL_RESOURCES_PROCESSED} \
 		--output_path ${FIG_COMPUTATIONAL_RESOURCES_OUT} \
-		--width 12 \
-		--height 9 \
+		--width 16 \
+		--height 14 \
 		--device ${DEVICE} \
 		--dpi ${DPI} \
 		--show_title ${SHOW_TITLE}
