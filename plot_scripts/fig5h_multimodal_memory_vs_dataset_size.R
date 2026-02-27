@@ -131,6 +131,8 @@ combined_df <- left_join(
 
 
 out_plot <- combined_df %>%
+  # Reorder the method to show better legend
+  mutate(method = forcats::fct_reorder(method, peak_rss_mb)) %>%
   ggplot(aes(x = dataset_size, y = peak_rss_mb, color = method)) +
   geom_line(aes(group = method), linewidth=1) +
   geom_point(size = 2) +

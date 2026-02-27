@@ -126,9 +126,10 @@ combined_df <- left_join(
 
 
 
-combined_df
 
 out_plot <- combined_df %>%
+  # Reorder the method to show better legend
+  mutate(method = forcats::fct_reorder(method, realtime_sec)) %>%
   ggplot(aes(x = dataset_size, y = realtime_sec, color = method)) +
   geom_line(aes(group = method), linewidth=1) +
   geom_point(size = 2) +

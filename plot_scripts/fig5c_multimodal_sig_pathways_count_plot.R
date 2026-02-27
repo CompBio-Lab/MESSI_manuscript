@@ -5,6 +5,8 @@ library(ggplot2)
 source("src/common_helpers/standardize_data_funs.R")
 # Load plotting helpers like colors
 source(here::here("src/common_helpers/plot_utils.R"))
+source(here::here("src/common_helpers/save_plot_both.R"))
+
 
 
 df <- data.table::fread("data/processed/multimodal/multimodal_msigdbr_fgsea.csv")
@@ -48,7 +50,12 @@ multimodal_msig_summary_df <- multimodal_msigdbr_df |>
   group_by(method) %>%
   summarize(mean_n_sig = mean(n_sig, na.rm=T),
            sd_n_sig = sd(n_sig, na.rm=T),
-           .groups = "drop")
+           .groups = "drop") %>%
+  mutate(color_label = str_remove(method, "-.*") |> toupper()) %>%
+  mutate(color_label = case_when(
+    color_label == "CARET_MULTIMODAL" ~ "CARET",
+    TRUE ~ color_label
+  ))
 
 # #
 # multimodal_msigdbr_df %>%
@@ -66,13 +73,14 @@ plot_bar <- function(data) {
 
   significant_pathways_method_gs_plot_obj <- data %>%
     mutate(x = forcats:::fct_reorder(method, mean_n_sig)) %>%
-    ggplot(aes(x = x, y = mean_n_sig, fill = method)) +
+    ggplot(aes(x = x, y = mean_n_sig, fill = color_label)) +
     geom_errorbar(aes(ymin = mean_n_sig, ymax = mean_n_sig + sd_n_sig),
                   width = 0.25, color = "grey30", linewidth=0.4,
                   position = position_dodge(0.9)) +
     geom_bar(stat = "identity", width = 0.7) +
     labs(
       x     = NULL,
+      fill  = "Method",
       y     = "# Significant Reactome Pathways",
       title = "Significant Reactome Pathways by Method"
     ) +
@@ -80,7 +88,7 @@ plot_bar <- function(data) {
     tidytext::scale_x_reordered() +
     scale_y_log10(expand = expansion(mult = c(0, 0.12))) +
     coord_flip() +
-    scale_fill_manual(values = method_colors) +
+    scale_fill_manual(values = method_family_colors) +
     theme(
       plot.title         = element_text(hjust = 0.5),
       strip.background   = element_rect(fill = "grey95", color = "grey70"),
