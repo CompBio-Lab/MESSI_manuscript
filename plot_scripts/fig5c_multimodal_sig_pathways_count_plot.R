@@ -7,7 +7,6 @@ source("src/common_helpers/standardize_data_funs.R")
 source(here::here("src/common_helpers/plot_utils.R"))
 
 
-
 df <- data.table::fread("data/processed/multimodal/multimodal_msigdbr_fgsea.csv")
 msigdbr_pathways <- readRDS("data/processed/pathways_db/msigdbr_pathways_collection.rds")
 
@@ -63,7 +62,7 @@ multimodal_msig_summary_df <- multimodal_msigdbr_df |>
 
 plot_bar <- function(data) {
   # Grab method palette
-  custom_method_palette <- get_method_custom_colors()
+  #custom_method_palette <- get_method_custom_colors()
 
   significant_pathways_method_gs_plot_obj <- data %>%
     mutate(x = forcats:::fct_reorder(method, mean_n_sig)) %>%
@@ -81,7 +80,7 @@ plot_bar <- function(data) {
     tidytext::scale_x_reordered() +
     scale_y_log10(expand = expansion(mult = c(0, 0.12))) +
     coord_flip() +
-    scale_fill_manual(values = custom_method_palette) +
+    scale_fill_manual(values = method_colors) +
     theme(
       plot.title         = element_text(hjust = 0.5),
       strip.background   = element_rect(fill = "grey95", color = "grey70"),
@@ -97,9 +96,8 @@ plot_bar <- function(data) {
 
 
 out_plot <- plot_bar(multimodal_msig_summary_df)
-output_png_path <- "fig5c_multimodal_sig_pathways_count.png"
-
-ggsave(output_png_path, out_plot, width = 12, height=8)
+output_png_path <- "results/multimodal/fig5c_multimodal_sig_pathways_count.png"
+save_plot_both(out_plot, output_png_path, width=12, height=8)
 message("\nDone fig5C multimodal significant pathways counts, see fig at: ", output_png_path)
 
 #print(out_plot)

@@ -2,6 +2,9 @@ library(ggplot2)
 library(dplyr)
 #library(ggtext)
 
+source("src/common_helpers/save_plot_both.R")
+source("src/common_helpers/plot_utils.R")
+
 # --- Data ---
 df <- data.table::fread("data/raw/multimodal_data/metrics.csv") |>
   dplyr::rename(method = method_name) |>
@@ -26,7 +29,7 @@ method_order <- df |>
 dot_plot <- df |>  mutate(
   method  = factor(method, levels = rev(method_order)),  # rev so top = highest on y-axis
 ) |>
-  ggplot(aes(x = auc, y = method, color = dataset, shape = dataset)) +
+  ggplot(aes(x = auc, y = method, shape = dataset)) +
   # Ceiling zone shading
   annotate("rect",
            xmin = 0.95, xmax = 1.005, ymin = -Inf, ymax = Inf,
@@ -37,7 +40,7 @@ dot_plot <- df |>  mutate(
                  linewidth = 0.4, alpha = 0.3) +
 
   # Dots
-  geom_point(size = 3) +
+  geom_point(size = 3, color=auc_color) +
 
   # Optional: value labels only for Electrical (most informative spread)
   geom_text(
@@ -45,11 +48,11 @@ dot_plot <- df |>  mutate(
     aes(label = round(auc, 3)),
     nudge_y = 0.4, size = 2.5
   ) +
-  scale_color_manual(values = c(
-    "Clinical + Omics"   = "#2166ac",
-    "Imaging + Omics"    = "#4dac26",
-    "Electrical + Omics" = "#d6604d"
-  )) +
+  # scale_color_manual(values = c(
+  #   "Clinical + Omics"   = "#2166ac",
+  #   "Imaging + Omics"    = "#4dac26",
+  #   "Electrical + Omics" = "#d6604d"
+  # )) +
 
   # Facet — one panel per dataset, shared y-axis
   #facet_wrap(~ dataset, ncol = 3) +
@@ -82,15 +85,15 @@ pos_prop <- data.table::fread("data/raw/multimodal_data/parsed_metadata.csv") |>
 
 p_bar <- ggplot(
   pos_prop,
-  aes(x = reorder(dataset, -prop), y = prop, fill = dataset)) +
-  geom_col(width = 0.6) +
+  aes(x = reorder(dataset, -prop), y = prop)) +
+  geom_col(width = 0.6, fill=auc_color) +
   geom_text(aes(label = round(prop, 2)),
             vjust = -0.4, size = 3) +
-  scale_fill_manual(values = c(
-    "Clinical + Omics"   = "#2166ac",
-    "Imaging + Omics"    = "#4dac26",
-    "Electrical + Omics" = "#d6604d"
-  ), guide = "none") +
+  # scale_fill_manual(values = c(
+  #   "Clinical + Omics"   = "#2166ac",
+  #   "Imaging + Omics"    = "#4dac26",
+  #   "Electrical + Omics" = "#d6604d"
+  # ), guide = "none") +
   scale_y_continuous(limits = c(0, 0.8),
                      labels = scales::label_percent()) +
   labs(x = NULL, y = "P(Y = 1)", title = "Positive proportion") +
@@ -107,7 +110,6 @@ out_plot  <- p_bar / dot_plot +
   plot_layout(heights = c(1, 4))
 
 
-output_png_path <- "fig5b_multimodal_auc_performance_dot.png"
-
-ggsave(output_png_path, out_plot, width = 12, height=8)
-message("\nDone fig5B multimodal auc performance, see fig at", output_png_path)
+output_png_path <- "results/multimodal/fig5b_multimodal_auc_performance_dot.png"
+save_plot_both(out_plot, output_png_path, width=12, height=8)
+message("\nDone fig5B multimodal auc performance, see fig at: ", output_png_path)
