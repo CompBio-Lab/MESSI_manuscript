@@ -7,9 +7,11 @@ library(dplyr)
 source("src/common_helpers/standardize_data_funs.R")
 # Load plotting helpers like colors
 source(here::here("src/common_helpers/plot_utils.R"))
-source(here::here("src/fig_fgsea_analysis/_utils.R"))
 # Load common util
 source(here::here("src/common_helpers/map_disease_name.R"))
+source(here::here("plot_scripts/fgsea_utils.R"))
+
+
 
 
 
@@ -236,7 +238,7 @@ out_plot <- plot_grid(
 )
 
 
-output_png_path <- "fig4ef_bulk_panglao_organ_enrichment.png"
+output_png_path <- "fig4ef_bulk_panglao_organ_enrichment_heatmap.png"
 
 ggsave(output_png_path, out_plot, width = 12, height=12)
 message("\nDone fig4ef bulk panglao organ enrichment, see fig at", output_png_path)

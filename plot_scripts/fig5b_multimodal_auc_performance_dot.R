@@ -14,7 +14,7 @@ df <- data.table::fread("data/raw/multimodal_data/metrics.csv") |>
 # Order methods by mean AUC across datasets
 method_order <- df |>
   group_by(method, dataset) |>
-  summarise(mean_auc = mean(auc)) |>
+  summarise(mean_auc = mean(auc), .groups = "drop") |>
   filter(dataset == "Electrical + Omics") |>
   arrange(desc(mean_auc)) |>
   pull(method)

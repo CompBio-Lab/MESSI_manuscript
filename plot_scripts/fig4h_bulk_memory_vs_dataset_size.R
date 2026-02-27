@@ -1,5 +1,5 @@
 # Load custom scripts
-source("src/fig_computational_resources_usage/_utils.R")
+source("plot_scripts/computational_resources_utils.R")
 
 
 # Custom theme to use
@@ -19,23 +19,11 @@ resource_panel_theme <- function(text_size) {
 }
 
 
-doc <- "
-
-This script is used to make plot data for figure computational resources usage for real data.
-
-Usage:
-  clean.R [options]
-
-Options:
-  --input_path=INPUT_PATH       Path to read in the trace file
-  --output_path=OUTPUT          Path to write out plot data
-"
 
 # Load library
 suppressPackageStartupMessages(library(dplyr))
 
-# Load utils
-source("src/fig_computational_resources_usage/_utils.R")
+# Main code here
 trace_path <- "data/raw/bulk_data/execution_trace.txt"
 # Read the trace in
 trace_df <- readr::read_tsv(
@@ -147,7 +135,7 @@ out_plot <- combined_df |>
   theme_bw()
 
 
-output_png_path <- "fig4h_bulk_space_complexity.png"
+output_png_path <- "fig4h_bulk_memory_vs_dataset_size.png"
 
 ggsave(output_png_path, out_plot, width = 12, height=8)
 message("\nDone fig4h bulk space complexity plot, see fig at", output_png_path)

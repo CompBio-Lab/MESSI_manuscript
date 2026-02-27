@@ -89,9 +89,9 @@ plot_bar <- function(data) {
 
 
 out_plot <- plot_bar(bulk_msig_summary_df)
-output_png_path <- "fig4cd_bulk_sig_pathways_count.png"
+output_png_path <- "fig4c_bulk_sig_pathways_bar_chart.png"
 
 ggsave(output_png_path, out_plot, width = 12, height=8)
-message("\nDone fig4CD bulk significant pathways counts, see fig at", output_png_path)
+message("\nDone fig4C bulk significant pathways counts, see fig at", output_png_path)
 
 #print(out_plot)

@@ -32,8 +32,8 @@ multimodal_msigdbr_df <- inner_join(
 
 
 # Should use a common cutoff
-#cutoff <- 0.2
-cutoff <- 0.05
+cutoff <- 0.2
+#cutoff <- 0.05
 message("\nUsing cutoff of: ", cutoff)
 
 multimodal_msig_summary_df <- multimodal_msigdbr_df |>
@@ -45,26 +45,61 @@ multimodal_msig_summary_df <- multimodal_msigdbr_df |>
   # Capitalize or to upper the method names
   mutate(method = standardize_method_names(method)) %>%
   group_by(method, dataset) %>%
-  summarize(n_sig = n(), .groups = "drop")
-  #group_by(method, dataset) %>%
-  #summarize(mean_n_sig = mean(n_sig, na.rm=T),
-  #          sd_n_sig = sd(n_sig, na.rm=T),
-  #          .groups = "drop")
+  summarize(n_sig = n(), .groups = "drop") %>%
+  group_by(method) %>%
+  summarize(mean_n_sig = mean(n_sig, na.rm=T),
+           sd_n_sig = sd(n_sig, na.rm=T),
+           .groups = "drop")
+
+# #
+# multimodal_msigdbr_df %>%
+#   dplyr::filter(padj < cutoff) %>%
+#   dplyr::select(pathway, padj,  NES, size, method, dataset, view) %>%
+#   group_by(method, dataset, view) %>%
+#   arrange(desc(abs(NES))) %>%
+#   slice_head(n=20) %>%
+#   ggplot(aes(x=NES, y=pathway, color=method, size=size)) +
+#   geom_point()
+
+plot_bar <- function(data) {
+  # Grab method palette
+  custom_method_palette <- get_method_custom_colors()
+
+  significant_pathways_method_gs_plot_obj <- data %>%
+    mutate(x = forcats:::fct_reorder(method, mean_n_sig)) %>%
+    ggplot(aes(x = x, y = mean_n_sig, fill = method)) +
+    geom_errorbar(aes(ymin = mean_n_sig, ymax = mean_n_sig + sd_n_sig),
+                  width = 0.25, color = "grey30", linewidth=0.4,
+                  position = position_dodge(0.9)) +
+    geom_bar(stat = "identity", width = 0.7) +
+    labs(
+      x     = NULL,
+      y     = "# Significant Reactome Pathways",
+      title = "Significant Reactome Pathways by Method"
+    ) +
+    theme_bw(base_size = 11) +
+    tidytext::scale_x_reordered() +
+    scale_y_log10(expand = expansion(mult = c(0, 0.12))) +
+    coord_flip() +
+    scale_fill_manual(values = custom_method_palette) +
+    theme(
+      plot.title         = element_text(hjust = 0.5),
+      strip.background   = element_rect(fill = "grey95", color = "grey70"),
+      strip.text         = element_text(face = "bold", size = 11),
+      panel.grid.major.y = element_blank(),
+      panel.grid.minor   = element_blank(),
+      legend.position    = "bottom"
+    )
+
+  return(significant_pathways_method_gs_plot_obj)
+}
 
 
-multimodal_msigdbr_df
-  filter(padj < cutoff) %>%
-  dplyr::select(pathway, padj,  NES, size, method, dataset, view) %>%
-  group_by(method, dataset, view) %>%
-  arrange(desc(abs(NES))) %>%
-  slice_head(n=20) %>%
-  ggplot(aes(x=NES, y=pathway, color=method, size=size)) +
-  geom_point()
 
-#out_plot <- plot_bar(multimodal_msig_summary_df)
-#output_png_path <- "fig5cd_multimodal_sig_pathways_count.png"
+out_plot <- plot_bar(multimodal_msig_summary_df)
+output_png_path <- "fig5cd_multimodal_sig_pathways_count.png"
 
-#ggsave(output_png_path, out_plot, width = 12, height=8)
-#message("\nDone fig5CD multimodal significant pathways counts, see fig at: ", output_png_path)
+ggsave(output_png_path, out_plot, width = 12, height=8)
+message("\nDone fig5CD multimodal significant pathways counts, see fig at: ", output_png_path)
 
 #print(out_plot)

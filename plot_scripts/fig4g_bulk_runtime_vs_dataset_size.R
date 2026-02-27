@@ -1,5 +1,5 @@
 # Load custom scripts
-source("src/fig_computational_resources_usage/_utils.R")
+source("plot_scripts/computational_resources_utils.R")
 
 
 # Custom theme to use
@@ -18,24 +18,10 @@ resource_panel_theme <- function(text_size) {
   )
 }
 
-
-doc <- "
-
-This script is used to make plot data for figure computational resources usage for real data.
-
-Usage:
-  clean.R [options]
-
-Options:
-  --input_path=INPUT_PATH       Path to read in the trace file
-  --output_path=OUTPUT          Path to write out plot data
-"
-
 # Load library
 suppressPackageStartupMessages(library(dplyr))
 
 # Load utils
-source("src/fig_computational_resources_usage/_utils.R")
 trace_path <- "data/raw/bulk_data/execution_trace.txt"
 # Read the trace in
 trace_df <- readr::read_tsv(
@@ -130,35 +116,35 @@ combined_df <- left_join(
 #   geom_point(aes(y = median), size = 2) +
 #   scale_x_log10() + scale_y_log10() +
 #   theme_bw()
-
-
-filter(action != "PREPROCESS") %>%
-  mutate(
-    action = case_when(
-      action %in% c("TRAIN", "PREDICT") ~ "model_assessment",
-      action == "FEATURE_SELECT" ~ "model_selection",
-      TRUE ~ action
-    )
-  ) %>%
-  # CHECK HERE
-  group_by(method, dataset_name, action, tag) %>%
-  mutate(
-    realtime_sec = sum(realtime_sec)
-  ) %>%
-  ungroup() %>%
-  summarise(
-    across(c(realtime_sec, peak_rss_mb), median),
-    .by = c(dataset_name, dataset_size, method, action)
-  ) %>%
-  ggplot(aes(x = dataset_size, y = realtime_sec, color = method)) +
-  geom_line(aes(group = method)) +
-  geom_point(size = 1.5) +
-  facet_wrap(~ action, scales = "free_y") +
-  scale_x_log10(labels = scales::label_comma()) +
-  scale_y_log10() +
-  labs(x = "Dataset Size", y = "Median Runtime (sec)") +
-  theme_bw()
 #
+#
+# filter(action != "PREPROCESS") %>%
+#   mutate(
+#     action = case_when(
+#       action %in% c("TRAIN", "PREDICT") ~ "model_assessment",
+#       action == "FEATURE_SELECT" ~ "model_selection",
+#       TRUE ~ action
+#     )
+#   ) %>%
+#   # CHECK HERE
+#   group_by(method, dataset_name, action, tag) %>%
+#   mutate(
+#     realtime_sec = sum(realtime_sec)
+#   ) %>%
+#   ungroup() %>%
+#   summarise(
+#     across(c(realtime_sec, peak_rss_mb), median),
+#     .by = c(dataset_name, dataset_size, method, action)
+#   ) %>%
+#   ggplot(aes(x = dataset_size, y = realtime_sec, color = method)) +
+#   geom_line(aes(group = method)) +
+#   geom_point(size = 1.5) +
+#   facet_wrap(~ action, scales = "free_y") +
+#   scale_x_log10(labels = scales::label_comma()) +
+#   scale_y_log10() +
+#   labs(x = "Dataset Size", y = "Median Runtime (sec)") +
+#   theme_bw()
+# #
 
 out_plot <- combined_df |>
   summarise(
@@ -174,7 +160,7 @@ out_plot <- combined_df |>
   labs(x = "Dataset Size", y = "Median Runtime (sec)") +
   theme_bw()
 
-output_png_path <- "fig4g_bulk_time_complexity.png"
+output_png_path <- "fig4g_bulk_runtime_vs_dataset_size.png"
 
 ggsave(output_png_path, out_plot, width = 12, height=8)
 message("\nDone fig4g bulk time complexity plot, see fig at", output_png_path)
