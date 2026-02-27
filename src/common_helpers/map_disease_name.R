@@ -15,6 +15,9 @@ map_disease_name <- function(dataset) {
     dataset == "tcga-skcm" ~ "Skin Cutaneous Melanoma",
     dataset == "tcga-stes" ~ "Stomach and Esophageal Cancer",
     dataset == "tcga-thca" ~ "Thyroid Cancer",
+    dataset == "clinical_omics" ~ "Clinical + Omics",
+    dataset == "imaging_omics" ~ "Imaging + omics",
+    dataset == "electrical_omics" ~ "Electrical + omics",
     TRUE ~ "not mapped"
   )
 }

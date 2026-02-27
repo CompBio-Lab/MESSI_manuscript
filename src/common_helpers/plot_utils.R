@@ -25,26 +25,29 @@ custom_theme_for_sim_plot <- function() {
 
 
 
-# Custom palette for the methods
-get_method_custom_colors <- function(method_palette="Paired") {
-  # This fun is to match the color choices used for the methods
-  custom_method_palette <-  RColorBrewer::brewer.pal(n=12, name=method_palette)
-  method_order_names <- c(
-    "DIABLO-full_ncomp-1",
-    "DIABLO-full_ncomp-2",
-    "DIABLO-null_ncomp-1",
-    "DIABLO-null_ncomp-2",
-    "MOFA-Factor1 + glmnet",
-    "MOFA-Factor2 + glmnet",
-    "MOGONET",
-    "multiview",
-    "RGCCA-full_ncomp-1 + lda",
-    "RGCCA-null_ncomp-1 + lda",
-    "RGCCA-full_ncomp-2 + lda",
-    "RGCCA-null_ncomp-2 + lda"
+
+get_method_custom_colors <- function() {
+  c(
+    # DIABLO family — blues (light → dark)
+    "DIABLO-full_ncomp-1"       = "#9ECAE1",
+    "DIABLO-full_ncomp-2"       = "#4292C6",
+    "DIABLO-null_ncomp-1"       = "#2171B5",
+    "DIABLO-null_ncomp-2"       = "#084594",
+    # MOFA family — greens (light → dark)
+    "MOFA-Factor1 + glmnet"     = "#74C476",
+    "MOFA-Factor2 + glmnet"     = "#238B45",
+    # Singletons
+    "MOGONET"                   = "#FD8D3C",   # orange
+    "multiview"                 = "#E377C2",   # pink
+    "integrao"                  = "#D62728",   # red
+    "caret_multimodal"          = "#17BECF",    # teal  ← recommended
+    # "caret_multimodal"        = "#8C6D31",    # brown ← warm alternative
+    # RGCCA family — purples (light → dark)
+    "RGCCA-full_ncomp-1 + lda"  = "#BCBDDC",
+    "RGCCA-null_ncomp-1 + lda"  = "#9E9AC8",
+    "RGCCA-full_ncomp-2 + lda"  = "#756BB1",
+    "RGCCA-null_ncomp-2 + lda"  = "#54278F"
   )
-  names(custom_method_palette) <- method_order_names
-  return(custom_method_palette)
 }
 
 # Extract legend

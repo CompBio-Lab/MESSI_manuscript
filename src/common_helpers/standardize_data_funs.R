@@ -25,3 +25,34 @@ standardize_method_names <- function(method) {
   out[na_mask] <- NA_character_
   out
 }
+
+
+standardize_method_names2 <- function(df) {
+  df %>%
+    mutate(
+      method = case_when(
+        str_detect(method, "cooperative_learning") ~ "multiview",
+        str_detect(method, "mofa") ~ paste(method, "glmnet", sep = " + " ),
+        str_detect(method, "gcca") ~ paste(method, "lda", sep = " + "),
+        TRUE ~ method
+      )
+    )
+}
+standardize_view_names <- function(df) {
+  df %>%
+    dplyr::mutate(
+      method = case_when(
+        str_detect(view, "ncomp") ~ paste(method, str_extract(view, "ncomp-\\d+"), sep = "-"),
+        str_detect(view, "Factor") ~ paste(method, str_extract(view, "Factor\\d+"), sep = "-"),
+        TRUE ~ method
+      ),
+      view_cleaned = case_when(
+        str_detect(view, "ncomp") ~ str_remove(view, "-ncomp.*"),
+        str_detect(view, "Factor") ~ str_remove(view, "-Factor.*"),
+        TRUE ~ view
+      ),
+      feat = str_remove(feature, paste0("^", view_cleaned, "_")),
+      view = view_cleaned
+    ) %>%
+    dplyr::select(-view_cleaned)
+}
