@@ -97,9 +97,9 @@ plot_bar <- function(data) {
 
 
 out_plot <- plot_bar(multimodal_msig_summary_df)
-output_png_path <- "fig5cd_multimodal_sig_pathways_count.png"
+output_png_path <- "fig5c_multimodal_sig_pathways_count.png"
 
 ggsave(output_png_path, out_plot, width = 12, height=8)
-message("\nDone fig5CD multimodal significant pathways counts, see fig at: ", output_png_path)
+message("\nDone fig5C multimodal significant pathways counts, see fig at: ", output_png_path)
 
 #print(out_plot)
