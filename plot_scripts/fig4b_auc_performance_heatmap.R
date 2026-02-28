@@ -1,6 +1,11 @@
 # Fig 1A AUC Heatmap of Predictive Performance
-source(here::here("src/fig_performance_evaluation/_performance_evaluation_utils.R"))
+source(here::here("plot_scripts/performance_evaluation_utils.R"))
 source(here::here("src/common_helpers/map_disease_name.R"))
+source(here::here("src/common_helpers/plot_utils.R"))
+source(here::here("src/common_helpers/save_plot_both.R"))
+
+# Load libraries
+
 library(dplyr)
 library(ComplexHeatmap)
 library(data.table)
@@ -54,7 +59,7 @@ bulk_auc_preprocess_main <- function(input_path="data/raw/bulk_data/metrics.csv"
   # First do common wrangling on the input data
 
   wrangle_df <- fread(input_path) %>%
-    wrangle_data() %>%
+    wrangle_bulk_data() %>%
     # Filter the unwanted data
     filter(!(tolower(dataset) %in% exclude_data)) %>%
     # For performance eval, ncomp could use the latest ncomp as it includes
@@ -220,7 +225,8 @@ out_plot <- plot_fig1_real(
   heatmap_title = NULL
 )
 
-output_png_path <- "fig4b_bulk_auc_performance_heatmap.png"
 
-ggsave(output_png_path, out_plot, width = 12, height=8)
-message("\nDone fig4B bulk auc performance, see fig at", output_png_path)
+
+output_png_path <- "results/bulk/fig4b_bulk_auc_performance_heatmap.png"
+save_plot_both(out_plot, output_png_path, width=12, height=8)
+message("\nDone fig4B bulk auc performance, see fig at: ", output_png_path)

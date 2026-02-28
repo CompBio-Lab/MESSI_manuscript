@@ -10,6 +10,8 @@ source(here::here("src/common_helpers/plot_utils.R"))
 # Load common util
 source(here::here("src/common_helpers/map_disease_name.R"))
 source(here::here("plot_scripts/fgsea_utils.R"))
+source(here::here("src/common_helpers/plot_utils.R"))
+source(here::here("src/common_helpers/save_plot_both.R"))
 
 
 
@@ -66,7 +68,6 @@ filtered_results <- bulk_panglao_df %>%
   ungroup()
 
 
-
 # Then make this wider data
 wide_n_sig_tab <- filtered_results %>%
   filter(!organ == "immune-system") %>%
@@ -82,7 +83,6 @@ wide_n_sig_tab <- filtered_results %>%
   mutate(ratio = n / group_num) %>%
   pivot_wider(names_from = organ, values_from = ratio, values_fill=0)
 
-c
 # =============================================================================
 # PLOTTING OF THE HEATMAP
 # =============================================================================
@@ -90,13 +90,22 @@ plot_heatmap <- function(plot_matrix, annotation_table, custom_method_palette, c
   # Param of the cutoff
   pval <- cutoff
   # =========================================================
+  # UGGLY FIX HER
+  annotation_table <- annotation_table %>%
+    mutate(color_label = str_remove(method, "-.*") |> toupper()) %>%
+    mutate(color_label = case_when(
+      color_label == "CARET_MULTIMODAL" ~ "CARET",
+      TRUE ~ color_label
+    ))
+
+  # =========================================================
   # Then the annotations here
   row_ha <- rowAnnotation(
     Method = factor(
-      annotation_table$method,
-      levels = names(custom_method_palette)  # ensure order and completeness
+      annotation_table$color_label,
+      levels = names(method_family_colors)  # ensure order and completeness
     ),
-    col = list(Method = custom_method_palette),
+    col = list(Method = method_family_colors),
     annotation_legend_param = list(
       Method = list(
         title_gp = gpar(fontsize = 9),
@@ -191,11 +200,16 @@ plot_annot_bar <- function(methods, custom_method_palette) {
   annot_bar_plot <- methods %>%
     table() %>%
     tibble::enframe(name="method", value="n") %>%
+    mutate(color_label = str_remove(method, "-.*") |> toupper()) %>%
+    mutate(color_label = case_when(
+      color_label == "CARET_MULTIMODAL" ~ "CARET",
+      TRUE ~ color_label
+    )) %>%
     mutate(n = as.integer(n)) %>%
-    ggplot(aes(x=reorder(method, n), y=n, fill=method)) +
+    ggplot(aes(x=reorder(method, n), y=n, fill=color_label)) +
     geom_bar(stat="identity", width=0.7) +
     labs(x=NULL, y="Frequency", fill="Method")+
-    scale_fill_manual(values = custom_method_palette, guide="note") +
+    scale_fill_manual(values = method_family_colors) +
     theme_bw() +
     # And remove horizontal lines
     theme(
@@ -206,6 +220,8 @@ plot_annot_bar <- function(methods, custom_method_palette) {
     coord_flip()
   return(annot_bar_plot)
 }
+
+
 
 # Extract the plot matrix from annotations
 plot_matrix <- wide_n_sig_tab %>%
@@ -238,9 +254,9 @@ out_plot <- plot_grid(
 )
 
 
-output_png_path <- "fig4ef_bulk_panglao_organ_enrichment_heatmap.png"
+output_png_path <- "results/bulk/fig4ef_bulk_panglao_organ_enrichment_heatmap.png"
+save_plot_both(out_plot, output_png_path, width=12, height=8)
 
-ggsave(output_png_path, out_plot, width = 12, height=12)
-message("\nDone fig4ef bulk panglao organ enrichment, see fig at", output_png_path)
+message("\nDone fig4ef bulk panglao organ enrichment, see fig at: ", output_png_path)
 
 #print(out_plot)

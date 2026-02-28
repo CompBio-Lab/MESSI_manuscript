@@ -1,5 +1,7 @@
 # Load custom scripts
 source("plot_scripts/computational_resources_utils.R")
+source(here::here("src/common_helpers/plot_utils.R"))
+source(here::here("src/common_helpers/save_plot_both.R"))
 
 
 # Custom theme to use
@@ -101,66 +103,46 @@ combined_df <- left_join(
   metadata_df, plot_df, by="dataset_name"
 ) |>
   # And drop chol, kipan
-  filter(!dataset_name %in% c("tcga-chol", "tcga-kipan"))
-
-# combined_df |>
-#   summarise(
-#     median = median(realtime_sec),
-#     q25 = quantile(realtime_sec, 0.25),
-#     q75 = quantile(realtime_sec, 0.75),
-#     .by = c(dataset_name, dataset_size, method)
-#   ) |>
-#   ggplot(aes(x = dataset_size, color = method, fill = method, group = method)) +
-#   geom_ribbon(aes(ymin = q25, ymax = q75), alpha = 0.15, color = NA) +
-#   geom_line(aes(y = median)) +
-#   geom_point(aes(y = median), size = 2) +
-#   scale_x_log10() + scale_y_log10() +
-#   theme_bw()
-#
-#
-# filter(action != "PREPROCESS") %>%
-#   mutate(
-#     action = case_when(
-#       action %in% c("TRAIN", "PREDICT") ~ "model_assessment",
-#       action == "FEATURE_SELECT" ~ "model_selection",
-#       TRUE ~ action
-#     )
-#   ) %>%
-#   # CHECK HERE
-#   group_by(method, dataset_name, action, tag) %>%
-#   mutate(
-#     realtime_sec = sum(realtime_sec)
-#   ) %>%
-#   ungroup() %>%
-#   summarise(
-#     across(c(realtime_sec, peak_rss_mb), median),
-#     .by = c(dataset_name, dataset_size, method, action)
-#   ) %>%
-#   ggplot(aes(x = dataset_size, y = realtime_sec, color = method)) +
-#   geom_line(aes(group = method)) +
-#   geom_point(size = 1.5) +
-#   facet_wrap(~ action, scales = "free_y") +
-#   scale_x_log10(labels = scales::label_comma()) +
-#   scale_y_log10() +
-#   labs(x = "Dataset Size", y = "Median Runtime (sec)") +
-#   theme_bw()
-# #
-
-out_plot <- combined_df |>
+  filter(!dataset_name %in% c("tcga-chol", "tcga-kipan")) %>%
+  filter(action != "PREPROCESS") %>%
+  mutate(
+    action = case_when(
+      action %in% c("TRAIN", "PREDICT") ~ "model_assessment",
+      action == "FEATURE_SELECT" ~ "model_selection",
+      TRUE ~ action
+    )
+  ) %>%
+  # CHECK HERE
+  group_by(method, dataset_name, action, tag, dataset_size) %>%
+  summarize(
+    realtime_sec = sum(realtime_sec),
+    peak_rss_mb = sum(peak_rss_mb),
+    .groups = "drop"
+  ) %>%
+  ungroup() %>%
+  group_by(method, dataset_name, action, dataset_size) %>%
   summarise(
     across(c(realtime_sec, peak_rss_mb), median),
-    .by = c(dataset_name, dataset_size, method, action)
-  ) |>
+    .groups = "drop"
+  ) %>%
+  ungroup()
+
+
+
+out_plot <- combined_df %>%
+  mutate(method = forcats::fct_reorder(method, realtime_sec)) %>%
   ggplot(aes(x = dataset_size, y = realtime_sec, color = method)) +
-  geom_line(aes(group = method)) +
-  geom_point(size = 1.5) +
-  facet_wrap(~ action, scales = "free_y") +
+  geom_line(aes(group = method), linewidth=1) +
+  geom_point(size = 2) +
+  facet_wrap(~ action) +
   scale_x_log10(labels = scales::label_comma()) +
   scale_y_log10() +
+  scale_color_manual(values=method_family_colors) +
   labs(x = "Dataset Size", y = "Median Runtime (sec)") +
+  ggtitle("Bulk Runtime Complexity") +
   theme_bw()
 
-output_png_path <- "fig4g_bulk_runtime_vs_dataset_size.png"
+output_png_path <- "results/bulk/fig4g_bulk_runtime_vs_dataset_size.png"
 
-ggsave(output_png_path, out_plot, width = 12, height=8)
-message("\nDone fig4g bulk time complexity plot, see fig at", output_png_path)
+save_plot_both(out_plot, output_png_path, width=12, height=8)
+message("\nDone fig4g bulk time complexity plot, see fig at: ", output_png_path)
