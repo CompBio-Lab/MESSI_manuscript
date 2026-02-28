@@ -86,3 +86,61 @@ get_text_color <- function(fill_color) {
   ifelse(luminance < 0.5, "white", "black")
 }
 
+# ==============================================================================
+# CONSTANTS TO USE
+
+
+# ── Method colors (group by algorithm family) ─────────────────────────────────
+method_colors <- c(
+  # DIABLO — Blues (dark → light: null > full, ncomp2 > ncomp1)
+  "DIABLO-null_ncomp-1"      = "#2166AC",
+  "DIABLO-null_ncomp-2"      = "#4393C3",
+  "DIABLO-full_ncomp-1"      = "#92C5DE",
+  "DIABLO-full_ncomp-2"      = "#C6DBEF",
+
+  # RGCCA — Purples
+  "RGCCA-null_ncomp-1 + lda" = "#6A3D9A",
+  "RGCCA-null_ncomp-2 + lda" = "#9970AB",
+  "RGCCA-full_ncomp-1 + lda" = "#C2A5CF",
+  "RGCCA-full_ncomp-2 + lda" = "#DEC9E9",
+
+  # MOFA — Greens
+  "MOFA-Factor1 + glmnet"    = "#1B7837",
+  "MOFA-Factor2 + glmnet"    = "#5AAE61",
+
+  # Singletons — distinct neutrals
+  "integrao"                 = "#D6604D",   # muted red
+  "caret_multimodal"         = "#F4A582",   # salmon
+  "MOGONET"                  = "#E08214",   # amber
+  "multiview"     = "#543005"    # dark brown
+)
+
+method_family_colors <- c(
+  # DIABLO — Blues (dark → light: null > full, ncomp2 > ncomp1)
+  "DIABLO"      = "#4393C3",
+
+  # RGCCA — Purples
+  "RGCCA" = "#6A3D9A",
+
+
+
+  # MOFA — Greens
+  "MOFA"    = "#5AAE61",
+
+  # Singletons — distinct neutrals
+  "INTEGRAO"                 = "#D6604D",   # muted red
+  "CARET"         = "#F4A582",   # salmon
+  "MOGONET"                  = "#E08214",   # amber
+  "MULTIVIEW"     = "#543005"    # dark brown
+)
+
+# ── AUC dot plot — single neutral, shape encodes dataset ──────────────────────
+auc_color <- "#4D4D4D"
+
+# ── Heatmap scales ────────────────────────────────────────────────────────────
+# Jaccard: sequential orange (use with circlize::colorRamp2)
+jaccard_col <- colorRamp2(c(0, 0.5, 1), c("#FFF5EB", "#FD8D3C", "#7F2704"))
+
+# Binary: stark 2-color categorical
+binary_colors <- c("0" = "#F7F7F7", "1" = "#01665E")  # light grey + dark teal
+
