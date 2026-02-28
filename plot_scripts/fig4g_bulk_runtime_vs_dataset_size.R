@@ -132,9 +132,18 @@ combined_df <- left_join(
 out_plot <- combined_df %>%
   mutate(method = forcats::fct_reorder(method, realtime_sec)) %>%
   ggplot(aes(x = dataset_size, y = realtime_sec, color = method)) +
-  geom_line(aes(group = method), linewidth=1) +
-  geom_point(size = 2) +
-  facet_wrap(~ action) +
+  geom_line(aes(group = method), linewidth=0.7) +
+  geom_point(size = 1.5, alpha=0.7) +
+  facet_wrap(
+    ~ action,
+    labeller = as_labeller(
+      c(
+        model_assessment = "Model Assessment",
+        model_selection  = "Model Selection"
+      )
+    ),
+    ncol=2
+  ) +
   scale_x_log10(labels = scales::label_comma()) +
   scale_y_log10() +
   scale_color_manual(values=method_family_colors) +

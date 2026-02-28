@@ -139,7 +139,11 @@ plot_fig1_real <- function(
     annotation_legend_param = list(
       positive_prop = list(
         title = "Positive proportion",
-        direction = "horizontal"
+        direction = "horizontal",
+        grid_height = unit(2, "mm"),
+        grid_width = unit(2, "mm"),
+        labels_gp = gpar(fontsize = text_size - 1.5),
+        title_gp = gpar(fontsize=  text_size - 1.5, fontface="bold")
       )
     )
   )
@@ -155,7 +159,7 @@ plot_fig1_real <- function(
 
     # Names
     row_names_rot  = 0,
-    column_names_rot = 50,
+    column_names_rot = ,
     row_names_gp   = gpar(fontsize = text_size),
     column_names_gp = gpar(fontsize = text_size),
     show_row_names  = TRUE,
@@ -179,28 +183,31 @@ plot_fig1_real <- function(
         #sprintf("%.3f", t(auc_matrix)[i, j]),
         sprintf("%.3f", auc_matrix[i,j]),
         x, y,
-        gp = gpar(col = get_text_color(fill), fontsize = text_size)
+        gp = gpar(col = get_text_color(fill), fontsize = text_size - 0.5)
       )
     },
 
     # Legend
     heatmap_legend_param = list(
       title          = "Mean AUC",
-      title_gp       = gpar(fontsize = text_size - 4, fontface = "bold"),
-      title_position = "leftcenter",
+      #title_position = "leftcenter",
       at             = auc_range,
       labels         = c("Low", "", "High"),
-      grid_height    = unit(1, "cm"),
-      grid_width     = unit(3, "cm"),
-      legend_width   = unit(5, "cm"),
-      labels_gp      = gpar(fontsize = text_size - 5),
+      labels_gp = gpar(fontsize = text_size - 1.5),
+      title_gp = gpar(fontsize=  text_size - 1.5, fontface="bold"),
+      grid_height    = unit(2, "mm"),
+      grid_width     = unit(2, "mm"),
+      legend_width   = unit(30, "mm"),
       legend_direction = "horizontal"
     )
   )
 
   # --- Draw and return ---
   grid.grabExpr(
-    draw(ht, merge_legends = TRUE, heatmap_legend_side = "bottom", annotation_legend_side = "bottom")
+    draw(ht, merge_legends = TRUE,
+         heatmap_legend_side = "bottom",
+         annotation_legend_side = "bottom",
+         align_heatmap_legend = "global_center")
   )
 }
 
@@ -220,7 +227,7 @@ input_data <- bulk_auc_preprocess_main(input_path, output_path)
 
 out_plot <- plot_fig1_real(
   input_data = input_data,
-  text_size = 10,
+  text_size = 6,
   method_palette = "Paired",
   heatmap_title = NULL
 )

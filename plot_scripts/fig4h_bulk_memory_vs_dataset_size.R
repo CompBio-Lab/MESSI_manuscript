@@ -132,8 +132,8 @@ combined_df <- left_join(
 out_plot <- combined_df %>%
   mutate(method = forcats::fct_reorder(method, peak_rss_mb)) %>%
   ggplot(aes(x = dataset_size, y = peak_rss_mb, color = method)) +
-  geom_line(aes(group = method), linewidth=1) +
-  geom_point(size = 2) +
+  geom_line(aes(group = method), linewidth=0.7) +
+  geom_point(size = 1.5, alpha=0.7) +
   facet_wrap(
     ~ action,
     labeller = as_labeller(
