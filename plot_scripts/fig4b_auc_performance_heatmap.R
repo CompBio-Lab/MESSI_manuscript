@@ -223,6 +223,7 @@ if (simple) {
 }
 
 
+
 input_data <- bulk_auc_preprocess_main(input_path, output_path)
 
 out_plot <- plot_fig1_real(

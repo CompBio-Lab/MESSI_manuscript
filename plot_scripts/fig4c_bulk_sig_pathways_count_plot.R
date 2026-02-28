@@ -34,6 +34,8 @@ bulk_msigdbr_df <- inner_join(
   group_by(method, dataset, view) %>%
   mutate(padj = p.adjust(pval, method="BH"))
 
+bulk_msigdbr_df$method |> unique()
+
 # Should use a common cutoff
 cutoff <- 0.2
 message("\nUsing cutoff of: ", cutoff)
@@ -44,8 +46,10 @@ bulk_msig_summary_df <- bulk_msigdbr_df |>
   dplyr::mutate(
     method = stringr::str_replace(method, "-ncomp", "_ncomp")
   ) %>%
+  # Just in here chop the names, which kinda went off
   # Capitalize or to upper the method names
   mutate(method = standardize_method_names(method)) %>%
+  # Just in
   #group_by(method, dataset, view, gs_collection_name) %>%
   group_by(method, dataset, gs_collection_name) %>%
   summarize(n_sig = n(), .groups = "drop") %>%
