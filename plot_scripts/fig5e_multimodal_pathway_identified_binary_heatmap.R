@@ -53,7 +53,7 @@ pathway_freq <- sig_df_top_k %>%
   mutate(pathway =  str_remove(pathway, "^REACTOME_") |>
            str_replace_all("_", " ") |>
            str_to_title()) %>%
-  count(pathway, name = "n_methods") %>%
+  dplyr::count(pathway, name = "n_methods") %>%
   arrange(desc(n_methods))
 
 

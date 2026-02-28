@@ -1,4 +1,3 @@
-
 library(dplyr)
 library(ggplot2)
 source("src/common_helpers/standardize_data_funs.R")
@@ -31,7 +30,7 @@ multimodal_msigdbr_df <- inner_join(
   ungroup()
 
 
-
+multimodal_msigdbr_df
 # Should use a common cutoff
 cutoff <- 0.2
 top_k <- 30
