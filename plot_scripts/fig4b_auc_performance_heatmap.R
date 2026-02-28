@@ -139,7 +139,11 @@ plot_fig1_real <- function(
     annotation_legend_param = list(
       positive_prop = list(
         title = "Positive proportion",
-        direction = "horizontal"
+        direction = "horizontal",
+        grid_height = unit(2, "mm"),
+        grid_width = unit(2, "mm"),
+        labels_gp = gpar(fontsize = text_size - 1.5),
+        title_gp = gpar(fontsize=  text_size - 1.5, fontface="bold")
       )
     )
   )
@@ -155,7 +159,7 @@ plot_fig1_real <- function(
 
     # Names
     row_names_rot  = 0,
-    column_names_rot = 50,
+    column_names_rot = 90,
     row_names_gp   = gpar(fontsize = text_size),
     column_names_gp = gpar(fontsize = text_size),
     show_row_names  = TRUE,
@@ -179,28 +183,33 @@ plot_fig1_real <- function(
         #sprintf("%.3f", t(auc_matrix)[i, j]),
         sprintf("%.3f", auc_matrix[i,j]),
         x, y,
-        gp = gpar(col = get_text_color(fill), fontsize = text_size)
+        gp = gpar(col = get_text_color(fill), fontsize = text_size - 1.5)
       )
     },
 
     # Legend
     heatmap_legend_param = list(
       title          = "Mean AUC",
-      title_gp       = gpar(fontsize = text_size - 4, fontface = "bold"),
-      title_position = "leftcenter",
+      #title_gp       = gpar(fontsize = text_size - 4, fontface = "bold"),
+      #title_position = "leftcenter",
       at             = auc_range,
       labels         = c("Low", "", "High"),
-      grid_height    = unit(1, "cm"),
-      grid_width     = unit(3, "cm"),
-      legend_width   = unit(5, "cm"),
-      labels_gp      = gpar(fontsize = text_size - 5),
+      labels_gp = gpar(fontsize = text_size - 1.5),
+      title_gp = gpar(fontsize=  text_size - 1.5, fontface="bold"),
+      grid_height    = unit(2, "mm"),
+      grid_width     = unit(2, "mm"),
+      legend_width   = unit(30, "mm"),
+      #labels_gp      = gpar(fontsize = text_size - 5),
       legend_direction = "horizontal"
     )
   )
 
   # --- Draw and return ---
   grid.grabExpr(
-    draw(ht, merge_legends = TRUE, heatmap_legend_side = "bottom", annotation_legend_side = "bottom")
+    draw(ht, merge_legends = TRUE, heatmap_legend_side = "bottom",
+         annotation_legend_side = "bottom",
+         align_heatmap_legend = "global_center"
+        )
   )
 }
 
@@ -218,15 +227,19 @@ if (simple) {
 
 input_data <- bulk_auc_preprocess_main(input_path, output_path)
 
+# Use text size 10 for normal use
+# Use text size 6 for publication quality
+
 out_plot <- plot_fig1_real(
   input_data = input_data,
-  text_size = 10,
+  text_size = 6,
   method_palette = "Paired",
   heatmap_title = NULL
 )
 
 
+out_plot |> ggdraw()
 
 output_png_path <- "results/bulk/fig4b_bulk_auc_performance_heatmap.png"
-save_plot_both(out_plot, output_png_path, width=12, height=8)
+save_plot_both(out_plot, output_png_path, width=6, height=6)
 message("\nDone fig4B bulk auc performance, see fig at: ", output_png_path)

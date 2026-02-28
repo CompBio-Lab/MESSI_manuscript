@@ -133,7 +133,7 @@ out_plot <- combined_df %>%
   mutate(method = forcats::fct_reorder(method, realtime_sec)) %>%
   ggplot(aes(x = dataset_size, y = realtime_sec, color = method)) +
   geom_line(aes(group = method), linewidth=1) +
-  geom_point(size = 2) +
+  geom_point(size = 1.25) +
   facet_wrap(~ action) +
   scale_x_log10(labels = scales::label_comma()) +
   scale_y_log10() +

@@ -86,7 +86,7 @@ wide_n_sig_tab <- filtered_results %>%
 # =============================================================================
 # PLOTTING OF THE HEATMAP
 # =============================================================================
-plot_heatmap <- function(plot_matrix, annotation_table, custom_method_palette, cutoff=0.2) {
+plot_heatmap <- function(plot_matrix, annotation_table, custom_method_palette, cutoff=0.2, text_size=12) {
   # Param of the cutoff
   pval <- cutoff
   # =========================================================
@@ -108,13 +108,13 @@ plot_heatmap <- function(plot_matrix, annotation_table, custom_method_palette, c
     col = list(Method = method_family_colors),
     annotation_legend_param = list(
       Method = list(
-        title_gp = gpar(fontsize = 9),
-        labels_gp = gpar(fontsize = 8),
+        labels_gp = gpar(fontsize = text_size - 1.5),
+        title_gp = gpar(fontsize=  text_size - 1.5, fontface="bold"),
         nrow=4
       )
     ),
     show_annotation_name = FALSE,
-    show_legend=TRUE
+    show_legend=FALSE
     #Dataset = factor(annotation_table$dataset, levels = unique(annotation_table$dataset))
   )
 
@@ -123,15 +123,24 @@ plot_heatmap <- function(plot_matrix, annotation_table, custom_method_palette, c
     # start from 5
     Organ = factor(annotation_table[5:ncol(annotation_table)] %>%
                      colnames()),
+    annotation_legend_param = list(
+      Organ = list(
+        title_gp = gpar(fontsize = text_size + 2),
+        labels_gp = gpar(fontsize = text_size)
+      )
+    ),
     show_annotation_name = FALSE
   )
 
   # Get the disease name of dataset from the src/common_helpers/map_disease_name.R
   mapped_disease_name <- tolower(annotation_table$dataset) %>% map_disease_name()
+  # Lastly make the colnames to title case
+  colnames(plot_matrix) <- colnames(plot_matrix) |> tools::toTitleCase()
 
   # Add number into the heatmap to show the actual ratio
   # Function of color
-  col_fun <- colorRamp2(c(0, 0.5, 1), c("white", "steelblue1", "blue"))
+  col_fun <- colorRamp2(c(0, 0.5, 1), c("white", "steelblue1", "royalblue"))
+  #col_fun <- viridis::cividis(n=50)
   #col_fun <- colorRamp2(c(0, 0.5, 1), c("white", "gainsboro", "lightgrey"))
   # Leave this as is, if not then go back to patchy problem
   # Y-axis to actual name of the dataset
@@ -149,27 +158,37 @@ plot_heatmap <- function(plot_matrix, annotation_table, custom_method_palette, c
     #column_split = annotation_table$method,
     border = TRUE,
     row_title_rot = 0,
-    row_gap = unit(2, "mm"),
+    row_gap = unit(1, "mm"),
     column_names_rot = 45,
-    row_names_gp = gpar(fontsize = 10),
-    row_title_gp = gpar(fontsize = 10),
+    column_names_gp = gpar(fontsize = text_size),
+    row_names_gp = gpar(fontsize = text_size),
+    row_title_gp = gpar(fontsize = text_size),
     show_row_names = FALSE,
     cluster_columns = TRUE,
     #cluster_rows = FALSE,
     row_dend_width = unit(1.5, "cm"),
     cell_fun = function(j, i, x, y, width, height, fill) {
-      text_color <- get_text_color(fill)
-      grid.text(sprintf("%.2f", plot_matrix[i, j]), x, y,
-                gp = gpar(col = text_color, fontsize = 10))
+      value <- plot_matrix[i, j]
+
+      # If value is 0, override fill to light grey and don't draw text
+      if (value == 0) {
+        grid.rect(x, y, width, height, gp = gpar(fill = "grey90", col = NA))
+      } else {
+        # Draw the text for non-zero values
+        text_color <- get_text_color(fill)
+        grid.text(sprintf("%.2f", value), x, y,
+                  gp = gpar(col = text_color, fontsize = text_size - 1.5))
+      }
     },
     # Assign legend
     heatmap_legend_param = list(
       at = c(0, 0.5, 1),
       labels = c("Low", "", "High"),
-      title = bquote(bold("Proportion of significant cells at ") * italic("p") < .(pval)),
-      grid_height = unit(0.3, "cm"), grid_width = unit(0.3, "cm"),
-      legend_width = unit(5, "cm"),
-      #labels_gp = gpar(fontsize = text_size - 5),
+      title = bquote("Proportion of significant cells at " * italic("p") < .(pval)),
+      grid_height = unit(2, "mm"), grid_width = unit(2, "mm"),
+      legend_width = unit(6.5, "cm"),
+      labels_gp = gpar(fontsize = text_size - 1.5),
+      title_gp = gpar(fontsize=  text_size - 1.5, fontface="bold"),
       legend_direction = "horizontal"
       #legend_direction = "vertical"
     ),
@@ -183,7 +202,8 @@ plot_heatmap <- function(plot_matrix, annotation_table, custom_method_palette, c
     #     legend_grouping = "original")
     draw(htmp, merge_legends = TRUE,
          heatmap_legend_side = "bottom",
-         annotation_legend_side = "bottom"
+         #align_heatmap_legend = "global_center",
+         annotation_legend_side = "bottom",
     )
   )
 
@@ -193,7 +213,7 @@ plot_heatmap <- function(plot_matrix, annotation_table, custom_method_palette, c
 # =============================================================================
 # PLOTTING OF THE BAR PLOT COUNT BASED ON HEATMAP
 # =============================================================================
-plot_annot_bar <- function(methods, custom_method_palette) {
+plot_annot_bar <- function(methods, custom_method_palette,text_size=12) {
 
 
   # The frequency plot
@@ -210,12 +230,12 @@ plot_annot_bar <- function(methods, custom_method_palette) {
     geom_bar(stat="identity", width=0.7) +
     labs(x=NULL, y="Frequency", fill="Method")+
     scale_fill_manual(values = method_family_colors) +
-    theme_bw() +
+    theme_bw(base_size=text_size) +
     # And remove horizontal lines
     theme(
       panel.grid.major.y = element_blank(),
       panel.grid.minor   = element_blank(),
-      axis.text.y        = element_text(size = 9)
+      axis.text.y        = element_text(size = text_size)
     ) +
     coord_flip()
   return(annot_bar_plot)
@@ -230,17 +250,24 @@ plot_matrix <- wide_n_sig_tab %>%
 # Also get the custom method colors
 custom_method_palette <- get_method_custom_colors()
 
+
+# Use a custom text size
+# size 12 for normal
+# size 8 for publication
+text_size <- 5.5
 # The heatmap plot goes here
 ht_grob <- plot_heatmap(
   plot_matrix=plot_matrix, annotation_table=wide_n_sig_tab,
   custom_method_palette=custom_method_palette,
-  cutoff=cutoff
+  cutoff=cutoff,
+  text_size=text_size
 )
 
 # Count method appearance as bars
 annot_bar_plot <- plot_annot_bar(
   methods=wide_n_sig_tab$method,
-  custom_method_palette=custom_method_palette
+  custom_method_palette=custom_method_palette,
+  text_size=text_size
 )
 
 # And combine them together
@@ -250,12 +277,12 @@ out_plot <- plot_grid(
     xlab(NULL) +
     guides(fill="none"),
   ncol = 2,
-  rel_widths = c(2, 1)
+  rel_widths = c(1, 0.5)
 )
 
 
 output_png_path <- "results/bulk/fig4ef_bulk_panglao_organ_enrichment_heatmap.png"
-save_plot_both(out_plot, output_png_path, width=12, height=8)
+save_plot_both(out_plot, output_png_path, width=7, height=7)
 
 message("\nDone fig4ef bulk panglao organ enrichment, see fig at: ", output_png_path)
 
