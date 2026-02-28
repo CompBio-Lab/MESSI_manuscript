@@ -4,6 +4,7 @@ library(dplyr)
 
 source("src/common_helpers/save_plot_both.R")
 source("src/common_helpers/plot_utils.R")
+source("src/common_helpers/standardize_data_funs.R")
 
 # --- Data ---
 df <- data.table::fread("data/raw/multimodal_data/metrics.csv") |>
@@ -11,7 +12,12 @@ df <- data.table::fread("data/raw/multimodal_data/metrics.csv") |>
   mutate(
     dataset = str_replace_all(dataset, "_", " + ") |>
       tools::toTitleCase()
-  )
+  ) %>%
+  # Standardize the method names
+  standardize_method_names2() %>%
+  # For performance plot, only retain biggest ncomp/factor
+  filter(!str_detect(method, "-1"))
+
 
 
 # Order methods by mean AUC across datasets
@@ -26,7 +32,7 @@ method_order <- df |>
 
 # --- Plot ---
 
-dot_plot <- df |>  mutate(
+out_plot <- df |>  mutate(
   method  = factor(method, levels = rev(method_order)),  # rev so top = highest on y-axis
 ) |>
   ggplot(aes(x = auc, y = method, shape = dataset)) +
@@ -40,7 +46,7 @@ dot_plot <- df |>  mutate(
                  linewidth = 0.4, alpha = 0.3) +
 
   # Dots
-  geom_point(size = 3, color=auc_color) +
+  geom_point(size = 4, color=auc_color) +
 
   # Optional: value labels only for Electrical (most informative spread)
   geom_text(
@@ -74,42 +80,13 @@ dot_plot <- df |>  mutate(
   )
 
 
-pos_prop <- data.table::fread("data/raw/multimodal_data/parsed_metadata.csv") |>
-  dplyr::select(dataset_name, positive_prop) |>
-  dplyr::rename(dataset = dataset_name, prop = positive_prop) |>
-  dplyr::mutate(
-    dataset = str_remove(dataset, "_processed") |>
-      str_replace_all("_", " + ") |>
-      tools::toTitleCase()
-  )
-
-p_bar <- ggplot(
-  pos_prop,
-  aes(x = reorder(dataset, -prop), y = prop)) +
-  geom_col(width = 0.6, fill=auc_color) +
-  geom_text(aes(label = round(prop, 2)),
-            vjust = -0.4, size = 3) +
-  # scale_fill_manual(values = c(
-  #   "Clinical + Omics"   = "#2166ac",
-  #   "Imaging + Omics"    = "#4dac26",
-  #   "Electrical + Omics" = "#d6604d"
-  # ), guide = "none") +
-  scale_y_continuous(limits = c(0, 0.8),
-                     labels = scales::label_percent()) +
-  labs(x = NULL, y = "P(Y = 1)", title = "Positive proportion") +
-  theme_bw(base_size = 10) +
-  theme(
-    axis.text.x  = element_text(angle = 30, hjust = 1),
-    panel.grid   = element_blank(),
-    plot.title   = element_text(size = 9, face = "bold")
-  )
 
 
-library(patchwork)
-out_plot  <- p_bar / dot_plot +
-  plot_layout(heights = c(1, 4))
+#library(patchwork)
+# out_plot  <- p_bar / dot_plot +
+#   plot_layout(heights = c(1, 4))
 
 
 output_png_path <- "results/multimodal/fig5b_multimodal_auc_performance_dot.png"
 save_plot_both(out_plot, output_png_path, width=12, height=8)
-message("\nDone fig5B multimodal auc performance, see fig at: ", output_png_path)
+
