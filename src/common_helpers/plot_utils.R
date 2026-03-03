@@ -140,7 +140,7 @@ auc_color <- "#4D4D4D"
 
 # ── Heatmap scales ────────────────────────────────────────────────────────────
 # Jaccard: sequential orange (use with circlize::colorRamp2)
-jaccard_col <- colorRamp2(c(0, 0.5, 1), c("#FFF5EB", "#FD8D3C", "#7F2704"))
+jaccard_col <- circlize::colorRamp2(c(0, 0.5, 1), c("#FFF5EB", "#FD8D3C", "#7F2704"))
 
 # Binary: stark 2-color categorical
 binary_colors <- c("0" = "#F7F7F7", "1" = "#01665E")  # light grey + dark teal
