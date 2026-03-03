@@ -3,20 +3,20 @@
 # ==============================================================================
 
 # The theme for simulation data plot
-custom_theme_for_sim_plot <- function() {
+custom_theme_for_sim_plot <- function(text_size=7) {
   theme(
-    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size = 11),
+    axis.text.x = element_text(angle = 90, hjust = 1, vjust = 1, size = text_size),
     #axis.title = element_text(size = 12),
     axis.ticks.length.x = unit(0.2, "cm"),
     strip.background = element_rect(fill = "gray95", color = "gray70"),
-    strip.text = element_text(face = "bold"),
+    strip.text = element_text(face = "bold", size=7),
     panel.grid.major.y = element_line(color = "gray90", linewidth = 0.4),
     panel.grid.minor = element_blank(),
     panel.grid.major.x = element_blank(),
     panel.background = element_rect(fill = "white"),
     legend.position = "bottom",
-    legend.title = element_text(size = 20),
-    legend.text = element_text(size = 15),
+    legend.title = element_text(size = text_size+4),
+    legend.text = element_text(size = text_size+2),
     legend.key.width = unit(1.2, "cm"),
     plot.margin = margin(10, 10, 10, 10),
     panel.spacing = unit(1, "lines"),
@@ -93,9 +93,9 @@ get_text_color <- function(fill_color) {
 # ── Method colors (group by algorithm family) ─────────────────────────────────
 method_colors <- c(
   # DIABLO — Blues (dark → light: null > full, ncomp2 > ncomp1)
-  "DIABLO-null_ncomp-1"      = "#2166AC",
-  "DIABLO-null_ncomp-2"      = "#4393C3",
-  "DIABLO-full_ncomp-1"      = "#92C5DE",
+  "DIABLO_null_ncomp-1"      = "#2166AC",
+  "DIABLO_null_ncomp-2"      = "#4393C3",
+  "DIABLO_full_ncomp-1"      = "#92C5DE",
   "DIABLO-full_ncomp-2"      = "#C6DBEF",
 
   # RGCCA — Purples
@@ -105,12 +105,12 @@ method_colors <- c(
   "RGCCA-full_ncomp-2 + lda" = "#DEC9E9",
 
   # MOFA — Greens
-  "MOFA-Factor1 + glmnet"    = "#1B7837",
-  "MOFA-Factor2 + glmnet"    = "#5AAE61",
+  "MOFA_Factor1 + glmnet"    = "#1B7837",
+  "MOFA_Factor2 + glmnet"    = "#5AAE61",
 
   # Singletons — distinct neutrals
-  "integrao"                 = "#D6604D",   # muted red
-  "caret_multimodal"         = "#F4A582",   # salmon
+  "IntegrAO"                 = "#D6604D",   # muted red
+  "caretMultimodal"         = "#F4A582",   # salmon
   "MOGONET"                  = "#E08214",   # amber
   "multiview"     = "#543005"    # dark brown
 )
@@ -136,6 +136,7 @@ method_family_colors <- c(
 
 # ── AUC dot plot — single neutral, shape encodes dataset ──────────────────────
 auc_color <- "#4D4D4D"
+#auc_color <- "brown"
 
 # ── Heatmap scales ────────────────────────────────────────────────────────────
 # Jaccard: sequential orange (use with circlize::colorRamp2)
