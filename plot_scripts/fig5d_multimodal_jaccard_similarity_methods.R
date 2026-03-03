@@ -102,12 +102,12 @@ out_plot <- grid.grabExpr(
   )
 )
 
-the_plot <- out_plot
+#the_plot <- out_plot
 
-ggsave("aaaa.png", the_plot, width=12, height=9, dpi=1200, units="in")
+#ggsave("aaaa.png", the_plot, width=12, height=9, dpi=1200, units="in")
 
 output_png_path <- "results/multimodal/fig5d_multimodal_jaccard_similarity_methods.png"
-#save_plot_both(out_plot, output_png_path, width=12, height=8)
+save_plot_both(out_plot, output_png_path, width=12, height=8)
 #message("\nDone fig5d multimodal method top K pathways jaccard similarity, see fig at: ", output_png_path)
 
 

@@ -105,12 +105,12 @@ out_plot <- grid.grabExpr(
   )
 )
 
-the_plot <- out_plot
+#the_plot <- out_plot
 
-ggsave("aaaa.png", the_plot, width=12, height=8, dpi=1200, units="in")
+#ggsave("aaaa.png", the_plot, width=12, height=8, dpi=1200, units="in")
 
 output_png_path <- "results/multimodal/fig5e_multimodal_top_pathways_identified_binary_heatmap.png"
-#save_plot_both(out_plot, output_png_path, width=12, height=8)
+save_plot_both(out_plot, output_png_path, width=12, height=8)
 #message("\nDone fig5e multimodal method top K pathways binary heatmap, see fig at: ", output_png_path)
 
 

@@ -105,12 +105,12 @@ plot_bar <- function(data,text_size=11) {
 text_size <- 40
 out_plot <- plot_bar(multimodal_msig_summary_df, text_size = text_size)
 output_png_path <- "results/multimodal/fig5c_multimodal_sig_pathways_count.png"
-the_plot <- out_plot +
-  ggtitle(NULL) +
-  ylab("# Sig pathways") +
-  theme(legend.position = "none")
-
-the_plot
+# the_plot <- out_plot +
+#   ggtitle(NULL) +
+#   ylab("# Sig pathways") +
+#   theme(legend.position = "none")
+#
+# the_plot
 #the_gg <- get_legend_35(out_plot +
 #  guides(fill = guide_legend(nrow=3,title=NULL)
 #         )) %>%
@@ -118,8 +118,8 @@ the_plot
   #ggsave("aaaa.png", . , width=12, height=4,dpi=1200, units="in")
 
 
-ggsave("aaaa.png", the_plot, width=12, height=9, dpi=1200, units="in")
-#save_plot_both(out_plot, output_png_path, width=12, height=8)
+#("aaaa.png", the_plot, width=12, height=9, dpi=1200, units="in")
+save_plot_both(out_plot, output_png_path, width=12, height=8)
 #message("\nDone fig5C multimodal significant pathways counts, see fig at: ", output_png_path)
 
 #print(out_plot)

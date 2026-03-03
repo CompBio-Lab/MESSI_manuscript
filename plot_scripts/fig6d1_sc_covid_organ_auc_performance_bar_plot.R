@@ -19,14 +19,13 @@ df <- data.table::fread("data/raw/sc_data/covid_data/metrics.csv") |>
       tools::toTitleCase()
   ) |>
   dplyr::select(method, dataset, auc) %>%
-  #standardize_method_names2() %>%
+  filter(!str_detect(method, "-1")) %>%
   mutate(color_label = str_remove(method, "-.*") |> toupper()) %>%
   mutate(color_label = case_when(
-    color_label == "CARET_MULTIMODAL" ~ "CARET",
+    str_detect(color_label, "caret") ~ "CARET",
     TRUE ~ color_label)
   ) %>%
-  standardize_method_names2() %>%
-  filter(!str_detect(method, "-1"))
+  mutate(method = standardize_method_names(method, "perf"))
 
 # Now for performance wise, only show the biggest factor
 

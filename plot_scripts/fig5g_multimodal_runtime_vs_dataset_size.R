@@ -159,11 +159,11 @@ out_plot <- combined_df %>%
 
 
 output_png_path <- "results/multimodal/fig5g_multimodal_runtime_vs_dataset_size.png"
-the_plot <- out_plot +
-  ggtitle(NULL) +
-  theme(legend.position = "none")
+# the_plot <- out_plot +
+#   ggtitle(NULL) +
+#   theme(legend.position = "none")
 
 
-ggsave("aaaa.png", the_plot, width=12, height=9, dpi=1200, units="in")
-#save_plot_both(out_plot, output_png_path, width=12, height=8)
+#ggsave("aaaa.png", the_plot, width=12, height=9, dpi=1200, units="in")
+save_plot_both(out_plot, output_png_path, width=12, height=8)
 #message("\nDone fig5g multimodal time complexity plot, see fig at: ", output_png_path)

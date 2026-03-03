@@ -15,7 +15,7 @@ df <- data.table::fread("data/raw/multimodal_data/metrics.csv") |>
       tools::toTitleCase()
   ) %>%
   # Standardize the method names
-  mutate(method=standardize_method_names(method)) %>%
+  mutate(method=standardize_method_names(method, "perf")) %>%
   # Update the name of datasets
   mutate(dataset = str_remove(dataset, " \\+ Omics")) %>%
   # For performance plot, only retain biggest ncomp/factor
@@ -88,12 +88,12 @@ out_plot <- df |>
 
 output_png_path <- "results/multimodal/fig5b_multimodal_auc_performance_dot.png"
 
-the_plot <- get_legend_35(out_plot +
-  ggtitle(NULL) +
-  guides(shape=guide_legend(title=NULL,nrow=2))
-  )
-
-#the_plot %>% ggdraw()
-ggsave("aaaa.png", the_plot, width=12, height=9, dpi=1200, units="in", bg="white")
-#save_plot_both(out_plot, output_png_path, width=9, height=)
+# the_plot <- get_legend_35(out_plot +
+#   ggtitle(NULL) +
+#   guides(shape=guide_legend(title=NULL,nrow=2))
+#   )
+#
+# #the_plot %>% ggdraw()
+# ggsave("aaaa.png", the_plot, width=12, height=9, dpi=1200, units="in", bg="white")
+save_plot_both(out_plot, output_png_path, width=9, height=)
 
