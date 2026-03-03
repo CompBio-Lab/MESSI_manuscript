@@ -11,7 +11,7 @@ method_mapping <-   mapping <- c(
   caret_multimodal = "caretMultimodal"
 )
 
-standardize_method_names <- function(method) {
+standardize_method_names <- function(method, mode="feature") {
 
   mapping <- c(
     diablo   = "DIABLO",
@@ -39,6 +39,8 @@ standardize_method_names <- function(method) {
     .init = method_chr
   )
 
+  # Otherwise loop through this and go adding variants and shortening
+
   # Step 2: Replace suffixes (-null -> _null, etc.)
   suffix_replacements <- c(
     "_null"   = "-null",
@@ -57,7 +59,6 @@ standardize_method_names <- function(method) {
     paste0(m[1,2], "-", type_letter, m[1,4], m[1,5])
   })
 
-
   # Step 4: Conditionally append + lda or + glmnet
   out <- shorthanded %>%
     sapply(function(x) {
@@ -69,10 +70,14 @@ standardize_method_names <- function(method) {
       }
       x
     }, USE.NAMES = FALSE)
+  if (mode == "feature") {
+    return(out)
 
-
-  out[na_mask] <- NA_character_
-  out
+  }
+  # Otherwise return the simplified version
+  out |>
+    stringr::str_replace_all("-(F|N)\\d+", "-\\1") |>  # drop numbers
+    stringr::str_replace_all("-FA.*$", "")             # drop FA entirely
 }
 
 # standardize_method_names <- function(method) {

@@ -46,7 +46,7 @@ wrangle_bulk_data <- function(df) {
       )
     ) %>%
     # Capitalize or to upper the method names
-    mutate(method = standardize_method_names(method)) %>%
+    mutate(method = standardize_method_names(method, "perf")) %>%
     dplyr::select(
       method, dataset, ranking,
       auc, f1_score
