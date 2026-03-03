@@ -13,11 +13,12 @@ main <- function(input_path, output_path) {
   # Use absolute values for methods that could have flipped signs
   #abs_strings <- c("mofa", "integrao", "mogonet")
   gsea_input_list <- feat_df %>%
-    mutate(stat = abs(coef)) %>%
-    arrange(desc(stat)) %>%
+    # No absolute value for the coef, use the raw signed
+    #mutate(stat = abs(coef)) %>%
+    arrange(desc(coef)) %>%
     mutate(group = paste(method, dataset, view, sep = " | ")) %>%
     group_by(group) %>%
-    summarise(stat_vec = list(setNames(stat, symbol)), .groups = "drop") %>%
+    summarise(stat_vec = list(setNames(coef, symbol)), .groups = "drop") %>%
     tibble::deframe()
   # Save it to file
   saveRDS(gsea_input_list, output_path)
@@ -29,3 +30,4 @@ main <- function(input_path, output_path) {
 input_path <- "data/processed/bulk/feat_selection_symbols.csv"
 output_path <- "data/processed/bulk/bulk_fgsea_list_input.rds"
 fgsea_input_list <-main(input_path=input_path, output_path=output_path)
+

@@ -27,11 +27,11 @@ htx_gsea_input_list <- data.table::fread("data/raw/sc_data/htx_data/all_feature_
   dplyr::select(-dataset_type, -feature_type) %>%
   wrangle_feat_selection() %>%
   distinct(feat, view, dataset, coef, method) %>%
-  mutate(stat = abs(coef)) %>%
-  arrange(desc(stat)) %>%
+  #mutate(stat = abs(coef)) %>%
+  arrange(desc(coef)) %>%
   mutate(group = paste(method, dataset, view, sep = " | ")) %>%
   group_by(group) %>%
-  summarise(stat_vec = list(setNames(stat, feat)), .groups = "drop") %>%
+  summarise(stat_vec = list(setNames(coef, feat)), .groups = "drop") %>%
   tibble::deframe()
 
 saveRDS(htx_gsea_input_list, "data/processed/sc/sc_htx_fgsea_list_input.rds")

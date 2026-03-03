@@ -31,11 +31,11 @@ covid_gsea_input_list <- data.table::fread("data/raw/sc_data/covid_data//all_fea
   mix_feat, names=c("celltype", "feat"), delim="_", too_many="merge"
   ) %>%
 #Now for the covid one need to explode more info out from the feature
-  mutate(stat = abs(coef)) %>%
-  arrange(desc(stat)) %>%
+  #mutate(stat = abs(coef)) %>%
+  arrange(desc(coef)) %>%
   mutate(group = paste(method, dataset, view, celltype, sep = " | ")) %>%
   group_by(group) %>%
-  summarise(stat_vec = list(setNames(stat, feat)), .groups = "drop") %>%
+  summarise(stat_vec = list(setNames(coef, feat)), .groups = "drop") %>%
   tibble::deframe()
 
 saveRDS(covid_gsea_input_list, "data/processed/sc/sc_covid_fgsea_list_input.rds")
