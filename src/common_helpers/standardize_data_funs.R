@@ -47,9 +47,19 @@ standardize_method_names <- function(method) {
     "_ncomp"  = "-ncomp"
   )
   replaced <- str_replace_all(replaced, suffix_replacements)
+  # Step 3: Replace the extra full ncomp, factor to shorthands
+  # Step 3: Collapse null/full + ncomp and MOFA Factor into shorthands
+  shorthanded <- sapply(replaced, function(x) {
+    m <- str_match(x, "^(.*?)-(full|null|Factor)(?:-ncomp|-_ncomp)?[-_]?(\\d+)(.*)$")
+    if (is.na(m[1,1])) return(x)
+    type_letter <- ifelse(m[1,3] == "full", "F",
+                          ifelse(m[1,3] == "null", "N", "FA"))
+    paste0(m[1,2], "-", type_letter, m[1,4], m[1,5])
+  })
 
-  # Step 3: Conditionally append + lda or + glmnet
-  out <- replaced %>%
+
+  # Step 4: Conditionally append + lda or + glmnet
+  out <- shorthanded %>%
     sapply(function(x) {
       if (str_detect(x, "GCCA") & !str_detect(x, "\\+ lda")) {
         x <- paste(x, "+ lda")
@@ -59,6 +69,7 @@ standardize_method_names <- function(method) {
       }
       x
     }, USE.NAMES = FALSE)
+
 
   out[na_mask] <- NA_character_
   out
