@@ -5,19 +5,20 @@ library(dplyr)
 source("src/common_helpers/save_plot_both.R")
 source("src/common_helpers/plot_utils.R")
 
-
 pos_prop <- data.table::fread("data/raw/multimodal_data/parsed_metadata.csv") |>
-  dplyr::select(dataset_name, positive_prop) |>
+  dplyr::select(dataset_name, positive_prop, subject_dimensions) |>
   dplyr::rename(dataset = dataset_name, prop = positive_prop) |>
   dplyr::mutate(
+    #n = subject_dimensions |> str_split(",") |> dplyr::head(),
     dataset = str_remove(dataset, "_processed") |>
-      str_replace_all("_", " + ") |>
+      str_remove("_omics") |>
       tools::toTitleCase()
   )
 
 
-out_plot <- ggplot(
-  pos_prop,
+out_plot <- pos_prop %>%
+  mutate(dataset = paste0(dataset, " Omics")) %>%
+  ggplot(
   aes(x = reorder(dataset, -prop), y = prop)) +
   geom_col(width = 0.6, fill=auc_color) +
   geom_text(aes(label = round(prop, 2)),
@@ -31,6 +32,7 @@ out_plot <- ggplot(
     panel.grid   = element_blank(),
     plot.title   = element_text(size = 9, face = "bold")
   )
+
 
 
 

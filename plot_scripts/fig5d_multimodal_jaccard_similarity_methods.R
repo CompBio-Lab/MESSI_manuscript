@@ -67,20 +67,25 @@ colnames(jaccard_mat) <- names(sets)
 library(ComplexHeatmap)
 library(circlize)
 
+# =======================
+text_size <- 45
+
 jaccard_ht <- Heatmap(jaccard_mat,
                       name = "Jaccard",
                       col = jaccard_col,
                       #col = colorRamp2(c(0, 0.5, 1), c("white", "steelblue", "darkblue")),
-                      column_title = "Pairwise Jaccard Similarity of Top-K Pathways (Pooled Across Datasets)",
+                      #column_title = "Pairwise Jaccard Similarity of Top-K Pathways (Pooled Across Datasets)",
+                      column_title = NULL,
                       cell_fun = function(j, i, x, y, width, height, fill) {
                         val <- jaccard_mat[i, j]
                         txt_col <- ifelse(val > 0.5, "white", "black")
                         grid.text(sprintf("%.2f", val), x, y,
-                                  gp = gpar(fontsize = 8, col = txt_col))
+                                  gp = gpar(fontsize = 20, col = txt_col))
                       },
-                      row_names_gp = gpar(fontsize = 9),
-                      column_names_gp = gpar(fontsize = 9),
-                      column_names_rot = 45,
+                      show_column_names = F,
+                      row_names_gp = gpar(fontsize = 20),
+                      column_names_gp = gpar(fontsize = 20),
+                      column_names_rot = 90,
                       heatmap_legend_param = list(
                         direction="vertical"
                       ),
@@ -90,14 +95,20 @@ jaccard_ht <- Heatmap(jaccard_mat,
 
 out_plot <- grid.grabExpr(
   draw(jaccard_ht, merge_legends = TRUE,
+       show_heatmap_legend = FALSE,
        heatmap_legend_side = "right",
-       align_heatmap_legend = "heatmap_top"
+       align_heatmap_legend = "heatmap_top",
+       padding = unit(c(5, 5, 5, 30), "mm")  # bottom, left, top, right
   )
 )
 
+the_plot <- out_plot
+
+ggsave("aaaa.png", the_plot, width=12, height=9, dpi=1200, units="in")
+
 output_png_path <- "results/multimodal/fig5d_multimodal_jaccard_similarity_methods.png"
-save_plot_both(out_plot, output_png_path, width=12, height=8)
-message("\nDone fig5d multimodal method top K pathways jaccard similarity, see fig at: ", output_png_path)
+#save_plot_both(out_plot, output_png_path, width=12, height=8)
+#message("\nDone fig5d multimodal method top K pathways jaccard similarity, see fig at: ", output_png_path)
 
 
 

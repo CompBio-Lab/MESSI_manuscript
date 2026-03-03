@@ -67,7 +67,7 @@ multimodal_msig_summary_df <- multimodal_msigdbr_df |>
 #   ggplot(aes(x=NES, y=pathway, color=method, size=size)) +
 #   geom_point()
 
-plot_bar <- function(data) {
+plot_bar <- function(data,text_size=11) {
   # Grab method palette
   #custom_method_palette <- get_method_custom_colors()
 
@@ -84,7 +84,7 @@ plot_bar <- function(data) {
       y     = "# Significant Reactome Pathways",
       title = "Significant Reactome Pathways by Method"
     ) +
-    theme_bw(base_size = 11) +
+    theme_bw(base_size = text_size) +
     tidytext::scale_x_reordered() +
     scale_y_log10(expand = expansion(mult = c(0, 0.12))) +
     coord_flip() +
@@ -92,7 +92,7 @@ plot_bar <- function(data) {
     theme(
       plot.title         = element_text(hjust = 0.5),
       strip.background   = element_rect(fill = "grey95", color = "grey70"),
-      strip.text         = element_text(face = "bold", size = 11),
+      strip.text         = element_text(face = "bold", size = text_size),
       panel.grid.major.y = element_blank(),
       panel.grid.minor   = element_blank(),
       legend.position    = "bottom"
@@ -102,10 +102,24 @@ plot_bar <- function(data) {
 }
 
 
-
-out_plot <- plot_bar(multimodal_msig_summary_df)
+text_size <- 40
+out_plot <- plot_bar(multimodal_msig_summary_df, text_size = text_size)
 output_png_path <- "results/multimodal/fig5c_multimodal_sig_pathways_count.png"
-save_plot_both(out_plot, output_png_path, width=12, height=8)
-message("\nDone fig5C multimodal significant pathways counts, see fig at: ", output_png_path)
+the_plot <- out_plot +
+  ggtitle(NULL) +
+  ylab("# Sig pathways") +
+  theme(legend.position = "none")
+
+the_plot
+#the_gg <- get_legend_35(out_plot +
+#  guides(fill = guide_legend(nrow=3,title=NULL)
+#         )) %>%
+#  cowplot::ggdraw()
+  #ggsave("aaaa.png", . , width=12, height=4,dpi=1200, units="in")
+
+
+ggsave("aaaa.png", the_plot, width=12, height=9, dpi=1200, units="in")
+#save_plot_both(out_plot, output_png_path, width=12, height=8)
+#message("\nDone fig5C multimodal significant pathways counts, see fig at: ", output_png_path)
 
 #print(out_plot)

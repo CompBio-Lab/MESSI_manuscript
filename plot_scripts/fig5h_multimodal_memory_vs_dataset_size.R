@@ -127,7 +127,7 @@ combined_df <- left_join(
   ) %>%
   ungroup()
 
-
+text_size <- 40
 
 
 out_plot <- combined_df %>%
@@ -146,7 +146,7 @@ out_plot <- combined_df %>%
     ),
     ncol=1
   ) +
-  theme_bw() +
+  theme_bw(base_size = text_size) +
   # theme(
   #   legend.position = "bottom",
   #   strip.background = element_blank(),
@@ -162,7 +162,13 @@ out_plot <- combined_df %>%
 
 
 output_png_path <- "results/multimodal/fig5h_multimodal_memory_vs_dataset_size.png"
-save_plot_both(out_plot, output_png_path, width=12, height=8)
+the_plot <- out_plot +
+  ggtitle(NULL) +
+  theme(legend.position = "none")
 
 
-message("\nDone fig5h multimodal space complexity plot, see fig at: ", output_png_path)
+ggsave("aaaa.png", the_plot, width=12, height=9, dpi=1200, units="in")
+#save_plot_both(out_plot, output_png_path, width=12, height=8)
+
+
+#message("\nDone fig5h multimodal space complexity plot, see fig at: ", output_png_path)

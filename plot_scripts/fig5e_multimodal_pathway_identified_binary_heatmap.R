@@ -72,18 +72,25 @@ binary_mat <- sig_df_top_k %>%
   tibble::column_to_rownames("pathway") %>%
   as.matrix()
 
+
+# ===========================
+text_size <- 40
+
 bn_ht <- Heatmap(binary_mat,
                  name = "Found",
                  col = binary_colors,
                  #col = c("0" = "grey95", "1" = "steelblue"),
-                 column_title = "Pathway Recovery Across Methods",
-                 row_names_gp = gpar(fontsize = 10),
-                 column_names_gp = gpar(fontsize = 8),
+                 #column_title = "Pathway Recovery Across Methods",
+                 column_title = NULL,
+                 #row_names_gp = gpar(fontsize = text_size),
+                 #column_names_gp = gpar(fontsize = text_size),
+                 row_names_gp = gpar(fontsize = 11),
+                 column_names_gp = gpar(fontsize = 12),
                  # Assign legend
                  heatmap_legend_param = list(
                    legend_direction = "horizontal"
                  ),
-                 column_names_rot = 45,
+                 column_names_rot = 90,
                  cluster_rows = TRUE,
                  cluster_columns = TRUE,
 
@@ -93,13 +100,17 @@ bn_ht <- Heatmap(binary_mat,
 out_plot <- grid.grabExpr(
   draw(bn_ht, merge_legends = TRUE,
        heatmap_legend_side = "right",
-       align_heatmap_legend = "heatmap_top"
+       align_heatmap_legend = "heatmap_top",
+       padding = unit(c(5, 5, 5, 25), "mm")  # bottom, left, top, right
   )
 )
 
+the_plot <- out_plot
+
+ggsave("aaaa.png", the_plot, width=12, height=8, dpi=1200, units="in")
 
 output_png_path <- "results/multimodal/fig5e_multimodal_top_pathways_identified_binary_heatmap.png"
-save_plot_both(out_plot, output_png_path, width=12, height=8)
-message("\nDone fig5e multimodal method top K pathways binary heatmap, see fig at: ", output_png_path)
+#save_plot_both(out_plot, output_png_path, width=12, height=8)
+#message("\nDone fig5e multimodal method top K pathways binary heatmap, see fig at: ", output_png_path)
 
 
