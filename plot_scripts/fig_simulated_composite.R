@@ -19,17 +19,6 @@ wrangle_sim_data <- function(df) {
     wrangle_df <- df %>%
       dplyr::rename(method = method_name) %>%
       ungroup() %>%
-      # Rename method names
-      # mutate(
-      #   method = case_when(
-      #     str_detect(method, "mofa") ~ "mofa + glmnet",
-      #     str_detect(method, "rgcca") ~ paste0(method, " + lda"),
-      #     str_detect(method, "cooperative") ~ "multiview",
-      #     TRUE ~ method
-      #   )
-      # ) %>%
-      # Capitalize or to upper the method names
-      mutate(method = standardize_method_names(method, "perf")) %>%
       dplyr::select(
         method, dataset,
         auc, f1_score
@@ -55,7 +44,6 @@ wrangle_sim_feat_selection <- function(df) {
       str_detect(view, "ncomp")  ~ paste0(method, "_", str_extract(view, "ncomp.*")),
       TRUE ~ method
     )) %>%
-
     # Final renaming of method
     mutate(method = case_when(
       str_detect(method, "gcca")        ~ paste0(method, " + lda"),
@@ -63,8 +51,6 @@ wrangle_sim_feat_selection <- function(df) {
       str_detect(method, "cooperative") ~ "multiview",
       TRUE ~ method
     )) %>%
-    # Capitalize or to upper the method names
-    mutate(method = standardize_method_names(method)) %>%
     as_tibble()  # Materialize result (computed now)
 }
 
@@ -76,12 +62,11 @@ input_path <- "data/raw/simulated_data/metrics.csv"
 
 # First wrangle data
 sim_perf_df <- data.table::fread(input_path) %>%
-  as_tibble() %>%
   wrangle_sim_data() %>%
   # TODO: Uggly fix here
   mutate(
     method = case_when(
-      str_detect(tolower(method), "mofa") ~ "mofa-Factor1 + glmnet",
+      str_detect(tolower(method), "mofa") ~ "mofa-Factor1",
       TRUE ~ method
     )
   ) %>%
@@ -90,11 +75,15 @@ sim_perf_df <- data.table::fread(input_path) %>%
   dplyr::select(method, dataset,
                 auc, f1_score,
                 signal, corr, n, p)
+
+
 plot_data_perf <- sim_perf_df %>%
   filter(signal %in% c(0,3,100)) %>%
   dplyr::select(method, dataset, auc, signal,corr) %>%
   # Capitalize or to upper the method names
-  mutate(method = standardize_method_names(method))
+  # HERE purposedly use "feature" to not remove the ncomps/factor
+  mutate(method = standardize_method_names(method, "feature"))
+
 
 # =============================================================================
 clean_feat_sim <- function(feat_result_df) {
@@ -158,6 +147,8 @@ feat_result_df <- data.table::fread(feat_input_path) %>%
       TRUE ~ view
     ))
 
+
+
 # Apply some wrangling / summarizing
 plot_data_feat <- feat_result_df %>%
   clean_feat_sim()  %>%
@@ -189,13 +180,14 @@ create_panel_plot <- function(data, metric_filter, metric_label, y_label_expr, t
     filter(metric == metric_filter) |>
     mutate(metric = metric_label) |>
     ggplot(aes(x = method, y = value, fill = corr)) +
-    geom_bar(stat = "identity", position = position_dodge2(padding = 0.4), alpha=0.7) +
+    # Original padding 0.4
+    geom_bar(stat = "identity", position = position_dodge2(padding = 0.6), alpha=0.7) +
     ylab(y_label_expr) +
     theme_bw(base_size = text_size) +
     facet_grid(metric ~ signal) +
     # Calls on another theme in plot_utils
     custom_theme_for_sim_plot(text_size) +
-    scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 12)) +
+    #scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 12)) +
     scale_y_continuous(expand = expansion(mult = c(0, 0.07))) +
     scale_fill_manual(
       values = c("0" = "#C6DBEF", "0.5" = "#6BAED6", "1" = "#2171B5"),
@@ -250,7 +242,7 @@ final_plot_data <- plot_data_df |>
     method = factor(method, levels=method_order)
   )
 
-text_size <- 8
+text_size <- 9.5
 
 # First create the independent panels
 auc_panel <- create_panel_plot(
@@ -258,8 +250,10 @@ auc_panel <- create_panel_plot(
   metric_filter = "auc",
   metric_label = "AUC",
   y_label_expr = "Mean AUC of 5-fold CV",
-  text_size = text_size
-)
+  text_size = text_size + 4
+) +
+  coord_flip()
+
 
 
 sensitivity_panel <- create_panel_plot(
@@ -269,8 +263,11 @@ sensitivity_panel <- create_panel_plot(
   #y_label_expr = expression("Proportion of TP^* / TP^* + FN^*")
   #y_label_expr = expression("Proportion of " * TP^"*" / (TP^"*" + FN^"*"))
   y_label_expr = "Proportion of variables selected",
-  text_size = text_size
-)
+  text_size = text_size + 3
+) +
+  coord_flip()
+
+
 
 specificity_panel <- create_panel_plot(
   data = final_plot_data,
@@ -279,15 +276,18 @@ specificity_panel <- create_panel_plot(
   #y_label_expr = "Proportion of TN^* / TN^* + FP^*"
   #y_label_expr = expression("Proportion of " * TN^"*" / (TN^"*" + FP^"*"))
   y_label_expr = "Proportion of variables selected",
-  text_size
-)
+  text_size = text_size + 3
+) +
+  coord_flip()
+
 
 
 # ==========================================================
 # Merging the panels together
 # First make the bottom row with patchwork
 # Using cowplot is extremely due to alignment problems
-bottom_row <- (sensitivity_panel + theme_empty_legend_ticks()) /
+library(patchwork)
+bottom_row <- (sensitivity_panel + theme_empty_legend_ticks() + xlab(NULL)) /
   (specificity_panel +
      xlab(NULL))+
   plot_layout(axes = "collect")
@@ -417,25 +417,28 @@ combined_df <- left_join(
   summarize(time = median(realtime_sec),
             space = median(peak_rss_mb),
             sd_time = sd(realtime_sec),
-            sd_space = sd(peak_rss_mb)) %>%
+            sd_space = sd(peak_rss_mb),
+            .groups = "drop") %>%
   pivot_longer(time:space, names_to="metric", values_to = "median_val") %>%
+  filter(metric != "space") %>%
   mutate(metric = case_when(
-    metric == "space" ~ "Peak RSS (MB)",
-    metric == "time" ~ "Runtime (Seconds)",
+  #  metric == "space" ~ "Peak RSS (MB)",
+    metric == "time" ~ "Runtime in Seconds",
     TRUE ~ NA
   )) %>%
   mutate(metric = tools::toTitleCase(metric))
 
-
 computation_usage_plot <- combined_df %>%
-ggplot(aes(method, y=median_val, fill=method)) +
+  ggplot(aes(reorder(method, median_val), y=median_val, fill=method)) +
   geom_bar(stat="identity") +
-  labs(y="Median (metric)") +
-  scale_y_log10(labels = scales::label_comma()) +
+  labs(x="Method") +
+  labs(y="Runtime (seconds)") +
+  scale_y_log10(labels = scales::label_comma(),
+                expand = expansion(mult = c(0, 0.07))) +
   scale_fill_manual(values=method_family_colors) +
   facet_wrap(
     scales="free_y",
-    metric ~ action,
+    ~ action,
     labeller = labeller(
       action = as_labeller(
         c(
@@ -449,42 +452,42 @@ ggplot(aes(method, y=median_val, fill=method)) +
         axis.text.x = element_text(angle=45, hjust=1))
 
 
-
 # This is empty space ratio
 panel_space <- 0.025
 # Now stack top and bottom rows
 top_plot <- cowplot::plot_grid(
-  auc_panel + theme_bw(base_size=8) +
-    custom_theme_for_sim_plot() +
+  auc_panel +
     xlab(NULL) +
     theme(
       legend.position = "none",
-      axis.text.x = element_blank()
+      #axis.text.x = element_blank()
     ),
   #NULL, # spacer
   bottom_row,
   nrow = 2,
-  rel_heights = c(0.45, 0.9),
+  rel_heights = c(0.9, 1.5),
   align="v",
   axis="lr",
   labels = c("A", "B"),
-  label_size=text_size
+  label_size=text_size * 2.5
 )
 
 # Output plot
 out_plot <- plot_grid(
   top_plot,
-  computation_usage_plot + theme_bw(base_size=10) +
-    theme(axis.text.x = element_blank()) +
+  computation_usage_plot + theme_bw(base_size=text_size+2) +
+    theme(axis.text.x = element_blank(),
+          axis.ticks.x = element_blank(),
+          legend.margin = margin(b=60),
+          ) +
     xlab("Method") +
     labs(fill="Method"),
   nrow = 2,
   labels = c("", "C"),
-  label_size = 12,
-  rel_heights = c(0.7, 0.5)
+  label_size = text_size * 2.5,
+  vjust = -4,
+  rel_heights = c(1.5, 0.3)
 )
-
-
 
 
 
