@@ -29,15 +29,15 @@ wrangle_bulk_data <- function(df) {
     #mutate(ranking = rank(desc(auc_mean))) %>%
     mutate(ranking = rank(auc)) %>%
     ungroup() %>%
-    # Rename method names
-    mutate(
-      method = case_when(
-        str_detect(method, "mofa") ~ "mofa + glmnet",
-        str_detect(method, "rgcca") ~ paste0(method, " + lda"),
-        str_detect(method, "cooperative") ~ "multiview",
-        TRUE ~ method
-      )
-    ) %>%
+    # # Rename method names
+    # mutate(
+    #   method = case_when(
+    #     str_detect(method, "mofa") ~ "mofa + glmnet",
+    #     str_detect(method, "rgcca") ~ paste0(method, " + lda"),
+    #     str_detect(method, "cooperative") ~ "multiview",
+    #     TRUE ~ method
+    #   )
+    #) %>%
     # Capitalize or to upper the method names
     mutate(method = standardize_method_names(method)) %>%
     dplyr::select(
