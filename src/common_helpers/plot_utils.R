@@ -9,7 +9,7 @@ custom_theme_for_sim_plot <- function(text_size=7) {
     #axis.title = element_text(size = 12),
     axis.ticks.length.x = unit(0.2, "cm"),
     strip.background = element_rect(fill = "gray95", color = "gray70"),
-    strip.text = element_text(face = "bold", size=7),
+    strip.text = element_text(face = "bold", size=text_size),
     panel.grid.major.y = element_line(color = "gray90", linewidth = 0.4),
     panel.grid.minor = element_blank(),
     panel.grid.major.x = element_blank(),
