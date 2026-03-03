@@ -67,7 +67,6 @@ bulk_auc_preprocess_main <- function(input_path="data/raw/bulk_data/metrics.csv"
     filter(!str_detect(tolower(method), "ncomp-1")) %>%
     # TODO: this a fix for real data only
     mutate(
-      method = str_remove(method, "_ncomp-2"),
       dataset = str_to_lower(dataset)
     ) %>%
     mutate(disease = map_disease_name(dataset)) %>%
@@ -225,7 +224,6 @@ if (simple) {
 
 
 input_data <- bulk_auc_preprocess_main(input_path, output_path)
-
 out_plot <- plot_fig1_real(
   input_data = input_data,
   text_size = 6,

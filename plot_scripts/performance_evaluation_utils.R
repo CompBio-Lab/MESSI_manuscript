@@ -38,6 +38,13 @@ wrangle_bulk_data <- function(df) {
     #     TRUE ~ method
     #   )
     #) %>%
+    # UGGLY FIX, append suffix of Factor to MOFA, for bulk data we set factor to 2
+    mutate(
+      method = case_when(
+        str_detect(tolower(method),"mofa") ~ str_c(method, "-Factor2"),
+      TRUE ~ method
+      )
+    ) %>%
     # Capitalize or to upper the method names
     mutate(method = standardize_method_names(method)) %>%
     dplyr::select(
