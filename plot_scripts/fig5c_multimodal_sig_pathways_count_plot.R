@@ -117,7 +117,7 @@ output_png_path <- "results/multimodal/fig5c_multimodal_sig_pathways_count.png"
 #  cowplot::ggdraw()
   #ggsave("aaaa.png", . , width=12, height=4,dpi=1200, units="in")
 
-
+out_plot
 #("aaaa.png", the_plot, width=12, height=9, dpi=1200, units="in")
 save_plot_both(out_plot, output_png_path, width=12, height=8)
 #message("\nDone fig5C multimodal significant pathways counts, see fig at: ", output_png_path)

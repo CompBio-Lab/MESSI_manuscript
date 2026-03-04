@@ -144,7 +144,7 @@ out_plot <- combined_df %>%
         model_selection  = "Model Selection"
       )
     ),
-    ncol=1
+    nrow=1
   ) +
   theme_bw(base_size = text_size) +
   # theme(

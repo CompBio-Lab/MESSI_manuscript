@@ -76,7 +76,7 @@ binary_mat <- sig_df_top_k %>%
 # ===========================
 text_size <- 40
 
-bn_ht <- Heatmap(binary_mat,
+bn_ht <- Heatmap(t(binary_mat),
                  name = "Found",
                  col = binary_colors,
                  #col = c("0" = "grey95", "1" = "steelblue"),
@@ -101,7 +101,10 @@ out_plot <- grid.grabExpr(
   draw(bn_ht, merge_legends = TRUE,
        heatmap_legend_side = "right",
        align_heatmap_legend = "heatmap_top",
-       padding = unit(c(5, 5, 5, 25), "mm")  # bottom, left, top, right
+       # Use this padding if want more space for the rownames to show up
+       # B, L, T, R
+       #padding = unit(c(5, 5, 5, 25), "mm")  # bottom, left, top, right
+       padding = unit(c(60,5,5,5), "mm")
   )
 )
 
