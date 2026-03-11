@@ -20,6 +20,6 @@ retrieve_sim_params <- function(df) {
       rep = str_extract(params, "rep-\\d+")
     ) %>%
     mutate(across(n:rep, ~ str_remove(., "^[a-z]+-") %>% as.numeric())) %>%
-    rename(signal = dt, corr = rho) %>%
-    select(-c(params))
+    dplyr::rename(signal = dt, corr = rho) %>%
+    dplyr::select(-c(params))
 }

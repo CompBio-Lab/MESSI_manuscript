@@ -3,20 +3,20 @@
 # ==============================================================================
 
 # The theme for simulation data plot
-custom_theme_for_sim_plot <- function() {
+custom_theme_for_sim_plot <- function(text_size=7) {
   theme(
-    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size = 11),
+    axis.text.x = element_text(angle = 90, hjust = 1, vjust = 1, size = text_size),
     #axis.title = element_text(size = 12),
     axis.ticks.length.x = unit(0.2, "cm"),
     strip.background = element_rect(fill = "gray95", color = "gray70"),
-    strip.text = element_text(face = "bold"),
+    strip.text = element_text(face = "bold", size=text_size),
     panel.grid.major.y = element_line(color = "gray90", linewidth = 0.4),
     panel.grid.minor = element_blank(),
     panel.grid.major.x = element_blank(),
     panel.background = element_rect(fill = "white"),
     legend.position = "bottom",
-    legend.title = element_text(size = 20),
-    legend.text = element_text(size = 15),
+    legend.title = element_text(size = text_size+4),
+    legend.text = element_text(size = text_size+2),
     legend.key.width = unit(1.2, "cm"),
     plot.margin = margin(10, 10, 10, 10),
     panel.spacing = unit(1, "lines"),
@@ -25,27 +25,30 @@ custom_theme_for_sim_plot <- function() {
 
 
 
-# Custom palette for the methods
-get_method_custom_colors <- function(method_palette="Paired") {
-  # This fun is to match the color choices used for the methods
-  custom_method_palette <-  RColorBrewer::brewer.pal(n=12, name=method_palette)
-  method_order_names <- c(
-    "DIABLO-full_ncomp-1",
-    "DIABLO-full_ncomp-2",
-    "DIABLO-null_ncomp-1",
-    "DIABLO-null_ncomp-2",
-    "MOFA-Factor1 + glmnet",
-    "MOFA-Factor2 + glmnet",
-    "MOGONET",
-    "multiview",
-    "RGCCA-full_ncomp-1 + lda",
-    "RGCCA-null_ncomp-1 + lda",
-    "RGCCA-full_ncomp-2 + lda",
-    "RGCCA-null_ncomp-2 + lda"
-  )
-  names(custom_method_palette) <- method_order_names
-  return(custom_method_palette)
-}
+
+# get_method_custom_colors <- function() {
+#   c(
+#     # DIABLO family — blues (light → dark)
+#     "DIABLO-full_ncomp-1"       = "#9ECAE1",
+#     "DIABLO-full_ncomp-2"       = "#4292C6",
+#     "DIABLO-null_ncomp-1"       = "#2171B5",
+#     "DIABLO-null_ncomp-2"       = "#084594",
+#     # MOFA family — greens (light → dark)
+#     "MOFA-Factor1 + glmnet"     = "#74C476",
+#     "MOFA-Factor2 + glmnet"     = "#238B45",
+#     # Singletons
+#     "MOGONET"                   = "#FD8D3C",   # orange
+#     "multiview"                 = "#E377C2",   # pink
+#     "integrao"                  = "#D62728",   # red
+#     "caret_multimodal"          = "#17BECF",    # teal  ← recommended
+#     # "caret_multimodal"        = "#8C6D31",    # brown ← warm alternative
+#     # RGCCA family — purples (light → dark)
+#     "RGCCA-full_ncomp-1 + lda"  = "#BCBDDC",
+#     "RGCCA-null_ncomp-1 + lda"  = "#9E9AC8",
+#     "RGCCA-full_ncomp-2 + lda"  = "#756BB1",
+#     "RGCCA-null_ncomp-2 + lda"  = "#54278F"
+#   )
+# }
 
 # Extract legend
 get_legend_35 <- function(plot) {
@@ -82,4 +85,63 @@ get_text_color <- function(fill_color) {
   # Otherwise, use black text.
   ifelse(luminance < 0.5, "white", "black")
 }
+
+# ==============================================================================
+# CONSTANTS TO USE
+
+
+# ── Method colors (group by algorithm family) ─────────────────────────────────
+method_colors <- c(
+  # DIABLO — Blues (dark → light: null > full, ncomp2 > ncomp1)
+  "DIABLO-N1"      = "#2166AC",
+  "DIABLO-N2"      = "#4393C3",
+  "DIABLO-F1"      = "#92C5DE",
+  "DIABLO-F2"      = "#C6DBEF",
+
+  # RGCCA — Purples
+  "RGCCA-N1+LDA" = "#6A3D9A",
+  "RGCCA-N2+LDA" = "#9970AB",
+  "RGCCA-F1+LDA" = "#C2A5CF",
+  "RGCCA-F2+LDA" = "#DEC9E9",
+
+  # MOFA — Greens
+  "MOFA-1+glmnet"    = "#1B7837",
+  "MOFA-2+glmnet"    = "#5AAE61",
+
+  # Singletons — distinct neutrals
+  "IntegrAO"                 = "#D6604D",   # muted red
+  "caretMultimodal"         = "#F4A582",   # salmon
+  "MOGONET"                  = "#E08214",   # amber
+  "multiview"     = "#543005"    # dark brown
+)
+
+method_family_colors <- c(
+  # DIABLO — Blues (dark → light: null > full, ncomp2 > ncomp1)
+  "DIABLO"      = "#4393C3",
+
+  # RGCCA — Purples
+  "RGCCA" = "#6A3D9A",
+
+
+
+  # MOFA — Greens
+  "MOFA"    = "#5AAE61",
+
+  # Singletons — distinct neutrals
+  "INTEGRAO"                 = "#D6604D",   # muted red
+  "CARETMULTIMODAL"         = "#F4A582",   # salmon
+  "MOGONET"                  = "#E08214",   # amber
+  "MULTIVIEW"     = "#543005"    # dark brown
+)
+
+# ── AUC dot plot — single neutral, shape encodes dataset ──────────────────────
+auc_color <- "#4D4D4D"
+#auc_color <- "brown"
+
+# ── Heatmap scales ────────────────────────────────────────────────────────────
+# Jaccard: sequential orange (use with circlize::colorRamp2)
+jaccard_col <- circlize::colorRamp2(c(0, 0.5, 1), c("#FFF5EB", "#FD8D3C", "#7F2704"))
+
+# Binary: stark 2-color categorical
+binary_colors <- c("0" = "#F7F7F7", "1" = "#01665E")  # light grey + dark teal
 
