@@ -23,7 +23,8 @@ wrangle_feat_selection <- function(df) {
 }
 
 # Load the feature part
-covid_gsea_input_list <- data.table::fread("data/raw/sc_data/covid_data//all_feature_selection_results.csv") %>%
+covid_multiomics_gsea_input_list <- data.table::fread("data/raw/sc_data/covid_data//all_feature_selection_results.csv") %>%
+  filter(dataset_name == "covid_multiomics") %>%
   dplyr::select(-dataset_type, -feature_type) %>%
   wrangle_feat_selection() %>%
   distinct(mix_feat, view, dataset, coef, method) %>%
@@ -38,5 +39,5 @@ covid_gsea_input_list <- data.table::fread("data/raw/sc_data/covid_data//all_fea
   summarise(stat_vec = list(setNames(coef, feat)), .groups = "drop") %>%
   tibble::deframe()
 
-saveRDS(covid_gsea_input_list, "data/processed/sc/sc_covid_fgsea_list_input.rds")
+saveRDS(covid_multiomics_gsea_input_list, "data/processed/sc/sc_covid_multiomics_fgsea_list_input.rds")
 
