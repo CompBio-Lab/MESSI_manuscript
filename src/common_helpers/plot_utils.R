@@ -26,29 +26,29 @@ custom_theme_for_sim_plot <- function(text_size=7) {
 
 
 
-get_method_custom_colors <- function() {
-  c(
-    # DIABLO family — blues (light → dark)
-    "DIABLO-full_ncomp-1"       = "#9ECAE1",
-    "DIABLO-full_ncomp-2"       = "#4292C6",
-    "DIABLO-null_ncomp-1"       = "#2171B5",
-    "DIABLO-null_ncomp-2"       = "#084594",
-    # MOFA family — greens (light → dark)
-    "MOFA-Factor1 + glmnet"     = "#74C476",
-    "MOFA-Factor2 + glmnet"     = "#238B45",
-    # Singletons
-    "MOGONET"                   = "#FD8D3C",   # orange
-    "multiview"                 = "#E377C2",   # pink
-    "integrao"                  = "#D62728",   # red
-    "caret_multimodal"          = "#17BECF",    # teal  ← recommended
-    # "caret_multimodal"        = "#8C6D31",    # brown ← warm alternative
-    # RGCCA family — purples (light → dark)
-    "RGCCA-full_ncomp-1 + lda"  = "#BCBDDC",
-    "RGCCA-null_ncomp-1 + lda"  = "#9E9AC8",
-    "RGCCA-full_ncomp-2 + lda"  = "#756BB1",
-    "RGCCA-null_ncomp-2 + lda"  = "#54278F"
-  )
-}
+# get_method_custom_colors <- function() {
+#   c(
+#     # DIABLO family — blues (light → dark)
+#     "DIABLO-full_ncomp-1"       = "#9ECAE1",
+#     "DIABLO-full_ncomp-2"       = "#4292C6",
+#     "DIABLO-null_ncomp-1"       = "#2171B5",
+#     "DIABLO-null_ncomp-2"       = "#084594",
+#     # MOFA family — greens (light → dark)
+#     "MOFA-Factor1 + glmnet"     = "#74C476",
+#     "MOFA-Factor2 + glmnet"     = "#238B45",
+#     # Singletons
+#     "MOGONET"                   = "#FD8D3C",   # orange
+#     "multiview"                 = "#E377C2",   # pink
+#     "integrao"                  = "#D62728",   # red
+#     "caret_multimodal"          = "#17BECF",    # teal  ← recommended
+#     # "caret_multimodal"        = "#8C6D31",    # brown ← warm alternative
+#     # RGCCA family — purples (light → dark)
+#     "RGCCA-full_ncomp-1 + lda"  = "#BCBDDC",
+#     "RGCCA-null_ncomp-1 + lda"  = "#9E9AC8",
+#     "RGCCA-full_ncomp-2 + lda"  = "#756BB1",
+#     "RGCCA-null_ncomp-2 + lda"  = "#54278F"
+#   )
+# }
 
 # Extract legend
 get_legend_35 <- function(plot) {
@@ -93,20 +93,20 @@ get_text_color <- function(fill_color) {
 # ── Method colors (group by algorithm family) ─────────────────────────────────
 method_colors <- c(
   # DIABLO — Blues (dark → light: null > full, ncomp2 > ncomp1)
-  "DIABLO_null_ncomp-1"      = "#2166AC",
-  "DIABLO_null_ncomp-2"      = "#4393C3",
-  "DIABLO_full_ncomp-1"      = "#92C5DE",
-  "DIABLO-full_ncomp-2"      = "#C6DBEF",
+  "DIABLO-N1"      = "#2166AC",
+  "DIABLO-N2"      = "#4393C3",
+  "DIABLO-F1"      = "#92C5DE",
+  "DIABLO-F2"      = "#C6DBEF",
 
   # RGCCA — Purples
-  "RGCCA-null_ncomp-1 + lda" = "#6A3D9A",
-  "RGCCA-null_ncomp-2 + lda" = "#9970AB",
-  "RGCCA-full_ncomp-1 + lda" = "#C2A5CF",
-  "RGCCA-full_ncomp-2 + lda" = "#DEC9E9",
+  "RGCCA-N1+LDA" = "#6A3D9A",
+  "RGCCA-N2+LDA" = "#9970AB",
+  "RGCCA-F1+LDA" = "#C2A5CF",
+  "RGCCA-F2+LDA" = "#DEC9E9",
 
   # MOFA — Greens
-  "MOFA_Factor1 + glmnet"    = "#1B7837",
-  "MOFA_Factor2 + glmnet"    = "#5AAE61",
+  "MOFA-1+glmnet"    = "#1B7837",
+  "MOFA-2+glmnet"    = "#5AAE61",
 
   # Singletons — distinct neutrals
   "IntegrAO"                 = "#D6604D",   # muted red
@@ -129,7 +129,7 @@ method_family_colors <- c(
 
   # Singletons — distinct neutrals
   "INTEGRAO"                 = "#D6604D",   # muted red
-  "CARET"         = "#F4A582",   # salmon
+  "CARETMULTIMODAL"         = "#F4A582",   # salmon
   "MOGONET"                  = "#E08214",   # amber
   "MULTIVIEW"     = "#543005"    # dark brown
 )
