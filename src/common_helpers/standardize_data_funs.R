@@ -17,25 +17,6 @@ library(stringr)
 # method_names |>
 #   standardize_method_names(mode="perf")
 
-df <- data.table::fread("data/processed/bulk/bulk_panglao_fgsea.csv")
-panglao_pathways <- readRDS("data/processed/pathways_db/panglao_pathways_collection.rds")
-# Now combine the pathways collection name into one df
-bulk_panglao_df <- inner_join(
-  df, panglao_pathways,
-  by = c("pathway" = "gs_name")
-) %>%
-  # Then in this one, need to readjust the pval later, so
-  # rename its existing padj to another name
-  dplyr::rename(old_padj = padj) %>%
-  tidyr::separate_wider_delim(
-    group, delim = " | ",
-    names = c("method", "dataset", "view"),
-    too_many = "merge", too_few = "align_start"
-  ) %>%
-  # Drop extra dataset
-  #filter(!(dataset %in% c("tcga-chol", "tcga-kipan"))) %>%
-  group_by(method, dataset, view) %>%
-  mutate(padj = p.adjust(pval, method="BH"))
 
 standardize_method_names <- function(method, mode="feature") {
 
