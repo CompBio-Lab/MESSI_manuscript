@@ -63,7 +63,7 @@ process_sc_htx <- function(metric_input_path=NULL, fgsea_input_path=NULL,
   time_space_usage_df <- load_sc_time_space_data(
     trace_path = trace_path,
     metadata_path = metadata_path,
-    dataset_patter = DATASET
+    dataset_pattern = DATASET
   ) |>
     standardize_sc_time_space_methods()
 
