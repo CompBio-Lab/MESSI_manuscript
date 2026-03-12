@@ -49,7 +49,7 @@ plot_fig_sc_covid_organ_panels_main <- function(input_rds_path=NULL, output_dir=
   save_plot_both(p_D3, here(output_dir, "fig_sc_d3_covid_organ_pathway_identified_plot.png"))
   save_plot_both(p_D4, here(output_dir, "fig_sc_d4_covid_organ_time_space_plot.png"))
   # ===============
-  message("\n[plot_fig_sc_covid_organ_panels_main] Done plotting fig sc covid multiomcis panel")
+  message("\n[plot_fig_sc_covid_organ_panels_main] Done plotting fig sc covid organ panel")
 }
 
 plot_fig_sc_covid_organ_panels_main(
