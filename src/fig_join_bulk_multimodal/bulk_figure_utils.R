@@ -687,9 +687,9 @@ build_bulk_panglao_heatmap <- function(
     row_title_rot       = 0,
     row_gap             = unit(1, "mm"),
     column_names_rot    = 45,
-    row_title_gp        = gpar(fontsize = text_size + 10),
-    column_names_gp     = gpar(fontsize = text_size + 10),
-    row_names_gp        = gpar(fontsize = text_size + 10),
+    row_title_gp        = gpar(fontsize = text_size),
+    column_names_gp     = gpar(fontsize = text_size),
+    row_names_gp        = gpar(fontsize = text_size),
     show_row_names      = FALSE,
     show_column_dend    = FALSE,
     row_dend_width      = unit(1.5, "cm"),
@@ -702,7 +702,7 @@ build_bulk_panglao_heatmap <- function(
       } else {
         text_color <- get_text_color(fill)
         grid.text(sprintf("%.2f", value), x, y,
-                  gp = gpar(col = text_color, fontsize = text_size + 4))
+                  gp = gpar(col = text_color, fontsize = text_size))
       }
     },
     heatmap_legend_param = list(
@@ -710,9 +710,9 @@ build_bulk_panglao_heatmap <- function(
       labels           = c("Low", "", "High"),
       grid_height      = unit(1.25, "cm"),
       grid_width       = unit(1.25, "cm"),
-      legend_width     = unit(18, "cm"),
-      labels_gp        = gpar(fontsize = text_size + 8),
-      title_gp         = gpar(fontsize = text_size + 8, fontface = "bold"),
+      legend_width     = unit(text_size * 2, "mm"),
+      labels_gp        = gpar(fontsize = text_size + 5),
+      title_gp         = gpar(fontsize = text_size + 5, fontface = "bold"),
       legend_direction = "horizontal"
     )
   )
@@ -722,7 +722,8 @@ build_bulk_panglao_heatmap <- function(
          show_heatmap_legend    = TRUE,
          heatmap_legend_side    = "bottom",
          annotation_legend_side = "bottom",
-         padding = unit(c(5, 5, 10, 5), "cm"))
+         #padding = unit(c(5, 5, 10, 5), "cm"))
+         padding = unit(c(5, 5, 10, 5), "mm"))
   )
 
   message("[build_bulk_panglao_heatmap] Done")

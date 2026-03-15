@@ -44,7 +44,7 @@ plot_fig_bulk_multimodal_panels_main <- function(input_rds_path=NULL, output_dir
   # ==============================================================================
   # Panel: PanglaoDB heatmap
   # ==============================================================================
-  p_e <- build_bulk_panglao_heatmap(panel_ef_data, text_size = text_size - 6) |>
+  p_e <- build_bulk_panglao_heatmap(panel_ef_data, text_size = text_size - 2) |>
     cowplot::ggdraw()
   # ==============================================================================
   # Panel: PanglaoDB annotation bar
@@ -59,7 +59,9 @@ plot_fig_bulk_multimodal_panels_main <- function(input_rds_path=NULL, output_dir
   save_plot_both(p_b, here(output_dir, "fig_bulk_multimodal_b_auc_performance_point_boxplot.png"))
   save_plot_both(p_c, here(output_dir, "fig_bulk_multimodal_c_feature_mean_correlation_heatmap.png"))
   save_plot_both(p_d, here(output_dir, "fig_bulk_multimodal_d_sig_pathways_count_plot.png"))
-  save_plot_both(p_e, here(output_dir, "fig_bulk_multimodal_e_panglao_organ_tissue_heatmap.png"))
+  save_plot_both(p_e, here(output_dir, "fig_bulk_multimodal_e_panglao_organ_tissue_heatmap.png"),
+                 # Special sizing for the panglao heatmap
+                 width=text_size, height=text_size)
   save_plot_both(p_f, here(output_dir, "fig_bulk_multimodal_f_count_panglao_method.png"))
   save_plot_both(p_g, here(output_dir, "fig_bulk_multimodal_g_computational_resources_usage.png"))
   # ===============
