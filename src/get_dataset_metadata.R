@@ -69,6 +69,7 @@ map_disease_name_table_format <- function(dname) {
   dplyr::case_when(
     # The bulk ones
     dataset == "gse38609" ~ "Autism",
+    dataset == "tcga-chol" ~ "Bile Duct Cancer",
     dataset == "tcga-stes" ~ "Stomach/Esophagus cancer",
     dataset == "gse71669" ~ "Bladder cancer 1",
     dataset == "tcga-acc" ~ "Adrenal Gland cancer",
@@ -142,13 +143,13 @@ metadata_df <- raw_metadata_df |>
   # Chop the suffix of dataset and make it to upper
   mutate(dataset = str_remove(dataset, "_processed") |> str_to_lower()) |>
   # TODO: this should not show up kipan and chol
-  filter(!dataset %in% c("tcga-chol", "tcga-kipan")) |>
+  filter(!dataset %in% c("tcga-kipan")) |>
   # Then specific mapping names
   mutate(
     disease = map_disease_name_table_format(dataset),
     dataset = map_dataset_name_table_format(dataset),
-         # This is a specific util here, not like the one in commmon_utils/standardize_data_funs.R
-    ) |>
+    # This is a specific util here, not like the one in commmon_utils/standardize_data_funs.R
+  ) |>
   # Then expand the subjection dimensions
   mutate(subject_dimensions_list = str_split(subject_dimensions, ",")) |>
   mutate(
@@ -189,8 +190,7 @@ metadata_df <- raw_metadata_df |>
     )
   )
 
-metadata_df |>
-  filter(dataset == "TCGA-BLCA")
+
 
 # Now also read in the raw metadata that are not filtered yet
 pre_filter_metadata <- read_csv("data/raw/data_prefilter.csv", show_col_types = FALSE)
@@ -199,7 +199,7 @@ pre_filter_metadata <- read_csv("data/raw/data_prefilter.csv", show_col_types = 
 # And join both
 # Set a custom order of datasets
 dataset_order <- c(
-  "GSE38609", "TCGA-STES", "GSE71669", "TCGA-ACC", "TCGA-KICH",
+  "GSE38609", "TCGA-STES", "TCGA-CHOL", "GSE71669", "TCGA-ACC", "TCGA-KICH",
   "TCGA-MESO", "TCGA-SKCM", "TCGA-BRCA", "TCGA-ESCA", "TCGA-KIRC",
   "TCGA-THCA", "TCGA-BLCA", "ROSMAP", # All the bulks here
   "Clinical-omics", "Electrical-omics", "Imaging-omics", # All the multimodal here
@@ -215,7 +215,7 @@ full_metadata_df <- left_join(metadata_df, pre_filter_metadata,
     n_after = obs,
     p_before = n_feature,
     p_after = var
-    ) |>
+  ) |>
   mutate(positive_n = ceiling(positive_prop * n_after)) |>
   # Then lastly bundle omics_names together by the omics_names and p before, and omics_nams and p after
   mutate(
@@ -235,11 +235,10 @@ full_metadata_df <- left_join(metadata_df, pre_filter_metadata,
   mutate(dataset_levels = factor(dataset, levels=dataset_order)) |>
   arrange(dataset_levels)
 
-full_metadata_df %>%
-  filter(dataset == "TCGA-ESCA") %>%
-  pull(feat_after)
+full_metadata_df |>
+  filter(dataset == "TCGA-CHOL") |>
+  dplyr::select(feat_after)
 
-
 full_metadata_df %>%
- write.csv("dataset_metadata.csv", row.names = FALSE)
+  write.csv("dataset_metadata.csv", row.names = FALSE)
 
