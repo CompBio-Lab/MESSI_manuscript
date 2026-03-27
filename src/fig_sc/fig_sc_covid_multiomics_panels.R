@@ -21,10 +21,10 @@ plot_fig_sc_covid_multiomics_panels_main <- function(input_rds_path=NULL, output
   # Load the plot data
   plot_data_list <- readRDS(input_rds_path)
   # Now extract each plot data
-  panel_C1_data <- plot_data_list$panel_c1_auc_plot_data
-  panel_C2_data <- plot_data_list$panel_c2_sig_pathways_count_plot_data
-  panel_C3_data <- plot_data_list$panel_c3_pathway_identified_plot_data
-  panel_C4_data <- plot_data_list$panel_c4_time_space_plot_data
+  panel_C1_data <- plot_data_list$panel_auc_plot_data
+  panel_C2_data <- plot_data_list$panel_sig_pathways_count_plot_data
+  panel_C3_data <- plot_data_list$panel_pathway_identified_plot_data
+  panel_C4_data <- plot_data_list$panel_time_space_plot_data
   # ==============================================================================
   # Now make each plot
   p_C1 <- plot_sc_auc_bar(panel_C1_data, title = "sc-COVID multiomics",

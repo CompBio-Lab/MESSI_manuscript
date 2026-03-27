@@ -61,10 +61,10 @@ process_sc_covid_multiomics <- function(metric_input_path=NULL, fgsea_input_path
   # ================================
   # Now store relevant plot data
   output_plot_data_list <- list(
-    panel_c1_auc_plot_data = auc_metric_df,
-    panel_c2_sig_pathways_count_plot_data = sig_pathways_count,
-    panel_c3_pathway_identified_plot_data = classified,
-    panel_c4_time_space_plot_data = time_space_usage_df
+    panel_auc_plot_data = auc_metric_df,
+    panel_sig_pathways_count_plot_data = sig_pathways_count,
+    panel_pathway_identified_plot_data = classified,
+    panel_time_space_plot_data = time_space_usage_df
   )
   # And save it to file
   message("[process_sc_covid_multiomics] Saving plot data to file: ", output_rds_path)

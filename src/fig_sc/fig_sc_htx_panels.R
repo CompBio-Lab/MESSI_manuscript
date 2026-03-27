@@ -21,10 +21,10 @@ plot_fig_sc_htx_panels_main <- function(input_rds_path=NULL, output_dir=NULL,
   # Load the plot data
   plot_data_list <- readRDS(input_rds_path)
   # Now extract each plot data
-  panel_B1_data <- plot_data_list$panel_c1_auc_plot_data
-  panel_B2_data <- plot_data_list$panel_c2_sig_pathways_count_plot_data
-  panel_B3_data <- plot_data_list$panel_c3_pathway_identified_plot_data
-  panel_B4_data <- plot_data_list$panel_c4_time_space_plot_data
+  panel_B1_data <- plot_data_list$panel_auc_plot_data
+  panel_B2_data <- plot_data_list$panel_sig_pathways_count_plot_data
+  panel_B3_data <- plot_data_list$panel_pathway_identified_plot_data
+  panel_B4_data <- plot_data_list$panel_time_space_plot_data
   # ==============================================================================
   # Now make each plot
   p_B1 <- plot_sc_auc_bar(panel_B1_data, title = "sc-HTX",
