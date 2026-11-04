@@ -8,7 +8,6 @@ library(here)
 #NUM_PATIENTS <- c(".")
 #NUM_VARS <- c(".")
 metadata_path <- here("data/parsed_metadata.csv")
-# TODO: remember to add sex
 
 # Helper to separate params out
 # Function to separate parameters
@@ -117,8 +116,6 @@ table <- flextable(final_result) %>%
   bg(part = "header", bg = "grey20") %>%
   bg(i = seq(1, nrow(final_result), by = 2), bg = "grey90") %>%  # Light grey for alternate rows
              # Dark color for header background
-  # TODO: this is not working now?
-  #bg(i = missing_indices[, "row"], j = missing_indices[, "col"], bg = "red") %>%
   color(part = "header", color = "white") %>%
   set_table_properties(width = 0.75, layout = "autofit")
 # Lastly should save this to output

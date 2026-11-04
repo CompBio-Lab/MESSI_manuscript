@@ -24,6 +24,7 @@ save_plot_both <- function(plot_obj,
                            width = 10,
                            height = 6,
                            dpi = 300,
+                           bg = "white",
                            plot_obj_dir = NULL) {
 
   # Ensure output directory exists
@@ -38,7 +39,8 @@ save_plot_both <- function(plot_obj,
     plot = plot_obj,
     width = width,
     height = height,
-    dpi = dpi
+    dpi = dpi,
+    bg  = bg
   )
   message("Saved PNG:   ", png_path, "\n")
 

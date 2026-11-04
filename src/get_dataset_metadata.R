@@ -142,7 +142,6 @@ metadata_df <- raw_metadata_df |>
   dplyr::rename(dataset = dataset_name) |>
   # Chop the suffix of dataset and make it to upper
   mutate(dataset = str_remove(dataset, "_processed") |> str_to_lower()) |>
-  # TODO: this should not show up kipan and chol
   filter(!dataset %in% c("tcga-kipan")) |>
   # Then specific mapping names
   mutate(

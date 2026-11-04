@@ -1,8 +1,25 @@
+# Data: from Zenodo, not tracked
 data/raw/
 data/processed/
-.Rproj.user/
+
+# Everything under results/ is generated, except the two inputs below
+results/*
+!results/sc_new/
+results/sc_new/*
+!results/sc_new/sc_design_concept.png
+!results/biology_validation/
+results/biology_validation/*
+!results/biology_validation/tables/
+results/biology_validation/tables/*
+!results/biology_validation/tables/fig4_null_results.csv
+!results/biology_validation/tables/fig4_null_cancer_summary.csv
+
+# Logs and local files
+logs/
+*.log
 Rplots.pdf
 *.tiff
+.Rproj.user/
 .Rhistory
-docs/report.log
-docs/report.aux
+*.pyc
+__pycache__/
