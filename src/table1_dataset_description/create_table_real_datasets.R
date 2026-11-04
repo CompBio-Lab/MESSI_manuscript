@@ -85,7 +85,6 @@ diseases <- c(
 
 
 metadata_path <- here("data/raw/real_data_results/parsed_metadata.csv")
-# TODO: remember to add sex
 
 # ==================================
 

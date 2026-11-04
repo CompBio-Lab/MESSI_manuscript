@@ -10,13 +10,10 @@ convert_table_format <- function(table) {
   if (!match_first_col) {
     stop("First column is not sample_name, wrong naming or missed somewhere")
   }
-  # TODO: Should at least contain sample name, phat, method_name, dataset
-  # TODO: allow this extra column of fold
   relevant_cols <- c("sample_name", "y",  "phat", "method_name", "dataset", "fold")
   contains_relevant_cols <- cols %in% relevant_cols
   if(!all(contains_relevant_cols)) {
     warning("\nResult table might not contain all relevant columns\n")
-    # TODO: Find a better way for this?
     table <- table[, relevant_cols]
   }
 
@@ -59,13 +56,10 @@ convert_table_format <- function(table) {
   if (!match_first_col) {
     stop("First column is not sample_name, wrong naming or missed somewhere")
   }
-  # TODO: Should at least contain sample name, phat, method_name, dataset
-  # TODO: allow this extra column of fold
   relevant_cols <- c("sample_name", "y",  "phat", "method_name", "dataset", "fold")
   contains_relevant_cols <- cols %in% relevant_cols
   if(!all(contains_relevant_cols)) {
     warning("\nResult table might not contain all relevant columns\n")
-    # TODO: Find a better way for this?
     table <- table[, relevant_cols]
   }
 
